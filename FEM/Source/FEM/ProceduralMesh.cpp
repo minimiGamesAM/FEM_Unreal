@@ -8,7 +8,7 @@
 // 1) Add in MyProject.Build.cs "ProceduralMeshComponent" at the end of PublicDependencyModuleNames.AddRange
 // 2) Add in AdditionalDependencies in .uproject file "ProceduralMeshComponent"
 // 3) To fix errors with Visual Studio IntelliSense you need to right-click MyProject.uproject and re-generate Visual Studio project files. In Visual Studio 2017, open "Solution Explorer" and open the "Game" folder, right-click on the first line, which should be the root of your solution, select: "Rescan Solution".
-#include "ProceduralMeshComponent.h"
+
 
 // Sets default values
 AProceduralMesh::AProceduralMesh()
@@ -32,7 +32,33 @@ void AProceduralMesh::BeginPlay()
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
 		if (thisComp)
 		{
-			thisComp->ClearAllMeshSections();
+			mVertices.Add(FVector(0.0, 0.0, 0.0));
+			mVertices.Add(FVector(0.0, 100.0, 0.0));
+			mVertices.Add(FVector(100.0, 0.0, 0.0));
+			mVertices.Add(FVector(100.0, 300.0, 0.0));
+
+			mTriangles.Add(0);
+			mTriangles.Add(1);
+			mTriangles.Add(2);
+			mTriangles.Add(3);
+			mTriangles.Add(2);
+			mTriangles.Add(1);
+
+			mUVs.Add(FVector2D(0.0, 0.0));
+			mUVs.Add(FVector2D(0.0, 1.0));
+			mUVs.Add(FVector2D(1.0, 0.0));
+			mUVs.Add(FVector2D(1.0, 1.0));
+
+			//m_EmptyArray
+			//thisComp->ClearAllMeshSections();
+			thisComp->CreateMeshSection(int32(1),
+										mVertices,
+										mTriangles,
+										mNormals,
+										mUVs,
+										mVertexColors,
+										mTangents,
+										false);
 			//This is the static mesh component
 			//auto c = thisComp->GetActorGuid();
 		

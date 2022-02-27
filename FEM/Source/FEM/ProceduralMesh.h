@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Containers/Array.h"
+#include "ProceduralMeshComponent.h"
 #include "ProceduralMesh.generated.h"
+
 
 UCLASS()
 class FEM_API AProceduralMesh : public AActor
@@ -23,4 +26,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+
+	TArray<FVector>				mVertices;
+	TArray<int32>				mTriangles;
+	TArray<FVector>				mNormals;
+	TArray<FVector2D>			mUVs;
+	TArray<FColor>		        mVertexColors;
+	TArray<FProcMeshTangent>	mTangents;
 };
