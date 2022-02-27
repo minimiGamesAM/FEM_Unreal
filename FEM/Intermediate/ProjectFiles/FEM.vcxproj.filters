@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\FEM.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{43337978-0B46-4358-B9D7-6751BB459966}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\FEM.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\FEMEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\FEM.uproject.bak" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{6B21930D-D565-4129-9A68-922F24E75626}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\FEM">
+      <UniqueIdentifier>{B6358917-34D8-4C74-AF6A-291D3A7B05D2}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\FEM\FEM.Build.cs">
+      <Filter>Source\FEM</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\FEM\FEM.cpp">
+      <Filter>Source\FEM</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\FEM\FEM.h">
+      <Filter>Source\FEM</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\FEM\ProceduralMesh.cpp">
+      <Filter>Source\FEM</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\FEM\ProceduralMesh.h">
+      <Filter>Source\FEM</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\FEM\TetGenFunctionLibrary.cpp">
+      <Filter>Source\FEM</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\FEM\TetGenFunctionLibrary.h">
+      <Filter>Source\FEM</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
