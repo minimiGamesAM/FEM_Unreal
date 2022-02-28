@@ -23,9 +23,14 @@ void UTetGenFunctionLibrary::RunTetGen()
 		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("runTetGen"));
 		if (DllExport)
 		{
-			typedef void(*runTetGen)();
+			typedef void(*runTetGen)(char* file_poly);
 			runTetGen runTetGenRef = (runTetGen)(DllExport);
-			runTetGenRef();
+			
+			FString fileModel = FPaths::ProjectDir() + "/Content/Models/triangulatedModel";
+			
+			char* result = TCHAR_TO_ANSI(*fileModel);
+						
+			runTetGenRef(result);
 		}
 	}
 }
