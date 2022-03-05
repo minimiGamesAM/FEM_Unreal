@@ -2,6 +2,7 @@
 
 
 #include "ProceduralMesh.h"
+#include "TetGenFunctionLibrary.h"
 
 //https://nerivec.github.io/old-ue4-wiki/pages/procedural-mesh-component-in-cgetting-started.html
 // without the "Pluging part"
@@ -27,6 +28,11 @@ void AProceduralMesh::BeginPlay()
 
 	this->GetComponents(comps);
 
+	UTetGenFunctionLibrary::RunTetGen();
+	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
+		
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB POINTS %i"), nbPoints));
+	
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component

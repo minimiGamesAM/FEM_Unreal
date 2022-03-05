@@ -21,4 +21,7 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 	static void RunTetGen();
+
+	UFUNCTION(BlueprintCallable)
+	static int getNumberOfPoints();
 };
