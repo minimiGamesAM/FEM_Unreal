@@ -24,4 +24,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static int getNumberOfPoints();
+
+	UFUNCTION(BlueprintCallable)
+	static float getPoint(int idx);
+
+	UFUNCTION(BlueprintCallable)
+	static int getNumberOfTets();
+
+	UFUNCTION(BlueprintCallable)
+	static int getTet(int idx);
 };

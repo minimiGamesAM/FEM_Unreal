@@ -51,3 +51,54 @@ int UTetGenFunctionLibrary::getNumberOfPoints()
 
 	return 0;
 }
+
+float UTetGenFunctionLibrary::getPoint(int idx)
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getPoint"));
+		if (DllExport)
+		{
+			typedef double(*getPoint)(int idx);
+			getPoint getPointRef = (getPoint)(DllExport);
+
+			return float(getPointRef(idx));
+		}
+	}
+
+	return 0.0;
+}
+
+int UTetGenFunctionLibrary::getNumberOfTets()
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getNumberOfTets"));
+		if (DllExport)
+		{
+			typedef int(*getPoint)();
+			getPoint getNumberOfTetsRef = (getPoint)(DllExport);
+
+			return getNumberOfTetsRef();
+		}
+	}
+
+	return 0;
+}
+
+int UTetGenFunctionLibrary::getTet(int idx)
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getTet"));
+		if (DllExport)
+		{
+			typedef int(*getPoint)(int idx);
+			getPoint getTetRef = (getPoint)(DllExport);
+
+			return getTetRef(idx);
+		}
+	}
+
+	return 0;
+}
