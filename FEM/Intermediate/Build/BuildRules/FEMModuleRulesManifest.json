@@ -1,8 +1,0 @@
-{
-	"SourceFiles": [
-		"C:\\FEM_Unreal\\FEM\\Source\\FEM\\FEM.Build.cs",
-		"C:\\FEM_Unreal\\FEM\\Source\\FEM.Target.cs",
-		"C:\\FEM_Unreal\\FEM\\Source\\FEMEditor.Target.cs"
-	],
-	"EngineVersion": "4.27.2"
-}
