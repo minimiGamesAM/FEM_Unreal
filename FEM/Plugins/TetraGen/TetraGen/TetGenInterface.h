@@ -19,3 +19,5 @@ extern "C" TETRAGEN_API int getTrifacet(int idx);
 extern "C" TETRAGEN_API int getNumberOfTets();
 
 extern "C" TETRAGEN_API int getTet(int idx);
+
+extern "C" TETRAGEN_API int getTet2facelist(int tetIdx, int idx);

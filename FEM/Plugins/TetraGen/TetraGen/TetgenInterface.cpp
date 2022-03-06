@@ -63,3 +63,8 @@ int getTet(int idx)
 {
 	return out.tetrahedronlist[idx];
 }
+
+int getTet2facelist(int tetIdx, int idx)
+{
+	return out.tet2facelist[tetIdx][idx];
+}

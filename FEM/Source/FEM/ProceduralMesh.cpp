@@ -43,28 +43,43 @@ void AProceduralMesh::BeginPlay()
 		mUVs.Add(FVector2D(0.0, 1.0));
 		mUVs.Add(FVector2D(1.0, 0.0));
 
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
 		mVertices.Add(p * 100);
 	}
 
-	int nbTrifacets = UTetGenFunctionLibrary::getNumberOfTrifaces();
-	for (int i = 0; i < nbTrifacets; ++i)
+	//for (int j = 0; j < UTetGenFunctionLibrary::getNumberOfTets(); j++)
+	//{
+	//	int tetIdx = UTetGenFunctionLibrary::getTet(j);
+	//
+	//	for (int i = 0; i < 4; ++i)
+	//	{
+	//		int idx = UTetGenFunctionLibrary::getTet2facelist(tetIdx * 4, i);
+	//
+	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 0));
+	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 1));
+	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 2));
+	//	}
+	//}
+	
+	for (int i = 0; i < UTetGenFunctionLibrary::getNumberOfTrifaces(); ++i)
 	{
 		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3));
 		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 1));
 		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 2));
 	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Tets %i "), UTetGenFunctionLibrary::getNumberOfTets()));
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Facets %i "), UTetGenFunctionLibrary::getNumberOfTrifaces()));
+
 		
+		
+	 
+
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
 		if (thisComp)
 		{
-			//mUVs.Add(FVector2D(0.0, 0.0));
-			//mUVs.Add(FVector2D(0.0, 1.0));
-			//mUVs.Add(FVector2D(1.0, 0.0));
-			//mUVs.Add(FVector2D(1.0, 1.0));
-
 			thisComp->CreateMeshSection(int32(1),
 				mVertices,
 				mTriangles,
@@ -73,7 +88,6 @@ void AProceduralMesh::BeginPlay()
 				mVertexColors,
 				mTangents,
 				false);
-
 		}
 	}
 	//auto obs = GetDefaultSubobjects<AProceduralMesh>();

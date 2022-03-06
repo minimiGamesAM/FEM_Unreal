@@ -30,7 +30,7 @@ void UTetGenFunctionLibrary::RunTetGen()
 			
 			char* result = TCHAR_TO_ANSI(*fileModel);
 						
-			runTetGenRef(result, "pqzVCYS0");// "pq1.414a0.1");
+			runTetGenRef(result, "-f-nnpqzVCYS0");// 
 		}
 	}
 }
@@ -131,6 +131,23 @@ int UTetGenFunctionLibrary::getTet(int idx)
 			getTet getTetRef = (getTet)(DllExport);
 
 			return getTetRef(idx);
+		}
+	}
+
+	return 0;
+}
+
+int UTetGenFunctionLibrary::getTet2facelist(int tetIdx, int idx)
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getTet2facelist"));
+		if (DllExport)
+		{
+			typedef int(*getTet2facelist)(int tetIdx, int idx);
+			getTet2facelist getTet2facelistRef = (getTet2facelist)(DllExport);
+
+			return getTet2facelistRef(tetIdx, idx);
 		}
 	}
 

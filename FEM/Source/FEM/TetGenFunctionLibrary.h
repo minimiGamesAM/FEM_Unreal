@@ -35,8 +35,11 @@ public:
 	static int getTrifacet(int idx);
 
 	UFUNCTION(BlueprintCallable)
-		static int getNumberOfTets();
+	static int getNumberOfTets();
 
 	UFUNCTION(BlueprintCallable)
-		static int getTet(int idx);
+	static int getTet(int idx);
+
+	UFUNCTION(BlueprintCallable)
+	static int getTet2facelist(int tetIdx, int idx);
 };
