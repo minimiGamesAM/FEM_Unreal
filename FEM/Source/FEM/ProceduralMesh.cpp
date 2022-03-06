@@ -47,33 +47,27 @@ void AProceduralMesh::BeginPlay()
 		mVertices.Add(p * 100);
 	}
 
-	//for (int j = 0; j < UTetGenFunctionLibrary::getNumberOfTets(); j++)
-	//{
-	//	int tetIdx = UTetGenFunctionLibrary::getTet(j);
-	//
-	//	for (int i = 0; i < 4; ++i)
-	//	{
-	//		int idx = UTetGenFunctionLibrary::getTet2facelist(tetIdx * 4, i);
-	//
-	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 0));
-	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 1));
-	//		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 2));
-	//	}
-	//}
-	
-	for (int i = 0; i < UTetGenFunctionLibrary::getNumberOfTrifaces(); ++i)
+	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
 	{
-		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3));
-		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 1));
-		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 2));
+		for (int i = 0; i < 4; ++i)
+		{
+			int idx = UTetGenFunctionLibrary::getTet2facelist(tetIdx * 4, i);
+	
+			mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 0));
+			mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 1));
+			mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 2));
+		}
 	}
+	
+	//for (int i = 0; i < UTetGenFunctionLibrary::getNumberOfTrifaces(); ++i)
+	//{
+	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3));
+	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 1));
+	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 2));
+	//}
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Tets %i "), UTetGenFunctionLibrary::getNumberOfTets()));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Facets %i "), UTetGenFunctionLibrary::getNumberOfTrifaces()));
-
-		
-		
-	 
 
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{

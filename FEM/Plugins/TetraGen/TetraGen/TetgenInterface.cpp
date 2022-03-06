@@ -66,5 +66,5 @@ int getTet(int idx)
 
 int getTet2facelist(int tetIdx, int idx)
 {
-	return out.tet2facelist[tetIdx][idx];
+	return out.tet2facelist[tetIdx + idx];
 }
