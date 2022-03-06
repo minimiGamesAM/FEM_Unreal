@@ -33,44 +33,49 @@ void AProceduralMesh::BeginPlay()
 		
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB POINTS %i"), nbPoints));
 	
+	for (int i = 0; i < nbPoints; i++)
+	{
+		FVector p(UTetGenFunctionLibrary::getPoint(i * 3),
+			UTetGenFunctionLibrary::getPoint(i * 3 + 1),
+			UTetGenFunctionLibrary::getPoint(i * 3 + 2));
+
+		mUVs.Add(FVector2D(0.0, 0.0));
+		mUVs.Add(FVector2D(0.0, 1.0));
+		mUVs.Add(FVector2D(1.0, 0.0));
+
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
+		mVertices.Add(p * 100);
+	}
+
+	int nbTrifacets = UTetGenFunctionLibrary::getNumberOfTrifaces();
+	for (int i = 0; i < nbTrifacets; ++i)
+	{
+		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3));
+		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 1));
+		mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 2));
+	}
+		
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
 		if (thisComp)
 		{
-			mVertices.Add(FVector(0.0, 0.0, 0.0));
-			mVertices.Add(FVector(0.0, 100.0, 0.0));
-			mVertices.Add(FVector(100.0, 0.0, 0.0));
-			mVertices.Add(FVector(100.0, 300.0, 0.0));
+			//mUVs.Add(FVector2D(0.0, 0.0));
+			//mUVs.Add(FVector2D(0.0, 1.0));
+			//mUVs.Add(FVector2D(1.0, 0.0));
+			//mUVs.Add(FVector2D(1.0, 1.0));
 
-			mTriangles.Add(0);
-			mTriangles.Add(1);
-			mTriangles.Add(2);
-			mTriangles.Add(3);
-			mTriangles.Add(2);
-			mTriangles.Add(1);
-
-			mUVs.Add(FVector2D(0.0, 0.0));
-			mUVs.Add(FVector2D(0.0, 1.0));
-			mUVs.Add(FVector2D(1.0, 0.0));
-			mUVs.Add(FVector2D(1.0, 1.0));
-
-			//m_EmptyArray
-			//thisComp->ClearAllMeshSections();
 			thisComp->CreateMeshSection(int32(1),
-										mVertices,
-										mTriangles,
-										mNormals,
-										mUVs,
-										mVertexColors,
-										mTangents,
-										false);
-			//This is the static mesh component
-			//auto c = thisComp->GetActorGuid();
-		
+				mVertices,
+				mTriangles,
+				mNormals,
+				mUVs,
+				mVertexColors,
+				mTangents,
+				false);
+
 		}
 	}
-
 	//auto obs = GetDefaultSubobjects<AProceduralMesh>();
 	//AProceduralMesh* proMesh = GetComponentByClass<AActor>();
 	//
@@ -78,7 +83,6 @@ void AProceduralMesh::BeginPlay()
 	//{
 	//	proMesh->GetActorGuid();
 	//}
-
 }
 
 // Called every frame

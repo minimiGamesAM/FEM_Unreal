@@ -29,8 +29,14 @@ public:
 	static float getPoint(int idx);
 
 	UFUNCTION(BlueprintCallable)
-	static int getNumberOfTets();
+	static int getNumberOfTrifaces();
 
 	UFUNCTION(BlueprintCallable)
-	static int getTet(int idx);
+	static int getTrifacet(int idx);
+
+	UFUNCTION(BlueprintCallable)
+		static int getNumberOfTets();
+
+	UFUNCTION(BlueprintCallable)
+		static int getTet(int idx);
 };

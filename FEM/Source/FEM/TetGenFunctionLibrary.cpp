@@ -30,7 +30,7 @@ void UTetGenFunctionLibrary::RunTetGen()
 			
 			char* result = TCHAR_TO_ANSI(*fileModel);
 						
-			runTetGenRef(result, "pq1.414a0.1");
+			runTetGenRef(result, "pqzVCYS0");// "pq1.414a0.1");
 		}
 	}
 }
@@ -66,7 +66,41 @@ float UTetGenFunctionLibrary::getPoint(int idx)
 		}
 	}
 
-	return 0.0;
+	return 0.0f;
+}
+
+int UTetGenFunctionLibrary::getNumberOfTrifaces()
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getNumberOfTrifaces"));
+		if (DllExport)
+		{
+			typedef int(*getNumberOfTrifaces)();
+			getNumberOfTrifaces getNumberOfTrifacesRef = (getNumberOfTrifaces)(DllExport);
+
+			return getNumberOfTrifacesRef();
+		}
+	}
+
+	return 0;
+}
+
+int UTetGenFunctionLibrary::getTrifacet(int idx)
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getTrifacet"));
+		if (DllExport)
+		{
+			typedef int(*getTrifacet)(int idx);
+			getTrifacet getTrifacetRef = (getTrifacet)(DllExport);
+
+			return getTrifacetRef(idx);
+		}
+	}
+
+	return 0;
 }
 
 int UTetGenFunctionLibrary::getNumberOfTets()
@@ -76,8 +110,8 @@ int UTetGenFunctionLibrary::getNumberOfTets()
 		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getNumberOfTets"));
 		if (DllExport)
 		{
-			typedef int(*getPoint)();
-			getPoint getNumberOfTetsRef = (getPoint)(DllExport);
+			typedef int(*getNumberOfTets)();
+			getNumberOfTets getNumberOfTetsRef = (getNumberOfTets)(DllExport);
 
 			return getNumberOfTetsRef();
 		}
@@ -93,8 +127,8 @@ int UTetGenFunctionLibrary::getTet(int idx)
 		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("getTet"));
 		if (DllExport)
 		{
-			typedef int(*getPoint)(int idx);
-			getPoint getTetRef = (getPoint)(DllExport);
+			typedef int(*getTet)(int idx);
+			getTet getTetRef = (getTet)(DllExport);
 
 			return getTetRef(idx);
 		}
