@@ -84,6 +84,7 @@ void AProceduralMesh::BeginPlay()
 				false);
 		}
 	}
+
 	//auto obs = GetDefaultSubobjects<AProceduralMesh>();
 	//AProceduralMesh* proMesh = GetComponentByClass<AActor>();
 	//

@@ -8,10 +8,7 @@ tetgenio addin, bgmin;
 
 void runTetGen(char* file, char* switches)
 {
-	in.clean_memory();
 	in.initialize();
-
-	out.clean_memory();
 	out.initialize();
 
 	in.load_stl(const_cast<char*>(std::string(file).c_str()));
