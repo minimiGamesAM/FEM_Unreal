@@ -18,6 +18,22 @@ public:
 	// Sets default values for this actor's properties
 	AProceduralMesh();
 
+	UFUNCTION(BlueprintCallable)
+	void runTetragenio();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FVector>& getVerticess();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<int32>& getTriangulos();
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FVector2D>& getUVs();
+
+	//UFUNCTION(BlueprintCallable)
+	//TArray<FVector>& getVertices();
+//
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

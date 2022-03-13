@@ -19,20 +19,13 @@ AProceduralMesh::AProceduralMesh()
 	
 }
 
-// Called when the game starts or when spawned
-void AProceduralMesh::BeginPlay()
+void AProceduralMesh::runTetragenio()
 {
-	Super::BeginPlay();
-
-	TArray<UActorComponent*> comps;
-
-	this->GetComponents(comps);
-
 	UTetGenFunctionLibrary::RunTetGen();
 	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
-		
+
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB POINTS %i"), nbPoints));
-	
+
 	for (int i = 0; i < nbPoints; i++)
 	{
 		FVector p(UTetGenFunctionLibrary::getPoint(i * 3),
@@ -58,7 +51,7 @@ void AProceduralMesh::BeginPlay()
 			mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(idx * 3 + 2));
 		}
 	}
-	
+
 	//for (int i = 0; i < UTetGenFunctionLibrary::getNumberOfTrifaces(); ++i)
 	//{
 	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3));
@@ -68,23 +61,7 @@ void AProceduralMesh::BeginPlay()
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Tets %i "), UTetGenFunctionLibrary::getNumberOfTets()));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Facets %i "), UTetGenFunctionLibrary::getNumberOfTrifaces()));
-
-	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
-	{
-		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
-		if (thisComp)
-		{
-			thisComp->CreateMeshSection(int32(1),
-				mVertices,
-				mTriangles,
-				mNormals,
-				mUVs,
-				mVertexColors,
-				mTangents,
-				false);
-		}
-	}
-
+		
 	//auto obs = GetDefaultSubobjects<AProceduralMesh>();
 	//AProceduralMesh* proMesh = GetComponentByClass<AActor>();
 	//
@@ -94,10 +71,29 @@ void AProceduralMesh::BeginPlay()
 	//}
 }
 
+// Called when the game starts or when spawned
+void AProceduralMesh::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+TArray<FVector>& AProceduralMesh::getVerticess()
+{
+	return mVertices;
+}
+
+TArray<int32>& AProceduralMesh::getTriangulos()
+{
+	return mTriangles;
+}
+
+TArray<FVector2D>& AProceduralMesh::getUVs()
+{
+	return mUVs;
+}
+
 // Called every frame
 void AProceduralMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

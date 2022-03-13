@@ -16,6 +16,8 @@ bool UTetGenFunctionLibrary::LoadDllHandle()
 	return DllHandle != nullptr;
 }
 
+//https://www.youtube.com/watch?v=dKlMEmVgbvg
+
 void UTetGenFunctionLibrary::RunTetGen()
 {
 	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
@@ -26,11 +28,11 @@ void UTetGenFunctionLibrary::RunTetGen()
 			typedef void(*runTetGen)(char* file_poly, char* switches);
 			runTetGen runTetGenRef = (runTetGen)(DllExport);
 			
-			FString fileModel = FPaths::ProjectDir() + "/Content/Models/triangulatedModel";
+			FString fileModel = FPaths::ProjectDir() + "/Content/Models/SUPER_MODELO";
 			
 			char* result = TCHAR_TO_ANSI(*fileModel);
 						
-			runTetGenRef(result, "-f-nnpqzVCYS0");// 
+			runTetGenRef(result, "pqzVCYS0-f-nn");// 
 		}
 	}
 }
