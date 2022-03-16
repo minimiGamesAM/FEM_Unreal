@@ -28,7 +28,7 @@ void UTetGenFunctionLibrary::RunTetGen()
 			typedef void(*runTetGen)(char* file_poly, char* switches);
 			runTetGen runTetGenRef = (runTetGen)(DllExport);
 			
-			FString fileModel = FPaths::ProjectDir() + "/Content/Models/SUPER_MODELO";
+			FString fileModel = FPaths::ProjectDir() + "/Content/Models/verificacion";
 			
 			char* result = TCHAR_TO_ANSI(*fileModel);
 						
