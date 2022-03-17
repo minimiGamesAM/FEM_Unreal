@@ -21,6 +21,13 @@ AProceduralMesh::AProceduralMesh()
 
 void AProceduralMesh::runTetragenio()
 {
+	mVertices.Empty();
+	mTriangles.Empty();
+	mNormals.Empty();
+	mUVs.Empty();
+	mVertexColors.Empty();
+	mTangents.Empty();
+
 	UTetGenFunctionLibrary::RunTetGen();
 	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
 
@@ -75,6 +82,19 @@ void AProceduralMesh::runTetragenio()
 void AProceduralMesh::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<UActorComponent*> comps;
+
+	this->GetComponents(comps);
+
+	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
+	{
+		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
+		if (thisComp)
+		{
+			mMeshSection = thisComp->GetProcMeshSection(0);
+		}
+	}
 }
 
 TArray<FVector>& AProceduralMesh::getVerticess()
@@ -96,4 +116,14 @@ TArray<FVector2D>& AProceduralMesh::getUVs()
 void AProceduralMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	t = t + GetWorld()->GetDeltaSeconds();
+
+	auto& data = mMeshSection->ProcVertexBuffer; // .Position;
+
+	
+	for (int i = 0; i < data.Num(); ++i)
+	{
+		data[i].Position = data[i].Position + FVector(5, 0, 0) * t;
+	}
 }

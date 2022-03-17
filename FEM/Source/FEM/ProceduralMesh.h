@@ -50,4 +50,8 @@ private:
 	TArray<FVector2D>			mUVs;
 	TArray<FColor>		        mVertexColors;
 	TArray<FProcMeshTangent>	mTangents;
+
+	FProcMeshSection*			mMeshSection;
+
+	float t = 0.0f;
 };
