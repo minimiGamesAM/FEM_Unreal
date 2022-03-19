@@ -83,6 +83,13 @@ void AProceduralMesh::BeginPlay()
 {
 	Super::BeginPlay();
 
+	mVertices.Empty();
+	mTriangles.Empty();
+	mNormals.Empty();
+	mUVs.Empty();
+	mVertexColors.Empty();
+	mTangents.Empty();
+
 	TArray<UActorComponent*> comps;
 
 	this->GetComponents(comps);
@@ -92,7 +99,16 @@ void AProceduralMesh::BeginPlay()
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
 		if (thisComp)
 		{
-			mMeshSection = thisComp->GetProcMeshSection(0);
+			mMeshComponent = thisComp;
+			auto meshSection = thisComp->GetProcMeshSection(0);
+
+			auto& data = meshSection->ProcVertexBuffer; // .Position;
+				
+			mVertices.SetNum(data.Num());
+			for (int j = 0; j < data.Num(); ++j)
+			{
+				mVertices[j] = data[j].Position;
+			}
 		}
 	}
 }
@@ -116,14 +132,13 @@ TArray<FVector2D>& AProceduralMesh::getUVs()
 void AProceduralMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	t = t + GetWorld()->GetDeltaSeconds();
-
-	auto& data = mMeshSection->ProcVertexBuffer; // .Position;
-
 	
-	for (int i = 0; i < data.Num(); ++i)
+	t = t + GetWorld()->GetDeltaSeconds();
+		
+	for (int i = 0; i < mVertices.Num(); ++i)
 	{
-		data[i].Position = data[i].Position + FVector(5, 0, 0) * t;
+		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
 	}
+
+	mMeshComponent->UpdateMeshSection(0, mVertices, mNormals, mUVs, mVertexColors, mTangents);
 }

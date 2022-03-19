@@ -51,7 +51,7 @@ private:
 	TArray<FColor>		        mVertexColors;
 	TArray<FProcMeshTangent>	mTangents;
 
-	FProcMeshSection*			mMeshSection;
+	UProceduralMeshComponent*	mMeshComponent;
 
 	float t = 0.0f;
 };
