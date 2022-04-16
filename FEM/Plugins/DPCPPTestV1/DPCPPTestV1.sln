@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DPCPPConsoleApplication2", "DPCPPConsoleApplication2\DPCPPConsoleApplication2.vcxproj", "{77BA3929-B480-4824-B0DE-9E5B7BADB6DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{77BA3929-B480-4824-B0DE-9E5B7BADB6DB}.Debug|x64.ActiveCfg = Debug|x64
+		{77BA3929-B480-4824-B0DE-9E5B7BADB6DB}.Debug|x64.Build.0 = Debug|x64
+		{77BA3929-B480-4824-B0DE-9E5B7BADB6DB}.Release|x64.ActiveCfg = Release|x64
+		{77BA3929-B480-4824-B0DE-9E5B7BADB6DB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75984F00-F70E-4B77-844C-02448FA4CAD4}
+	EndGlobalSection
+EndGlobal
