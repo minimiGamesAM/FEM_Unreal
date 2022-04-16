@@ -28,8 +28,20 @@ void matrixInversion()
     A[6] = 7;
     A[7] = 2;
     A[8] = 9;
-   
+  
     LAPACKE_sgetrf(CblasRowMajor, m, m, A, m, ipiv);
+
+    float determinant = 1;
+
+    for (int i = 0; i < m; ++i)
+    {
+        determinant = determinant * A[i + i * m];
+    }
+
+    determinant = -determinant;
+
+    std::cout << "Determinante " << determinant << std::endl;
+
     LAPACKE_sgetri(CblasRowMajor, m, A, m, ipiv);
 
     for (int i = 0; i < m; ++i)
@@ -140,8 +152,8 @@ int vectorOperation()
 //************************************
 int main(int argc, char* argv[]) {
    
-    vectorOperation();
-    matrixProductVector();
+   // vectorOperation();
+    //matrixProductVector();
     matrixInversion();
 
     std::cout << "Vector add successfully completed on device.\n";
