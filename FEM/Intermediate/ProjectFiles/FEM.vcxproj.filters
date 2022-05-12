@@ -3,7 +3,7 @@
   <ItemGroup>
     <None Include="..\..\FEM.uproject" />
     <Filter Include="Source">
-      <UniqueIdentifier>{05413411-67CF-474D-9323-6BA621080422}</UniqueIdentifier>
+      <UniqueIdentifier>{F308D9CC-07A7-40BD-BF82-FB3C13B1B229}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Source\FEM.Target.cs">
       <Filter>Source</Filter>
@@ -12,7 +12,7 @@
       <Filter>Source</Filter>
     </None>
     <Filter Include="Config">
-      <UniqueIdentifier>{25655679-6F4B-49EB-80AE-4CC42735583A}</UniqueIdentifier>
+      <UniqueIdentifier>{0E47D825-BEAF-4829-B38F-C40F1308F9AE}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Config\DefaultEditor.ini">
       <Filter>Config</Filter>
@@ -23,8 +23,212 @@
     <None Include="..\..\Config\DefaultGame.ini">
       <Filter>Config</Filter>
     </None>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{F3EA81DD-8F6C-4826-BC9C-440871E2F5C6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation">
+      <UniqueIdentifier>{DA7983BC-B00B-494F-913B-692B23C859BC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source">
+      <UniqueIdentifier>{88A6F419-3816-470B-9879-73D8BA8F81DB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\FemImplementation">
+      <UniqueIdentifier>{385BC0F9-32FC-4555-ACAB-5187BB8DC5FB}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\FemImplementation\FemImplementation.Build.cs">
+      <Filter>Plugins\FemImplementation\Source\FemImplementation</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\FemImplementation\Private">
+      <UniqueIdentifier>{4B2044A1-BD2C-40FD-B027-174B02E71854}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\FemImplementation\Private\FemImplementation.cpp">
+      <Filter>Plugins\FemImplementation\Source\FemImplementation\Private</Filter>
+    </ClCompile>
+    <Filter Include="Plugins\FemImplementation\Source\FemImplementation\Public">
+      <UniqueIdentifier>{8AB7C091-D629-4225-BD6C-2FA0FADED391}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Plugins\FemImplementation\Source\FemImplementation\Public\FemImplementation.h">
+      <Filter>Plugins\FemImplementation\Source\FemImplementation\Public</Filter>
+    </ClInclude>
+    <None Include="..\..\Plugins\FemImplementation\FemImplementation.uplugin">
+      <Filter>Plugins\FemImplementation</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Resources">
+      <UniqueIdentifier>{045695F3-2E1C-4D0A-A21D-76A32713A35E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Resources\Icon128.png">
+      <Filter>Plugins\FemImplementation\Resources</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty">
+      <UniqueIdentifier>{D4BFE7CF-4F2F-485D-9CDC-F33C25C142D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary">
+      <UniqueIdentifier>{9971A270-20B3-4510-A063-807AC94CB8E9}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\dllmain.cpp">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary</Filter>
+    </ClCompile>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.Build.cs">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.Build.cs.bak">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary</Filter>
+    </None>
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.cpp">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.h">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary</Filter>
+    </ClInclude>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs">
+      <UniqueIdentifier>{CB0C087C-8D69-41A4-917D-6EA0C4D1F999}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary">
+      <UniqueIdentifier>{9462C26B-ED56-427D-B565-10E1B6B27127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16">
+      <UniqueIdentifier>{73792948-E0E6-482E-91F3-80E3116E297A}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db-shm">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db-wal">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.opendb">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch">
+      <UniqueIdentifier>{C07C9A38-8B92-4096-A2E2-AE634B427716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH">
+      <UniqueIdentifier>{C9FDA26E-F9AA-4898-95BA-145C8F2ED534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\17444a6298b9d267">
+      <UniqueIdentifier>{D1625838-5996-4E38-8476-B56EBDA001AC}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\17444a6298b9d267\DLLMAIN.ipch">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\17444a6298b9d267</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\58b9eed8631e41b5">
+      <UniqueIdentifier>{E7D4E1FB-B032-49B6-AE25-AB036936A6C8}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\58b9eed8631e41b5\DLLMAIN.ipch">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\58b9eed8631e41b5</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\5baa2057b5ca16d1">
+      <UniqueIdentifier>{09546528-0B69-4D50-9498-88EFFA8B01E3}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\5baa2057b5ca16d1\FEMIMPLIBRARY.ipch">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\5baa2057b5ca16d1</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\d2abe4ac62d7fa9f">
+      <UniqueIdentifier>{9C7D2602-C22C-40E7-9AC8-20FEC3A9D557}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\d2abe4ac62d7fa9f\FEMIMPLIBRARY.ipch">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\d2abe4ac62d7fa9f</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64">
+      <UniqueIdentifier>{2E25FF2D-61AE-40CB-8AF8-9A9495553837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release">
+      <UniqueIdentifier>{364BCF8A-9536-4CF7-85FB-300D56F3B84E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\dllmain.obj">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.Build.CppClean.log">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.dll">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.dll.recipe">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.lib">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.log">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.obj">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.pdb">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.vcxproj.FileListAbsolute.txt">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release</Filter>
+    </None>
+    <Filter Include="Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog">
+      <UniqueIdentifier>{2EA3564F-56A0-4962-B986-9F42FCACC122}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\FemImpLibrary.lastbuildstate">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.delete.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.write.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.delete.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.write.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.command.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.write.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-clang.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.delete.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.2.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.3.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.write.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.command.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.read.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.write.1.tlog">
+      <Filter>Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog</Filter>
+    </None>
     <Filter Include="Source\FEM">
-      <UniqueIdentifier>{EEA7CABF-FE50-4C35-BDCD-50E84BD8DDDE}</UniqueIdentifier>
+      <UniqueIdentifier>{BE002003-9E33-495C-BFE5-376641370458}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\Source\FEM\FEM.Build.cs">
       <Filter>Source\FEM</Filter>

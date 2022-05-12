@@ -5,7 +5,7 @@
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\DatasmithRhino6.Build.cs" />
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\DatasmithRhino7.Build.cs" />
     <Filter Include="Config">
-      <UniqueIdentifier>{B9B699EB-2710-418A-917D-40487EBAF769}</UniqueIdentifier>
+      <UniqueIdentifier>{31B86E1A-5FE9-4968-82A2-F28FE2F9B0E2}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Config\DatasmithRhino.rhp.config">
       <Filter>Config</Filter>
@@ -14,19 +14,19 @@
       <Filter>Config</Filter>
     </None>
     <Filter Include="DatasmithRhino6">
-      <UniqueIdentifier>{6AAA7C30-F4CA-4D2B-B936-EAF8E40E8500}</UniqueIdentifier>
+      <UniqueIdentifier>{4A989426-DC09-4FFE-84D3-77BB94CC5A94}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\DatasmithRhino6\DatasmithRhino6.cs">
       <Filter>DatasmithRhino6</Filter>
     </None>
     <Filter Include="DatasmithRhino7">
-      <UniqueIdentifier>{7A9ACEC5-E566-490A-B956-A710A4F8B143}</UniqueIdentifier>
+      <UniqueIdentifier>{FDE536EB-3F55-45E9-B982-D835B61FA2D3}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\DatasmithRhino7\DatasmithRhino7.cs">
       <Filter>DatasmithRhino7</Filter>
     </None>
     <Filter Include="Installer">
-      <UniqueIdentifier>{D1AD5104-1CEA-4C8D-9D28-B777F7F6CE81}</UniqueIdentifier>
+      <UniqueIdentifier>{E43372A7-AA08-48CC-8D46-72FDCA34F8DE}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\CreateMacPackages.sh">
       <Filter>Installer</Filter>
@@ -68,7 +68,7 @@
       <Filter>Installer</Filter>
     </None>
     <Filter Include="Installer\Localization">
-      <UniqueIdentifier>{677D2717-2140-45A7-8A25-0F3CB0792F21}</UniqueIdentifier>
+      <UniqueIdentifier>{9D73FECF-B110-4CF2-9B58-0B70E2B9407F}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Localization\de-de.wxl">
       <Filter>Installer\Localization</Filter>
@@ -113,7 +113,7 @@
       <Filter>Installer\Localization</Filter>
     </None>
     <Filter Include="Installer\Resources">
-      <UniqueIdentifier>{41D85556-A5BB-4BFB-83D6-D6B8E87F15FE}</UniqueIdentifier>
+      <UniqueIdentifier>{528779D3-D2F9-4660-88DC-B6AC139B7E1B}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Resources\Banner.bmp">
       <Filter>Installer\Resources</Filter>
@@ -140,7 +140,7 @@
       <Filter>Installer\Resources</Filter>
     </None>
     <Filter Include="Installer\Resources\General">
-      <UniqueIdentifier>{CCC10919-F401-4003-90DA-3B1C789E4DC2}</UniqueIdentifier>
+      <UniqueIdentifier>{68A43EA9-151C-4EA0-B298-F37CAFBC1ABE}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Resources\General\banner.bmp">
       <Filter>Installer\Resources\General</Filter>
@@ -149,13 +149,13 @@
       <Filter>Installer\Resources\General</Filter>
     </None>
     <Filter Include="Installer\Resources\Images">
-      <UniqueIdentifier>{ADB3FCD9-FD6C-4612-B4ED-5EF8A90D172C}</UniqueIdentifier>
+      <UniqueIdentifier>{CEBB623A-37D5-4EC9-AD11-73FCAACCFAC8}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Resources\Images\Epic_Games_logo.bmp">
       <Filter>Installer\Resources\Images</Filter>
     </None>
     <Filter Include="Installer\Resources\Images\Background">
-      <UniqueIdentifier>{7F520FBC-9BCE-4BAC-8FBA-FAF579B28587}</UniqueIdentifier>
+      <UniqueIdentifier>{8C753156-C5E3-4F0E-9E21-7225C13AA5EB}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Resources\Images\Background\28190.bmp">
       <Filter>Installer\Resources\Images\Background</Filter>
@@ -173,7 +173,7 @@
       <Filter>Installer\Resources\Images\Background</Filter>
     </None>
     <Filter Include="Installer\Resources\Images\General">
-      <UniqueIdentifier>{7A49682F-88D2-4874-A3DE-9938D7F37AB8}</UniqueIdentifier>
+      <UniqueIdentifier>{BD0A8191-CAC6-41EA-8A78-3828E8351139}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Installer\Resources\Images\General\banner.bmp">
       <Filter>Installer\Resources\Images\General</Filter>
@@ -182,7 +182,7 @@
       <Filter>Installer\Resources\Images\General</Filter>
     </None>
     <Filter Include="Private">
-      <UniqueIdentifier>{B968CB1F-4FC9-4173-9129-223BA7B2FF57}</UniqueIdentifier>
+      <UniqueIdentifier>{BBBA8861-2433-4A56-8B1F-4C5C40A44138}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Private\DatasmithRhinoExportContext.cs">
       <Filter>Private</Filter>
@@ -197,7 +197,7 @@
       <Filter>Private</Filter>
     </None>
     <Filter Include="Private\Commands">
-      <UniqueIdentifier>{AB2B22C6-D92F-4985-9A02-EB5A1D0C9E82}</UniqueIdentifier>
+      <UniqueIdentifier>{4CB8F4CE-F526-488D-B58F-CEF179BE0F7D}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Private\Commands\DatasmithDirectLinkConnectionsCommand.cs">
       <Filter>Private\Commands</Filter>
@@ -215,7 +215,7 @@
       <Filter>Private\Commands</Filter>
     </None>
     <Filter Include="Private\DirectLink">
-      <UniqueIdentifier>{2CF7CEF1-1169-41EE-8688-934AB11A8F94}</UniqueIdentifier>
+      <UniqueIdentifier>{0F4EB571-2E4C-4A2B-971A-8F16FB47D497}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Private\DirectLink\DatasmithRhinoChangeListener.cs">
       <Filter>Private\DirectLink</Filter>
@@ -224,7 +224,7 @@
       <Filter>Private\DirectLink</Filter>
     </None>
     <Filter Include="Private\ElementExporters">
-      <UniqueIdentifier>{F9113C62-41AD-48FE-A020-A86C1470552F}</UniqueIdentifier>
+      <UniqueIdentifier>{C8708913-C779-49CF-81C7-122050032F3D}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Private\ElementExporters\DatasmithRhinoActorExporter.cs">
       <Filter>Private\ElementExporters</Filter>
@@ -242,7 +242,7 @@
       <Filter>Private\ElementExporters</Filter>
     </None>
     <Filter Include="Private\Utils">
-      <UniqueIdentifier>{2A85740E-4958-46EB-AF10-7CF9A60BF3A1}</UniqueIdentifier>
+      <UniqueIdentifier>{77E671E2-AAD2-4EFD-A0B8-4555AF95E511}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Private\Utils\DatasmithRhinoLogManager.cs">
       <Filter>Private\Utils</Filter>
@@ -257,7 +257,7 @@
       <Filter>Private\Utils</Filter>
     </None>
     <Filter Include="Properties">
-      <UniqueIdentifier>{ADBE13E7-C07E-4B72-98D7-22D83BD33B3F}</UniqueIdentifier>
+      <UniqueIdentifier>{DDB6655C-8D07-4D3E-80AB-A20F609CBBF0}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\Properties\DefaultAssemblyInfo.cs">
       <Filter>Properties</Filter>
@@ -266,7 +266,7 @@
       <Filter>Properties</Filter>
     </None>
     <Filter Include="SharedResources">
-      <UniqueIdentifier>{2C02B7E9-F164-4194-9980-13AF49A52763}</UniqueIdentifier>
+      <UniqueIdentifier>{8A8A5D65-3ABE-4A65-885C-3B4B57316755}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\SharedResources\DatasmithRhino.plist">
       <Filter>SharedResources</Filter>
@@ -278,7 +278,7 @@
       <Filter>SharedResources</Filter>
     </None>
     <Filter Include="SharedResources\Localization">
-      <UniqueIdentifier>{5F77B375-4AF3-49AD-A58A-F5254B1F32C8}</UniqueIdentifier>
+      <UniqueIdentifier>{77755DC8-7ABD-413A-BD13-FB294BDDA4DD}</UniqueIdentifier>
     </Filter>
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\Enterprise\Datasmith\DatasmithRhinoExporter\SharedResources\Localization\Resources.de.Designer.cs">
       <Filter>SharedResources\Localization</Filter>

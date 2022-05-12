@@ -4,7 +4,7 @@
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\TextureShare\TextureShareSDK\TextureShareSDK.Target.cs" />
     <None Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\TextureShare\TextureShareSDK\TextureShareSDK.Build.cs" />
     <Filter Include="Private">
-      <UniqueIdentifier>{89098E49-E4F3-4FAC-B95A-17A8EA3A657A}</UniqueIdentifier>
+      <UniqueIdentifier>{52F190DC-985C-4F65-9668-7D3A2D480F2C}</UniqueIdentifier>
     </Filter>
     <ClCompile Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\TextureShare\TextureShareSDK\Private\TextureShareDLL.cpp">
       <Filter>Private</Filter>
@@ -13,7 +13,7 @@
       <Filter>Private</Filter>
     </ClCompile>
     <Filter Include="Public">
-      <UniqueIdentifier>{5253AD06-ADC2-427A-8461-7BE5D2CFF6D4}</UniqueIdentifier>
+      <UniqueIdentifier>{A9E82691-7FEF-4078-AC36-B0F154EB2B1B}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="..\..\..\..\..\UnrealEngine\Engine\Source\Programs\TextureShare\TextureShareSDK\Public\TextureShareContainers.h">
       <Filter>Public</Filter>

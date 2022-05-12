@@ -221,132 +221,132 @@
     <PropertyPageSchema Include="$(LOCALAPPDATA)\Microsoft\VisualStudio\MagicLeap\debugger.xaml" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Debug|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Debug_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_DebugGame|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_DebugGame_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Development|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Development_Editor|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Shipping|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Test|arm64'" Label="Configuration">
-		<AppContainerApplication>true</AppContainerApplication>
-		<ApplicationType>Windows Store</ApplicationType>
-		<ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-		<WindowsAppContainer>true</WindowsAppContainer>
-		<AppxPackage>true</AppxPackage>
-		<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsAppContainer>true</WindowsAppContainer>
+    <AppxPackage>true</AppxPackage>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Invalid|Win32'" Label="Configuration">
@@ -692,21 +692,21 @@
     <NMakeReBuildCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Rebuild.bat FEM HoloLens Debug -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Clean.bat FEM HoloLens Debug -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>..\..\Binaries\HoloLens\FEM-HoloLens-Debug.exe</NMakeOutput>
-		<AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
-		<NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
-		<NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
-		<NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
+    <AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-		<RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
-		<LayoutDir>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
-		<AppxPackageRecipe>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
-	</PropertyGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
+    <RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
+    <LayoutDir>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
+    <AppxPackageRecipe>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
+  </ItemGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -808,21 +808,21 @@
     <NMakeReBuildCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Rebuild.bat FEM HoloLens DebugGame -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Clean.bat FEM HoloLens DebugGame -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>..\..\Binaries\HoloLens\FEM-HoloLens-DebugGame.exe</NMakeOutput>
-		<AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
-		<NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
-		<NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
-		<NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
+    <AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'">
-		<RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
-		<LayoutDir>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
-		<AppxPackageRecipe>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
-	</PropertyGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'">
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'">
+    <RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
+    <LayoutDir>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
+    <AppxPackageRecipe>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
+  </ItemGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mac_DebugGame|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -924,21 +924,21 @@
     <NMakeReBuildCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Rebuild.bat FEM HoloLens Development -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Clean.bat FEM HoloLens Development -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>..\..\Binaries\HoloLens\FEM.exe</NMakeOutput>
-		<AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
-		<NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
-		<NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
-		<NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
+    <AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'">
-		<RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
-		<LayoutDir>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
-		<AppxPackageRecipe>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
-	</PropertyGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'">
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'">
+    <RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
+    <LayoutDir>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
+    <AppxPackageRecipe>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
+  </ItemGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Development|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -1023,21 +1023,21 @@
     <NMakeReBuildCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Rebuild.bat FEM HoloLens Shipping -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Clean.bat FEM HoloLens Shipping -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>..\..\Binaries\HoloLens\FEM-HoloLens-Shipping.exe</NMakeOutput>
-		<AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
-		<NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
-		<NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
-		<NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
+    <AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'">
-		<RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
-		<LayoutDir>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
-		<AppxPackageRecipe>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
-	</PropertyGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'">
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'">
+    <RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
+    <LayoutDir>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
+    <AppxPackageRecipe>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
+  </ItemGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Shipping|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -1105,21 +1105,21 @@
     <NMakeReBuildCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Rebuild.bat FEM HoloLens Test -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>C:\UnrealEngine\Engine\Build\BatchFiles\Clean.bat FEM HoloLens Test -Project="$(SolutionDir)FEM.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>..\..\Binaries\HoloLens\FEM-HoloLens-Test.exe</NMakeOutput>
-		<AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
-		<NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
-		<NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
-		<NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
+    <AdditionalOptions>/ZW /ZW:nostdlib</AdditionalOptions>
+    <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);PLATFORM_HOLOLENS=1;HOLOLENS=1;</NMakePreprocessorDefinitions>
+    <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath);C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\Store\references</NMakeAssemblySearchPath>
+    <NMakeForcedUsingAssemblies>$(NMakeForcedUsingAssemblies);C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd;C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.UniversalApiContract\10.0.0.0\Windows.Foundation.UniversalApiContract.winmd;platform.winmd</NMakeForcedUsingAssemblies>
   </PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|arm64'">
-		<RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
-		<LayoutDir>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
-		<AppxPackageRecipe>C:\new3\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
-	</PropertyGroup>
-    <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Test|arm64'">
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
-		<PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
-    </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|arm64'">
+    <RemoveExtraDeployFiles>false</RemoveExtraDeployFiles>
+    <LayoutDir>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\AppX</LayoutDir>
+    <AppxPackageRecipe>C:\Deformables\FEM_Unreal\FEM\Binaries\HoloLens\FEM.build.appxrecipe</AppxPackageRecipe>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Test|arm64'">
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Local.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Simulator.xml" />
+    <PropertyPageSchema Include="$(VCTargetsPath)$(LangID)\AppHostDebugger_Remote.xml" />
+  </ItemGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mac_Test|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -1139,41 +1139,100 @@
   </PropertyGroup>
   <PropertyGroup>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <IncludePath>$(IncludePath);C:\UnrealEngine\Engine\Source;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine;C:\UnrealEngine\Engine\Source\Runtime;C:\UnrealEngine\Engine\Source\Runtime\Engine\Classes;C:\UnrealEngine\Engine\Source\Runtime\Engine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Core;C:\UnrealEngine\Engine\Source\Runtime\TraceLog\Public;C:\UnrealEngine\Engine\Source\Runtime\Core\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TraceLog;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CoreUObject;C:\UnrealEngine\Engine\Source\Runtime\CoreUObject\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetCore;C:\UnrealEngine\Engine\Source\Runtime\Net;C:\UnrealEngine\Engine\Source\Runtime\Net\Core\Classes;C:\UnrealEngine\Engine\Source\Runtime\Net\Core\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ApplicationCore;C:\UnrealEngine\Engine\Source\Runtime\ApplicationCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RHI;C:\UnrealEngine\Engine\Source\Runtime\RHI\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Json;C:\UnrealEngine\Engine\Source\Runtime\Json\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SlateCore;C:\UnrealEngine\Engine\Source\Runtime\SlateCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\InputCore;C:\UnrealEngine\Engine\Source\Runtime\InputCore\Classes;C:\UnrealEngine\Engine\Source\Runtime\InputCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Slate;C:\UnrealEngine\Engine\Source\Runtime\Slate\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ImageWrapper;C:\UnrealEngine\Engine\Source\Runtime\ImageWrapper\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Messaging;C:\UnrealEngine\Engine\Source\Runtime\Messaging\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MessagingCommon;C:\UnrealEngine\Engine\Source\Runtime\MessagingCommon\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RenderCore;C:\UnrealEngine\Engine\Source\Runtime\RenderCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AnalyticsET;C:\UnrealEngine\Engine\Source\Runtime\Analytics;C:\UnrealEngine\Engine\Source\Runtime\Analytics\AnalyticsET\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Analytics;C:\UnrealEngine\Engine\Source\Runtime\Analytics\Analytics\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Sockets;C:\UnrealEngine\Engine\Source\Runtime\Sockets\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetCommon;C:\UnrealEngine\Engine\Source\Runtime\Net\Common\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetRegistry;C:\UnrealEngine\Engine\Source\Runtime\AssetRegistry\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EngineMessages;C:\UnrealEngine\Engine\Source\Runtime\EngineMessages\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EngineSettings;C:\UnrealEngine\Engine\Source\Runtime\EngineSettings\Classes;C:\UnrealEngine\Engine\Source\Runtime\EngineSettings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SynthBenchmark;C:\UnrealEngine\Engine\Source\Runtime\SynthBenchmark\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Renderer;C:\UnrealEngine\Engine\Source\Runtime\Renderer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayTags;C:\UnrealEngine\Engine\Source\Runtime\GameplayTags\Classes;C:\UnrealEngine\Engine\Source\Runtime\GameplayTags\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DeveloperSettings;C:\UnrealEngine\Engine\Source\Runtime\DeveloperSettings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PacketHandler;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\PacketHandler\Classes;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\PacketHandler\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ReliabilityHandlerComponent;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\ReliabilityHandlerComponent\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioPlatformConfiguration;C:\UnrealEngine\Engine\Source\Runtime\AudioPlatformConfiguration\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshDescription;C:\UnrealEngine\Engine\Source\Runtime\MeshDescription\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\StaticMeshDescription;C:\UnrealEngine\Engine\Source\Runtime\StaticMeshDescription\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PakFile;C:\UnrealEngine\Engine\Source\Runtime\PakFile\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RSA;C:\UnrealEngine\Engine\Source\Runtime\RSA\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetworkReplayStreaming;C:\UnrealEngine\Engine\Source\Runtime\NetworkReplayStreaming;C:\UnrealEngine\Engine\Source\Runtime\NetworkReplayStreaming\NetworkReplayStreaming\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PhysicsCore;C:\UnrealEngine\Engine\Source\Runtime\PhysicsCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Chaos;C:\UnrealEngine\Engine\Source\Runtime\Experimental;C:\UnrealEngine\Engine\Source\Runtime\Experimental\Chaos\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ChaosCore;C:\UnrealEngine\Engine\Source\Runtime\Experimental\ChaosCore\Public;C:\UnrealEngine\Engine\Source\ThirdParty\Intel;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Voronoi;C:\UnrealEngine\Engine\Source\Runtime\Experimental\Voronoi\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SignalProcessing;C:\UnrealEngine\Engine\Source\Runtime\SignalProcessing\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioExtensions;C:\UnrealEngine\Engine\Source\Runtime\AudioExtensions\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixerCore;C:\UnrealEngine\Engine\Source\Runtime\AudioMixerCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyAccess;C:\UnrealEngine\Engine\Source\Runtime\PropertyAccess\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealEd;C:\UnrealEngine\Engine\Source\Editor;C:\UnrealEngine\Engine\Source\Programs\UnrealLightmass\Public;C:\UnrealEngine\Engine\Source\Developer\Android\AndroidDeviceDetection\Public\Interfaces;C:\UnrealEngine\Engine\Source\Editor\UnrealEd\Classes;C:\UnrealEngine\Engine\Source\Editor\UnrealEd\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DirectoryWatcher;C:\UnrealEngine\Engine\Source\Developer;C:\UnrealEngine\Engine\Source\Developer\DirectoryWatcher\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Documentation;C:\UnrealEngine\Engine\Source\Editor\Documentation\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Projects;C:\UnrealEngine\Engine\Source\Runtime\Projects\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SandboxFile;C:\UnrealEngine\Engine\Source\Runtime\SandboxFile\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EditorStyle;C:\UnrealEngine\Engine\Source\Editor\EditorStyle\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SourceControl;C:\UnrealEngine\Engine\Source\Developer\SourceControl\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealEdMessages;C:\UnrealEngine\Engine\Source\Editor\UnrealEdMessages\Classes;C:\UnrealEngine\Engine\Source\Editor\UnrealEdMessages\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayDebugger;C:\UnrealEngine\Engine\Source\Developer\GameplayDebugger\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\BlueprintGraph;C:\UnrealEngine\Engine\Source\Editor\BlueprintGraph\Classes;C:\UnrealEngine\Engine\Source\Editor\BlueprintGraph\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EditorSubsystem;C:\UnrealEngine\Engine\Source\Editor\EditorSubsystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HTTP;C:\UnrealEngine\Engine\Source\Runtime\Online;C:\UnrealEngine\Engine\Source\Runtime\Online\HTTP\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealAudio;C:\UnrealEngine\Engine\Source\Runtime\UnrealAudio\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\FunctionalTesting;C:\UnrealEngine\Engine\Source\Developer\FunctionalTesting\Classes;C:\UnrealEngine\Engine\Source\Developer\FunctionalTesting\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AutomationController;C:\UnrealEngine\Engine\Source\Developer\AutomationController\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Localization;C:\UnrealEngine\Engine\Source\Developer\Localization\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioEditor;C:\UnrealEngine\Engine\Source\Editor\AudioEditor\Classes;C:\UnrealEngine\Engine\Source\Editor\AudioEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixer;C:\UnrealEngine\Engine\Source\Runtime\AudioMixer\Classes;C:\UnrealEngine\Engine\Source\Runtime\AudioMixer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TargetPlatform;C:\UnrealEngine\Engine\Source\Developer\TargetPlatform\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\LevelEditor;C:\UnrealEngine\Engine\Source\Editor\LevelEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Settings;C:\UnrealEngine\Engine\Source\Developer\Settings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\IntroTutorials;C:\UnrealEngine\Engine\Source\Editor\IntroTutorials\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HeadMountedDisplay;C:\UnrealEngine\Engine\Source\Runtime\HeadMountedDisplay\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\VREditor;C:\UnrealEngine\Engine\Source\Editor\VREditor;C:\UnrealEngine\Engine\Source\Editor\VREditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CommonMenuExtensions;C:\UnrealEngine\Engine\Source\Editor\CommonMenuExtensions\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Landscape;C:\UnrealEngine\Engine\Source\Runtime\Landscape\Classes;C:\UnrealEngine\Engine\Source\Runtime\Landscape\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyEditor;C:\UnrealEngine\Engine\Source\Editor\PropertyEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ActorPickerMode;C:\UnrealEngine\Engine\Source\Editor\ActorPickerMode\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SceneDepthPickerMode;C:\UnrealEngine\Engine\Source\Editor\SceneDepthPickerMode\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DetailCustomizations;C:\UnrealEngine\Engine\Source\Editor\DetailCustomizations\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ClassViewer;C:\UnrealEngine\Engine\Source\Editor\ClassViewer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GraphEditor;C:\UnrealEngine\Engine\Source\Editor\GraphEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\StructViewer;C:\UnrealEngine\Engine\Source\Editor\StructViewer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ContentBrowser;C:\UnrealEngine\Engine\Source\Editor\ContentBrowser\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ContentBrowserData;C:\UnrealEngine\Engine\Source\Editor\ContentBrowserData\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CollectionManager;C:\UnrealEngine\Engine\Source\Developer\CollectionManager\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UELibSampleRate;C:\UnrealEngine\Engine\Source\ThirdParty;C:\UnrealEngine\Engine\Source\ThirdParty\libSampleRate\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetworkFileSystem;C:\UnrealEngine\Engine\Source\Runtime\NetworkFileSystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UMG;C:\UnrealEngine\Engine\Source\Runtime\UMG\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MovieScene;C:\UnrealEngine\Engine\Source\Runtime\MovieScene\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TimeManagement;C:\UnrealEngine\Engine\Source\Runtime\TimeManagement\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MovieSceneTracks;C:\UnrealEngine\Engine\Source\Runtime\MovieSceneTracks\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AnimationCore;C:\UnrealEngine\Engine\Source\Runtime\AnimationCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyPath;C:\UnrealEngine\Engine\Source\Runtime\PropertyPath\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NavigationSystem;C:\UnrealEngine\Engine\Source\Runtime\NavigationSystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GeometryCollectionEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\GeometryCollectionEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\FieldSystemEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\FieldSystem\Source;C:\UnrealEngine\Engine\Source\Runtime\Experimental\FieldSystem\Source\FieldSystemEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ChaosSolverEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\ChaosSolverEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshBuilder;C:\UnrealEngine\Engine\Source\Developer\MeshBuilder\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MaterialShaderQualitySettings;C:\UnrealEngine\Engine\Source\Runtime\MaterialShaderQualitySettings\Classes;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\InteractiveToolsFramework;C:\UnrealEngine\Engine\Source\Runtime\Experimental\InteractiveToolsFramework\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ToolMenusEditor;C:\UnrealEngine\Engine\Source\Editor\ToolMenusEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ToolMenus;C:\UnrealEngine\Engine\Source\Developer\ToolMenus\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\XAudio2;C:\UnrealEngine\Engine\Source\Runtime\Windows;C:\UnrealEngine\Engine\Source\Runtime\Windows\XAudio2\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixerXAudio2;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetTagsEditor;C:\UnrealEngine\Engine\Source\Editor\AssetTagsEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AddContentDialog;C:\UnrealEngine\Engine\Source\Editor\AddContentDialog\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshUtilities;C:\UnrealEngine\Engine\Source\ThirdParty\Intel\Embree\Embree2140\Win64\include;C:\UnrealEngine\Engine\Source\Developer\MeshUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshMergeUtilities;C:\UnrealEngine\Engine\Source\Developer\MeshMergeUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HierarchicalLODUtilities;C:\UnrealEngine\Engine\Source\Developer\HierarchicalLODUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshReductionInterface;C:\UnrealEngine\Engine\Source\Developer\MeshReductionInterface\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetTools;C:\UnrealEngine\Engine\Source\Developer\AssetTools\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\KismetCompiler;C:\UnrealEngine\Engine\Source\Editor\KismetCompiler\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayTasks;C:\UnrealEngine\Engine\Source\Runtime\GameplayTasks\Classes;C:\UnrealEngine\Engine\Source\Runtime\GameplayTasks\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule;C:\UnrealEngine\Engine\Source\Runtime\AIModule\Public;C:\UnrealEngine\Engine\Source\Runtime\AIModule\Classes;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Kismet;C:\UnrealEngine\Engine\Source\Editor\Kismet\Classes;C:\UnrealEngine\Engine\Source\Editor\Kismet\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ClothingSystemRuntimeInterface;C:\UnrealEngine\Engine\Source\Runtime\ClothingSystemRuntimeInterface\Public;..\Build\Win64\UE4Editor\Inc\FEM;..\..\Source;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\INCLUDE;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt;;</IncludePath>
+    <IncludePath>$(IncludePath);C:\UnrealEngine\Engine\Source;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CoreUObject;C:\UnrealEngine\Engine\Source\Runtime;C:\UnrealEngine\Engine\Source\Runtime\CoreUObject\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Core;C:\UnrealEngine\Engine\Source\Runtime\TraceLog\Public;C:\UnrealEngine\Engine\Source\Runtime\Core\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TraceLog;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Engine;C:\UnrealEngine\Engine\Source\Runtime\Engine\Classes;C:\UnrealEngine\Engine\Source\Runtime\Engine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetCore;C:\UnrealEngine\Engine\Source\Runtime\Net;C:\UnrealEngine\Engine\Source\Runtime\Net\Core\Classes;C:\UnrealEngine\Engine\Source\Runtime\Net\Core\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ApplicationCore;C:\UnrealEngine\Engine\Source\Runtime\ApplicationCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RHI;C:\UnrealEngine\Engine\Source\Runtime\RHI\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Json;C:\UnrealEngine\Engine\Source\Runtime\Json\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SlateCore;C:\UnrealEngine\Engine\Source\Runtime\SlateCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\InputCore;C:\UnrealEngine\Engine\Source\Runtime\InputCore\Classes;C:\UnrealEngine\Engine\Source\Runtime\InputCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Slate;C:\UnrealEngine\Engine\Source\Runtime\Slate\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ImageWrapper;C:\UnrealEngine\Engine\Source\Runtime\ImageWrapper\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Messaging;C:\UnrealEngine\Engine\Source\Runtime\Messaging\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MessagingCommon;C:\UnrealEngine\Engine\Source\Runtime\MessagingCommon\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RenderCore;C:\UnrealEngine\Engine\Source\Runtime\RenderCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AnalyticsET;C:\UnrealEngine\Engine\Source\Runtime\Analytics;C:\UnrealEngine\Engine\Source\Runtime\Analytics\AnalyticsET\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Analytics;C:\UnrealEngine\Engine\Source\Runtime\Analytics\Analytics\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Sockets;C:\UnrealEngine\Engine\Source\Runtime\Sockets\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetCommon;C:\UnrealEngine\Engine\Source\Runtime\Net\Common\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetRegistry;C:\UnrealEngine\Engine\Source\Runtime\AssetRegistry\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EngineMessages;C:\UnrealEngine\Engine\Source\Runtime\EngineMessages\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EngineSettings;C:\UnrealEngine\Engine\Source\Runtime\EngineSettings\Classes;C:\UnrealEngine\Engine\Source\Runtime\EngineSettings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SynthBenchmark;C:\UnrealEngine\Engine\Source\Runtime\SynthBenchmark\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Renderer;C:\UnrealEngine\Engine\Source\Runtime\Renderer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayTags;C:\UnrealEngine\Engine\Source\Runtime\GameplayTags\Classes;C:\UnrealEngine\Engine\Source\Runtime\GameplayTags\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DeveloperSettings;C:\UnrealEngine\Engine\Source\Runtime\DeveloperSettings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PacketHandler;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\PacketHandler\Classes;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\PacketHandler\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ReliabilityHandlerComponent;C:\UnrealEngine\Engine\Source\Runtime\PacketHandlers\ReliabilityHandlerComponent\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioPlatformConfiguration;C:\UnrealEngine\Engine\Source\Runtime\AudioPlatformConfiguration\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshDescription;C:\UnrealEngine\Engine\Source\Runtime\MeshDescription\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\StaticMeshDescription;C:\UnrealEngine\Engine\Source\Runtime\StaticMeshDescription\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PakFile;C:\UnrealEngine\Engine\Source\Runtime\PakFile\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\RSA;C:\UnrealEngine\Engine\Source\Runtime\RSA\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetworkReplayStreaming;C:\UnrealEngine\Engine\Source\Runtime\NetworkReplayStreaming;C:\UnrealEngine\Engine\Source\Runtime\NetworkReplayStreaming\NetworkReplayStreaming\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PhysicsCore;C:\UnrealEngine\Engine\Source\Runtime\PhysicsCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Chaos;C:\UnrealEngine\Engine\Source\Runtime\Experimental;C:\UnrealEngine\Engine\Source\Runtime\Experimental\Chaos\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ChaosCore;C:\UnrealEngine\Engine\Source\Runtime\Experimental\ChaosCore\Public;C:\UnrealEngine\Engine\Source\ThirdParty\Intel;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Voronoi;C:\UnrealEngine\Engine\Source\Runtime\Experimental\Voronoi\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SignalProcessing;C:\UnrealEngine\Engine\Source\Runtime\SignalProcessing\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioExtensions;C:\UnrealEngine\Engine\Source\Runtime\AudioExtensions\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixerCore;C:\UnrealEngine\Engine\Source\Runtime\AudioMixerCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyAccess;C:\UnrealEngine\Engine\Source\Runtime\PropertyAccess\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealEd;C:\UnrealEngine\Engine\Source\Editor;C:\UnrealEngine\Engine\Source\Programs\UnrealLightmass\Public;C:\UnrealEngine\Engine\Source\Developer\Android\AndroidDeviceDetection\Public\Interfaces;C:\UnrealEngine\Engine\Source\Editor\UnrealEd\Classes;C:\UnrealEngine\Engine\Source\Editor\UnrealEd\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DirectoryWatcher;C:\UnrealEngine\Engine\Source\Developer;C:\UnrealEngine\Engine\Source\Developer\DirectoryWatcher\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Documentation;C:\UnrealEngine\Engine\Source\Editor\Documentation\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Projects;C:\UnrealEngine\Engine\Source\Runtime\Projects\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SandboxFile;C:\UnrealEngine\Engine\Source\Runtime\SandboxFile\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EditorStyle;C:\UnrealEngine\Engine\Source\Editor\EditorStyle\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SourceControl;C:\UnrealEngine\Engine\Source\Developer\SourceControl\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealEdMessages;C:\UnrealEngine\Engine\Source\Editor\UnrealEdMessages\Classes;C:\UnrealEngine\Engine\Source\Editor\UnrealEdMessages\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayDebugger;C:\UnrealEngine\Engine\Source\Developer\GameplayDebugger\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\BlueprintGraph;C:\UnrealEngine\Engine\Source\Editor\BlueprintGraph\Classes;C:\UnrealEngine\Engine\Source\Editor\BlueprintGraph\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\EditorSubsystem;C:\UnrealEngine\Engine\Source\Editor\EditorSubsystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HTTP;C:\UnrealEngine\Engine\Source\Runtime\Online;C:\UnrealEngine\Engine\Source\Runtime\Online\HTTP\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UnrealAudio;C:\UnrealEngine\Engine\Source\Runtime\UnrealAudio\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\FunctionalTesting;C:\UnrealEngine\Engine\Source\Developer\FunctionalTesting\Classes;C:\UnrealEngine\Engine\Source\Developer\FunctionalTesting\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AutomationController;C:\UnrealEngine\Engine\Source\Developer\AutomationController\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Localization;C:\UnrealEngine\Engine\Source\Developer\Localization\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioEditor;C:\UnrealEngine\Engine\Source\Editor\AudioEditor\Classes;C:\UnrealEngine\Engine\Source\Editor\AudioEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixer;C:\UnrealEngine\Engine\Source\Runtime\AudioMixer\Classes;C:\UnrealEngine\Engine\Source\Runtime\AudioMixer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TargetPlatform;C:\UnrealEngine\Engine\Source\Developer\TargetPlatform\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\LevelEditor;C:\UnrealEngine\Engine\Source\Editor\LevelEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Settings;C:\UnrealEngine\Engine\Source\Developer\Settings\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\IntroTutorials;C:\UnrealEngine\Engine\Source\Editor\IntroTutorials\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HeadMountedDisplay;C:\UnrealEngine\Engine\Source\Runtime\HeadMountedDisplay\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\VREditor;C:\UnrealEngine\Engine\Source\Editor\VREditor;C:\UnrealEngine\Engine\Source\Editor\VREditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CommonMenuExtensions;C:\UnrealEngine\Engine\Source\Editor\CommonMenuExtensions\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Landscape;C:\UnrealEngine\Engine\Source\Runtime\Landscape\Classes;C:\UnrealEngine\Engine\Source\Runtime\Landscape\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyEditor;C:\UnrealEngine\Engine\Source\Editor\PropertyEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ActorPickerMode;C:\UnrealEngine\Engine\Source\Editor\ActorPickerMode\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\SceneDepthPickerMode;C:\UnrealEngine\Engine\Source\Editor\SceneDepthPickerMode\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\DetailCustomizations;C:\UnrealEngine\Engine\Source\Editor\DetailCustomizations\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ClassViewer;C:\UnrealEngine\Engine\Source\Editor\ClassViewer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GraphEditor;C:\UnrealEngine\Engine\Source\Editor\GraphEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\StructViewer;C:\UnrealEngine\Engine\Source\Editor\StructViewer\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ContentBrowser;C:\UnrealEngine\Engine\Source\Editor\ContentBrowser\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ContentBrowserData;C:\UnrealEngine\Engine\Source\Editor\ContentBrowserData\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\CollectionManager;C:\UnrealEngine\Engine\Source\Developer\CollectionManager\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UELibSampleRate;C:\UnrealEngine\Engine\Source\ThirdParty;C:\UnrealEngine\Engine\Source\ThirdParty\libSampleRate\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NetworkFileSystem;C:\UnrealEngine\Engine\Source\Runtime\NetworkFileSystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\UMG;C:\UnrealEngine\Engine\Source\Runtime\UMG\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MovieScene;C:\UnrealEngine\Engine\Source\Runtime\MovieScene\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\TimeManagement;C:\UnrealEngine\Engine\Source\Runtime\TimeManagement\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MovieSceneTracks;C:\UnrealEngine\Engine\Source\Runtime\MovieSceneTracks\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AnimationCore;C:\UnrealEngine\Engine\Source\Runtime\AnimationCore\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\PropertyPath;C:\UnrealEngine\Engine\Source\Runtime\PropertyPath\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\NavigationSystem;C:\UnrealEngine\Engine\Source\Runtime\NavigationSystem\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GeometryCollectionEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\GeometryCollectionEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\FieldSystemEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\FieldSystem\Source;C:\UnrealEngine\Engine\Source\Runtime\Experimental\FieldSystem\Source\FieldSystemEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ChaosSolverEngine;C:\UnrealEngine\Engine\Source\Runtime\Experimental\ChaosSolverEngine\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshBuilder;C:\UnrealEngine\Engine\Source\Developer\MeshBuilder\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MaterialShaderQualitySettings;C:\UnrealEngine\Engine\Source\Runtime\MaterialShaderQualitySettings\Classes;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\InteractiveToolsFramework;C:\UnrealEngine\Engine\Source\Runtime\Experimental\InteractiveToolsFramework\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ToolMenusEditor;C:\UnrealEngine\Engine\Source\Editor\ToolMenusEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ToolMenus;C:\UnrealEngine\Engine\Source\Developer\ToolMenus\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\XAudio2;C:\UnrealEngine\Engine\Source\Runtime\Windows;C:\UnrealEngine\Engine\Source\Runtime\Windows\XAudio2\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AudioMixerXAudio2;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetTagsEditor;C:\UnrealEngine\Engine\Source\Editor\AssetTagsEditor\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AddContentDialog;C:\UnrealEngine\Engine\Source\Editor\AddContentDialog\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshUtilities;C:\UnrealEngine\Engine\Source\ThirdParty\Intel\Embree\Embree2140\Win64\include;C:\UnrealEngine\Engine\Source\Developer\MeshUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshMergeUtilities;C:\UnrealEngine\Engine\Source\Developer\MeshMergeUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\HierarchicalLODUtilities;C:\UnrealEngine\Engine\Source\Developer\HierarchicalLODUtilities\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\MeshReductionInterface;C:\UnrealEngine\Engine\Source\Developer\MeshReductionInterface\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AssetTools;C:\UnrealEngine\Engine\Source\Developer\AssetTools\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\KismetCompiler;C:\UnrealEngine\Engine\Source\Editor\KismetCompiler\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\GameplayTasks;C:\UnrealEngine\Engine\Source\Runtime\GameplayTasks\Classes;C:\UnrealEngine\Engine\Source\Runtime\GameplayTasks\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\AIModule;C:\UnrealEngine\Engine\Source\Runtime\AIModule\Public;C:\UnrealEngine\Engine\Source\Runtime\AIModule\Classes;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\Kismet;C:\UnrealEngine\Engine\Source\Editor\Kismet\Classes;C:\UnrealEngine\Engine\Source\Editor\Kismet\Public;C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Inc\ClothingSystemRuntimeInterface;C:\UnrealEngine\Engine\Source\Runtime\ClothingSystemRuntimeInterface\Public;..\Build\Win64\UE4Editor\Inc\FEM;..\..\Source;C:\UnrealEngine\Engine\Plugins\Runtime\ProceduralMeshComponent\Intermediate\Build\Win64\UE4Editor\Inc\ProceduralMeshComponent;C:\UnrealEngine\Engine\Plugins\Runtime\ProceduralMeshComponent\Source;C:\UnrealEngine\Engine\Plugins\Runtime\ProceduralMeshComponent\Source\ProceduralMeshComponent\Public;..\..\Plugins\FemImplementation\Source\FemImplementation\Private;..\..\Plugins\FemImplementation\Intermediate\Build\Win64\UE4Editor\Inc\FemImplementation;..\..\Plugins\FemImplementation\Source;..\..\Plugins\FemImplementation\Source\FemImplementation\Public;..\..\Plugins\FemImplementation\Source\ThirdParty;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\INCLUDE;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt</IncludePath>
     <NMakeForcedIncludes>$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeAssemblySearchPath>$(NMakeAssemblySearchPath)</NMakeAssemblySearchPath>
     <AdditionalOptions>/std:c++14</AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\..\FEM.uproject"/>
-    <None Include="..\..\Source\FEM.Target.cs"/>
-    <None Include="..\..\Source\FEMEditor.Target.cs"/>
-    <None Include="..\..\Config\DefaultEditor.ini"/>
-    <None Include="..\..\Config\DefaultEngine.ini"/>
-    <None Include="..\..\Config\DefaultGame.ini"/>
-    <None Include="..\..\Source\FEM\FEM.Build.cs"/>
+    <None Include="..\..\FEM.uproject" />
+    <None Include="..\..\Source\FEM.Target.cs" />
+    <None Include="..\..\Source\FEMEditor.Target.cs" />
+    <None Include="..\..\Config\DefaultEditor.ini" />
+    <None Include="..\..\Config\DefaultEngine.ini" />
+    <None Include="..\..\Config\DefaultGame.ini" />
+    <None Include="..\..\Plugins\FemImplementation\Source\FemImplementation\FemImplementation.Build.cs" />
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\FemImplementation\Private\FemImplementation.cpp">
+      <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\cudamanager;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\filebuf;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\foundation;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\pvd;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\task;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\cooking;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\common;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\extensions;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\geometry;</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.ShadowErrors.h;$(SolutionDir)Plugins\FemImplementation\Intermediate\Build\Win64\UE4Editor\Development\FemImplementation\Definitions.FemImplementation.h</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\FemImplementation\Source\FemImplementation\Public\FemImplementation.h" />
+    <None Include="..\..\Plugins\FemImplementation\FemImplementation.uplugin" />
+    <None Include="..\..\Plugins\FemImplementation\Resources\Icon128.png" />
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\dllmain.cpp">
+      <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.Build.cs" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.Build.cs.bak" />
+    <ClCompile Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.cpp">
+      <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\FemImpLibrary.h" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db-shm" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.db-wal" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\Browse.VC.opendb" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\17444a6298b9d267\DLLMAIN.ipch" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\58b9eed8631e41b5\DLLMAIN.ipch" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\5baa2057b5ca16d1\FEMIMPLIBRARY.ipch" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\.vs\FemImpLibrary\v16\ipch\AutoPCH\d2abe4ac62d7fa9f\FEMIMPLIBRARY.ipch" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\dllmain.obj" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.Build.CppClean.log" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.dll" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.dll.recipe" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.lib" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.log" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.obj" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.pdb" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.vcxproj.FileListAbsolute.txt" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\FemImpLibrary.lastbuildstate" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.delete.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.18296.write.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.delete.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.25528.write.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx-clang-cl.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.command.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\icx.write.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-clang.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.delete.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.2.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.read.3.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink-lld-link.write.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.command.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.read.1.tlog" />
+    <None Include="..\..\Plugins\FemImplementation\Source\ThirdParty\FemImpLibrary\x64\Release\FemImpLibrary.tlog\xilink.write.1.tlog" />
+    <None Include="..\..\Source\FEM\FEM.Build.cs" />
     <ClCompile Include="..\..\Source\FEM\FEM.cpp">
       <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\cudamanager;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\filebuf;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\foundation;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\pvd;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\task;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\cooking;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\common;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\extensions;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\geometry;</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.ShadowErrors.h;$(SolutionDir)Intermediate\Build\Win64\UE4Editor\Development\FEM\Definitions.FEM.h</ForcedIncludeFiles>
     </ClCompile>
-    <ClInclude Include="..\..\Source\FEM\FEM.h"/>
+    <ClInclude Include="..\..\Source\FEM\FEM.h" />
     <ClCompile Include="..\..\Source\FEM\ProceduralMesh.cpp">
       <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\cudamanager;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\filebuf;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\foundation;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\pvd;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\task;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\cooking;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\common;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\extensions;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\geometry;</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.ShadowErrors.h;$(SolutionDir)Intermediate\Build\Win64\UE4Editor\Development\FEM\Definitions.FEM.h</ForcedIncludeFiles>
     </ClCompile>
-    <ClInclude Include="..\..\Source\FEM\ProceduralMesh.h"/>
+    <ClInclude Include="..\..\Source\FEM\ProceduralMesh.h" />
     <ClCompile Include="..\..\Source\FEM\TetGenFunctionLibrary.cpp">
       <AdditionalIncludeDirectories>$(NMakeIncludeSearchPath);C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\cudamanager;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\filebuf;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\foundation;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\pvd;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PxShared\include\task;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\cooking;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\common;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\extensions;C:\UnrealEngine\Engine\Source\ThirdParty\PhysX3\PhysX_3.4\Include\geometry;</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\UnrealEngine\Engine\Intermediate\Build\Win64\UE4Editor\Development\Engine\SharedPCH.Engine.ShadowErrors.h;$(SolutionDir)Intermediate\Build\Win64\UE4Editor\Development\FEM\Definitions.FEM.h</ForcedIncludeFiles>
     </ClCompile>
-    <ClInclude Include="..\..\Source\FEM\TetGenFunctionLibrary.h"/>
+    <ClInclude Include="..\..\Source\FEM\TetGenFunctionLibrary.h" />
   </ItemGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <PropertyGroup>
     <CleanDependsOn> $(CleanDependsOn); </CleanDependsOn>
-    <CppCleanDependsOn></CppCleanDependsOn>
+    <CppCleanDependsOn>
+    </CppCleanDependsOn>
   </PropertyGroup>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
