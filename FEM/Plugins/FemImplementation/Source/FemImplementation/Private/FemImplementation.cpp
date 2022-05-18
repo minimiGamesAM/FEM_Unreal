@@ -29,9 +29,9 @@ void FFemImplementationModule::StartupModule()
 
 	if (ExampleLibraryHandle)
 	{
-
-		float determinante = basicTest();
-		auto message = FString("ThirdPartyLibraryError %f", determinante);// +FString(determinante);
+		FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("FemImpLibrary", "OK"));
+		//float determinante = basicTest();
+		//auto message = FString("ThirdPartyLibraryError %f", determinante);// +FString(determinante);
 		//FMessageDialog::Open(EAppMsgType::Ok, FText(message));
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
 	}
