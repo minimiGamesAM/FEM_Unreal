@@ -11,4 +11,4 @@
 #define FEMIMP_DLL_API __declspec(dllimport)
 #endif
 
-FEMIMP_DLL_API float basicTest();
+FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize);

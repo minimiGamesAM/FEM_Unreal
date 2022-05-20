@@ -44,6 +44,7 @@ public:
 
 private:
 
+	float*						mVerticesBuffer;
 	TArray<FVector>				mVertices;
 	TArray<int32>				mTriangles;
 	TArray<FVector>				mNormals;

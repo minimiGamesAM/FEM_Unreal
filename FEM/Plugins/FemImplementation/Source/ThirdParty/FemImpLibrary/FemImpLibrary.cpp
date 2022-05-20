@@ -111,47 +111,49 @@ float dotProduct(MKL_INT n, float* x, float* y)
     return cblas_sdot(n, x, 1, y, 1);
 }
 
-void vectorOperation()
+float vectorOperation(float* verticesBuffer, int bufferSize)
 {
-    MKL_INT  n, incx, incy, i;
-    float* x, * y;
+    //MKL_INT  n, incx, incy, i;
+    //float* x, * y;
     float    res;
-    MKL_INT  len_x, len_y;
+    //MKL_INT  len_x, len_y;
+    //
+    //n = 1;
+    //incx = 1;
+    //incy = 1;
+    //
+    ////len_x = 1 + (n - 1) * abs(incx);
+    ////len_y = 1 + (n - 1) * abs(incy);
+    //x = new float[n]; // (float*)calloc(len_x, sizeof(float));
+    //y = new float[n]; // (float*)calloc(len_y, sizeof(float));
+    //if (x == NULL || y == NULL) {
+    //    //printf("\n Can't allocate memory for arrays\n");
+    //    return;
+    //}
+    //
+    //for (i = 0; i < n; i++) {
+    //    x[i] = 2.0f;
+    //    y[i] = 5.0f;
+    //}
 
-    n = 1;
-    incx = 1;
-    incy = 1;
-
-    len_x = 1 + (n - 1) * abs(incx);
-    len_y = 1 + (n - 1) * abs(incy);
-    x = (float*)calloc(len_x, sizeof(float));
-    y = (float*)calloc(len_y, sizeof(float));
-    if (x == NULL || y == NULL) {
-        //printf("\n Can't allocate memory for arrays\n");
-        return;
-    }
-
-    for (i = 0; i < n; i++) {
-        x[i] = 2.0f;
-        y[i] = 1.0f;
-    }
-
-    res = dotProduct(n, x, y);
+    res = dotProduct(bufferSize, verticesBuffer, verticesBuffer);
 
     // printf("\n       SDOT = %7.3f", res);
-    std::cout << res << std::endl;
-    free(x);
-    free(y);
+   // std::cout << res << std::endl;
+    //free(x);
+    //free(y);
+
+    return res;
 }
 
-FEMIMP_DLL_API float basicTest()
+FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize)
 {
     float determinat = matrixInversion();
     matrixProductVector();
-    vectorOperation();
+    float dotResult = vectorOperation(verticesBuffer, bufferSize);
 
     std::cout << std::endl;
     std::cout << "GIRANDO TEST BASICO" << std::endl;
     //MessageBox(NULL, TEXT("BASIC DLL CARGADO INTEL."), TEXT("Third Party Plugin"), MB_OK);
-    return determinat;
+    return dotResult;
 }

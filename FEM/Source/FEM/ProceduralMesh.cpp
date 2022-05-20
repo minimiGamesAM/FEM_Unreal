@@ -3,6 +3,7 @@
 
 #include "ProceduralMesh.h"
 #include "TetGenFunctionLibrary.h"
+#include "FemFunctions.h"
 
 //https://nerivec.github.io/old-ue4-wiki/pages/procedural-mesh-component-in-cgetting-started.html
 // without the "Pluging part"
@@ -13,6 +14,7 @@
 
 // Sets default values
 AProceduralMesh::AProceduralMesh()
+	: mVerticesBuffer(nullptr)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -27,7 +29,7 @@ void AProceduralMesh::runTetragenio()
 	mUVs.Empty();
 	mVertexColors.Empty();
 	mTangents.Empty();
-
+		
 	UTetGenFunctionLibrary::RunTetGen();
 	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
 
@@ -44,7 +46,9 @@ void AProceduralMesh::runTetragenio()
 		mUVs.Add(FVector2D(1.0, 0.0));
 
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
-		mVertices.Add(p * 100);
+		//to be remove this scale, should do a proper blender model with the right scale
+		float scale = 100; 
+		mVertices.Add(p * scale);
 	}
 
 	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
@@ -89,7 +93,7 @@ void AProceduralMesh::BeginPlay()
 	mUVs.Empty();
 	mVertexColors.Empty();
 	mTangents.Empty();
-
+		
 	TArray<UActorComponent*> comps;
 
 	this->GetComponents(comps);
@@ -105,9 +109,19 @@ void AProceduralMesh::BeginPlay()
 			auto& data = meshSection->ProcVertexBuffer; // .Position;
 				
 			mVertices.SetNum(data.Num());
+			
+			if (!mVerticesBuffer)
+			{
+				mVerticesBuffer = new float[data.Num() * 3];
+			}
+
 			for (int j = 0; j < data.Num(); ++j)
 			{
 				mVertices[j] = data[j].Position;
+
+				mVerticesBuffer[j * 3] = mVertices[j][0];
+				mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
+				mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
 			}
 		}
 	}
@@ -139,6 +153,8 @@ void AProceduralMesh::Tick(float DeltaTime)
 	{
 		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
 	}
+
+	UFemFunctions::runFem(mVerticesBuffer, 3 * mVertices.Num());
 
 	mMeshComponent->UpdateMeshSection(0, mVertices, mNormals, mUVs, mVertexColors, mTangents);
 }

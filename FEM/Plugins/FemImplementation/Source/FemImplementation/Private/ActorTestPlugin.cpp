@@ -20,8 +20,8 @@ void AActorTestPlugin::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	float determinante = basicTest();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
+	//float determinante = basicTest();
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
 
 }
 
