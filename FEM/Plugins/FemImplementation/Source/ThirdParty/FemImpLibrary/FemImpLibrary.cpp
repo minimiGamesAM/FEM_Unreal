@@ -146,6 +146,49 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
     return res;
 }
 
+// C = alpha A * B + betha * C
+void matmul(float* A, float* B, float* C, int m, int k, int n)
+{
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
+}
+
+FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
+{
+    const int nbPoints = 4;
+    const int dim = 3;
+    
+    float* coord = new float[nbPoints * dim];
+
+    for (int tetIdCoord = 0; tetIdCoord < nbPoints; ++tetIdCoord)
+    {       
+        int pointId = tetsBuffer[tetIdCoord];
+
+        for (int j = 0; j < dim; ++j)
+        {
+            coord[j + dim * tetIdCoord] = verticesBuffer[dim * pointId + j];
+        }
+    }
+
+    // derivate of the shape function
+    float der[nbPoints * dim] = {
+        1, 0, 0, -1,
+        0, 1, 0, -1,
+        0, 0, 1, -1
+    };
+
+    // calculate jac
+
+    float C[dim * dim] = {};
+
+    matmul(der, coord, C, dim, nbPoints, dim);
+
+
+    for (int i = 0; i < dim * dim; ++i)
+    {
+        std::cout << C[i] << std::endl;
+    }
+}
+
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
     float determinat = matrixInversion();

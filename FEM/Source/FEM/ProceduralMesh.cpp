@@ -132,19 +132,6 @@ void AProceduralMesh::BeginPlay()
 		}
 
 		/////////////////////////////////
-		if (!mVerticesBuffer)
-		{
-			mVerticesBuffer = new float[mVertices.Num() * 3];
-		}
-
-		for (int j = 0; j < mVertices.Num(); ++j)
-		{	
-			mVerticesBuffer[j * 3] = mVertices[j][0];
-			mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
-			mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
-		}
-
-		/////////////////////////////////
 		if (!mTetsBuffer)
 		{
 			mTetsBuffer = new int[mTetsIds.Num()];
@@ -153,6 +140,19 @@ void AProceduralMesh::BeginPlay()
 		for (int j = 0; j < mTetsIds.Num(); ++j)
 		{
 			mTetsBuffer[j] = mTetsIds[j];
+		}
+
+		/////////////////////////////////
+		if (!mVerticesBuffer)
+		{
+			mVerticesBuffer = new float[mVertices.Num() * 3];
+		}
+		
+		for (int j = 0; j < mVertices.Num(); ++j)
+		{
+			mVerticesBuffer[j * 3] = mVertices[j][0];
+			mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
+			mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
 		}
 	}
 }
