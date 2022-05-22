@@ -17,5 +17,5 @@ class FEMIMPLEMENTATION_API UFemFunctions : public UBlueprintFunctionLibrary
 private:
 
 public:
-	static void runFem(float* verticesBuffer, int bufferSize);
+	static void runFem(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize);
 };

@@ -111,7 +111,7 @@ float dotProduct(MKL_INT n, float* x, float* y)
     return cblas_sdot(n, x, 1, y, 1);
 }
 
-float vectorOperation(float* verticesBuffer, int bufferSize)
+float vectorOperation(float* verticesBuffer, int verticesBufferSize)
 {
     //MKL_INT  n, incx, incy, i;
     //float* x, * y;
@@ -136,7 +136,7 @@ float vectorOperation(float* verticesBuffer, int bufferSize)
     //    y[i] = 5.0f;
     //}
 
-    res = dotProduct(bufferSize, verticesBuffer, verticesBuffer);
+    res = dotProduct(verticesBufferSize, verticesBuffer, verticesBuffer);
 
     // printf("\n       SDOT = %7.3f", res);
    // std::cout << res << std::endl;
@@ -146,11 +146,11 @@ float vectorOperation(float* verticesBuffer, int bufferSize)
     return res;
 }
 
-FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize)
+FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
     float determinat = matrixInversion();
     matrixProductVector();
-    float dotResult = vectorOperation(verticesBuffer, bufferSize);
+    float dotResult = vectorOperation(verticesBuffer, verticesBufferSize);
 
     std::cout << std::endl;
     std::cout << "GIRANDO TEST BASICO" << std::endl;

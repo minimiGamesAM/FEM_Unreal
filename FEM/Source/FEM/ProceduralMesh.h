@@ -29,11 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FVector2D>& getUVs();
-
-	//UFUNCTION(BlueprintCallable)
-	//TArray<FVector>& getVertices();
-//
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,6 +41,11 @@ public:
 private:
 
 	float*						mVerticesBuffer;
+	int*						mTetsBuffer;
+	int							mNbTets;
+	TArray<int32>				mTetsIds;
+
+	///
 	TArray<FVector>				mVertices;
 	TArray<int32>				mTriangles;
 	TArray<FVector>				mNormals;

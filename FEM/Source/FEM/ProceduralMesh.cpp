@@ -29,6 +29,7 @@ void AProceduralMesh::runTetragenio()
 	mUVs.Empty();
 	mVertexColors.Empty();
 	mTangents.Empty();
+	mTetsIds.Empty();
 		
 	UTetGenFunctionLibrary::RunTetGen();
 	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
@@ -69,17 +70,20 @@ void AProceduralMesh::runTetragenio()
 	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 1));
 	//	mTriangles.Add(UTetGenFunctionLibrary::getTrifacet(i * 3 + 2));
 	//}
+	
+	mTetsIds.SetNum(UTetGenFunctionLibrary::getNumberOfTets() * 4);
+
+	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
+	{
+		mTetsIds[4 * tetIdx] = UTetGenFunctionLibrary::getTet(4 * tetIdx);
+		mTetsIds[4 * tetIdx + 1] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 1);
+		mTetsIds[4 * tetIdx + 2] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 2);
+		mTetsIds[4 * tetIdx + 3] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 3);
+	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Tets %i "), UTetGenFunctionLibrary::getNumberOfTets()));
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB Facets %i "), UTetGenFunctionLibrary::getNumberOfTrifaces()));
-		
-	//auto obs = GetDefaultSubobjects<AProceduralMesh>();
-	//AProceduralMesh* proMesh = GetComponentByClass<AActor>();
-	//
-	//if (proMesh)
-	//{
-	//	proMesh->GetActorGuid();
-	//}
+
 }
 
 // Called when the game starts or when spawned
@@ -87,12 +91,14 @@ void AProceduralMesh::BeginPlay()
 {
 	Super::BeginPlay();
 
-	mVertices.Empty();
-	mTriangles.Empty();
-	mNormals.Empty();
-	mUVs.Empty();
-	mVertexColors.Empty();
-	mTangents.Empty();
+	runTetragenio();
+
+	//mVertices.Empty();
+	//mTriangles.Empty();
+	//mNormals.Empty();
+	//mUVs.Empty();
+	//mVertexColors.Empty();
+	//mTangents.Empty();
 		
 	TArray<UActorComponent*> comps;
 
@@ -104,25 +110,49 @@ void AProceduralMesh::BeginPlay()
 		if (thisComp)
 		{
 			mMeshComponent = thisComp;
-			auto meshSection = thisComp->GetProcMeshSection(0);
+			//auto meshSection = thisComp->GetProcMeshSection(0);
+			//
+			//auto& data = meshSection->ProcVertexBuffer; // .Position;
+			//	
+			//mVertices.SetNum(data.Num());
+			//
+			//if (!mVerticesBuffer)
+			//{
+			//	mVerticesBuffer = new float[data.Num() * 3];
+			//}
+			//
+			//for (int j = 0; j < data.Num(); ++j)
+			//{
+			//	mVertices[j] = data[j].Position;
+			//
+			//	mVerticesBuffer[j * 3] = mVertices[j][0];
+			//	mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
+			//	mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
+			//}
+		}
 
-			auto& data = meshSection->ProcVertexBuffer; // .Position;
-				
-			mVertices.SetNum(data.Num());
-			
-			if (!mVerticesBuffer)
-			{
-				mVerticesBuffer = new float[data.Num() * 3];
-			}
+		/////////////////////////////////
+		if (!mVerticesBuffer)
+		{
+			mVerticesBuffer = new float[mVertices.Num() * 3];
+		}
 
-			for (int j = 0; j < data.Num(); ++j)
-			{
-				mVertices[j] = data[j].Position;
+		for (int j = 0; j < mVertices.Num(); ++j)
+		{	
+			mVerticesBuffer[j * 3] = mVertices[j][0];
+			mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
+			mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
+		}
 
-				mVerticesBuffer[j * 3] = mVertices[j][0];
-				mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
-				mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
-			}
+		/////////////////////////////////
+		if (!mTetsBuffer)
+		{
+			mTetsBuffer = new int[mTetsIds.Num()];
+		}
+
+		for (int j = 0; j < mTetsIds.Num(); ++j)
+		{
+			mTetsBuffer[j] = mTetsIds[j];
 		}
 	}
 }
@@ -142,6 +172,21 @@ TArray<FVector2D>& AProceduralMesh::getUVs()
 	return mUVs;
 }
 
+//void AProceduralMesh::storeTetsIds()
+//{
+//	mTetsIds.Empty();
+//
+//	mTetsIds.SetNum(UTetGenFunctionLibrary::getNumberOfTets() * 4);
+//
+//	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
+//	{
+//		mTetsIds[tetIdx] = UTetGenFunctionLibrary::getTet(tetIdx);
+//		mTetsIds[tetIdx + 1] = UTetGenFunctionLibrary::getTet(tetIdx + 1);
+//		mTetsIds[tetIdx + 2] = UTetGenFunctionLibrary::getTet(tetIdx + 2);
+//		mTetsIds[tetIdx + 3] = UTetGenFunctionLibrary::getTet(tetIdx + 3);
+//	}
+//}
+
 // Called every frame
 void AProceduralMesh::Tick(float DeltaTime)
 {
@@ -154,7 +199,7 @@ void AProceduralMesh::Tick(float DeltaTime)
 		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
 	}
 
-	UFemFunctions::runFem(mVerticesBuffer, 3 * mVertices.Num());
+	UFemFunctions::runFem(mVerticesBuffer, 3 * mVertices.Num(), mTetsBuffer, mTetsIds.Num());
 
 	mMeshComponent->UpdateMeshSection(0, mVertices, mNormals, mUVs, mVertexColors, mTangents);
 }
