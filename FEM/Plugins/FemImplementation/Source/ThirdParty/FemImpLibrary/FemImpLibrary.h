@@ -14,3 +14,8 @@
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize, int* tetsBuffer, int tetsBufferSize);
 
 FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer);
+
+//Funtions to unit test
+
+FEMIMP_DLL_API float invert(float* A, int m);
+FEMIMP_DLL_API void matmul(float* A, float* B, float* C, int m, int k, int n);

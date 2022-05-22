@@ -146,10 +146,30 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
     return res;
 }
 
-// C = alpha A * B + betha * C
-void matmul(float* A, float* B, float* C, int m, int k, int n)
+// C = alpha A * B + beta * C
+FEMIMP_DLL_API void matmul(float* A, float* B, float* C, int m, int k, int n)
 {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
+}
+
+// mkl_?getrfnp could be an alternative withouh using pivot
+FEMIMP_DLL_API float invert(float* A, int m)
+{
+    lapack_int* ipiv = new lapack_int[m];
+        
+    auto info = LAPACKE_sgetrf(CblasRowMajor, m, m, A, m, ipiv);
+    
+    float determinant = 1;
+    
+    for (int i = 0; i < m; ++i)
+    {
+        determinant = determinant * A[i + i * m];
+        determinant = ipiv[i] - 1 != i ? -determinant : determinant;
+    }
+            
+    LAPACKE_sgetri(CblasRowMajor, m, A, m, ipiv);
+    
+    return determinant;
 }
 
 FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
@@ -178,14 +198,20 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
 
     // calculate jac
 
-    float C[dim * dim] = {};
+    float jac[dim * dim] = { 0, 0, 1,
+                             1, 0, 0,
+                             1, 1, 0 };
 
-    matmul(der, coord, C, dim, nbPoints, dim);
+    
+    float det = invert(jac, dim);
 
-
+    matmul(der, coord, jac, dim, nbPoints, dim);
+    
+    std::cout << "det jac " << det << std::endl;
+    
     for (int i = 0; i < dim * dim; ++i)
     {
-        std::cout << C[i] << std::endl;
+        std::cout << jac[i] << std::endl;
     }
 }
 
