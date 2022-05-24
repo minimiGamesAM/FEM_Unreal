@@ -25,7 +25,7 @@
              REAL(iwp),INTENT(OUT)::bee(:,:)
              INTEGER::k,l,m,n,ih,nod
              REAL::x,y,z
-             bee=9999999.0_iwp
+             bee=0.0_iwp
              ih=UBOUND(bee,1)
              nod=UBOUND(deriv,2)
              SELECT CASE (ih)
@@ -96,7 +96,8 @@ implicit none
         
     do i = LBOUND (bee, 1), UBOUND (bee, 1)
       do j = LBOUND (bee, 2), UBOUND (bee, 2)
-         Print *, i, j, bee(i, j)
+         Print *, bee(i, j)
+         !write(*, '(f9.1)') bee(i, j)
       end do
     end do
     !

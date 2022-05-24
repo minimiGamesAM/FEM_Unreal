@@ -32,7 +32,7 @@ void testInvert(float* jac, const int dim)
 	//
 }
 
-float unitTest()
+void unitTest()
 {
 	const int dim3 = 3;
 	const int dim4 = 4;
@@ -72,6 +72,7 @@ float unitTest()
 }
 int main()
 {
+	//unitTest();
 	
 	//float* buffer = new float[2];
 	//

@@ -9,6 +9,7 @@
 
 #include "mkl.h"
 #include "mkl_pblas.h"
+#include <algorithm>
 
 //using namespace sycl;
 
@@ -152,6 +153,11 @@ FEMIMP_DLL_API void matmul(float* A, float* B, float* C, int m, int k, int n)
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
 }
 
+void matmul(float* A, const CBLAS_TRANSPOSE TransA, float* B, float* C, int m, int k, int n)
+{
+    cblas_sgemm(CblasRowMajor, TransA, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
+}
+
 // mkl_?getrfnp could be an alternative withouh using pivot
 FEMIMP_DLL_API float invert(float* A, int m)
 {
@@ -172,6 +178,37 @@ FEMIMP_DLL_API float invert(float* A, int m)
     return determinant;
 }
 
+void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColumsDerivs)
+{
+    int k, l, n, ih(nbRowsBee), nod(nbColumsDerivs);
+    float x, y, z;
+
+    //ih = UBOUND(bee, 1) 
+    //nod = UBOUND(deriv, 2)
+
+    for (int m = 1; m < nod + 1; ++m)
+    {
+        n = 3 * m;
+        k = n - 1;
+        l = k - 1;
+
+        x = deriv[m - 1 + 0 * nbColumsDerivs]; // (1, m);
+        y = deriv[m - 1 + 1 * nbColumsDerivs]; //(2, m);
+        z = deriv[m - 1 + 2 * nbColumsDerivs]; //(3, m);
+
+        bee[l - 1 + 0 * nbColumsBee] = x; //(1, l) = x
+        bee[k - 1 + 3 * nbColumsBee] = x; //(4, k) = x
+        bee[n - 1 + 5 * nbColumsBee] = x; //(6, n) = x
+        bee[k - 1 + 1 * nbColumsBee] = y; //(2, k) = y
+        bee[l - 1 + 3 * nbColumsBee] = y; //(4, l) = y
+        bee[n - 1 + 4 * nbColumsBee] = y; //(5, n) = y
+        bee[n - 1 + 2 * nbColumsBee] = z; //(3, n) = z
+        bee[k - 1 + 4 * nbColumsBee] = z; //(5, k) = z
+        bee[l - 1 + 5 * nbColumsBee] = z; //(6, l) = z
+
+    }
+}
+
 FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
 {
     const int nbPoints = 4;
@@ -190,29 +227,37 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
     }
 
     // derivate of the shape function
-    float der[nbPoints * dim] = {
+    float der[dim * nbPoints] = {
         1, 0, 0, -1,
         0, 1, 0, -1,
         0, 0, 1, -1
     };
 
     // calculate jac
-
-    float jac[dim * dim] = { 0, 0, 1,
-                             1, 0, 0,
-                             1, 1, 0 };
-
-    
+    float jac[dim * dim] = {};
+    matmul(der, coord, jac, dim, nbPoints, dim);
     float det = invert(jac, dim);
 
-    matmul(der, coord, jac, dim, nbPoints, dim);
+    // calculate the derivative in x, y, z
+    float deriv[dim * nbPoints] = {};
+       
+    matmul(jac, der, deriv, dim, dim, nbPoints);
+
+    const int beeBufferSize = 6 * (nbPoints * 3);
+    //float* bee = new float[beeBufferSize];// = {};
     
-    std::cout << "det jac " << det << std::endl;
-    
-    for (int i = 0; i < dim * dim; ++i)
+    float bee[beeBufferSize] = {};// = {};
+    float* beeItt = bee;
+    std::fill(beeItt, beeItt + beeBufferSize, 0);
+
+    beemat(bee, 6, (nbPoints * 3), deriv, nbPoints);
+    //matmul(deriv, const CBLAS_TRANSPOSE TransA, float* B, float* C, int m, int k, int n)
+
+    for (int i = 0; i < 6 * (nbPoints * 3); ++i)
     {
-        std::cout << jac[i] << std::endl;
+        std::cout << "beemat " << bee[i] << std::endl;
     }
+
 }
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
