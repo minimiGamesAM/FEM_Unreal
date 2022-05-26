@@ -205,14 +205,47 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
         bee[n - 1 + 2 * nbColumsBee] = z; //(3, n) = z
         bee[k - 1 + 4 * nbColumsBee] = z; //(5, k) = z
         bee[l - 1 + 5 * nbColumsBee] = z; //(6, l) = z
-
     }
 }
+
+void deemat(float* dee, int nbRowsDee, float e, float v)
+{
+    float ih = nbRowsDee;
+    float one(1.0f), two(2.0f), pt5 = 0.5f;
+    float v1 = one - v;
+    float c = e / ((one + v) * (one - two * v));
+    
+    float v2 = v / (one - v);
+    float vv = (one - two * v) / (one - v) * pt5;
+
+    float factor = e / (two * (one + v) * vv);
+
+    for (int i = 1; i <= 3; ++i)
+    {
+        dee[i - 1 + (i - 1) * nbRowsDee] = one * factor;
+    }
+
+    for (int i = 4; i <= 6; ++i)
+    {
+        dee[i - 1 + (i - 1) * nbRowsDee] = vv * factor;
+    }
+
+    v2 *= factor;
+    dee[1 + 0 * nbRowsDee] = v2; //dee[1, 2] = v2  
+    dee[0 + 1 * nbRowsDee] = v2; //dee[2, 1] = v2
+    dee[2 + 0 * nbRowsDee] = v2; //dee[1, 3] = v2
+    dee[0 + 2 * nbRowsDee] = v2; //dee[3, 1] = v2
+    dee[2 + 1 * nbRowsDee] = v2; //dee[2, 3] = v2
+    dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
+}                                         
 
 FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
 {
     const int nbPoints = 4;
     const int dim = 3;
+
+    const float e = 10000.0f;
+    const float v = 0.3f;
     
     float* coord = new float[nbPoints * dim];
 
@@ -228,9 +261,9 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
 
     // derivate of the shape function
     float der[dim * nbPoints] = {
-        1, 0, 0, -1,
-        0, 1, 0, -1,
-        0, 0, 1, -1
+        1.0f, 0.0f, 0.0f, -1.0f,
+        0.0f, 1.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, 1.0f, -1.0f
     };
 
     // calculate jac
@@ -244,18 +277,24 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
     matmul(jac, der, deriv, dim, dim, nbPoints);
 
     const int beeBufferSize = 6 * (nbPoints * 3);
+    const int deeBufferSize = 6 * 6;
     //float* bee = new float[beeBufferSize];// = {};
     
     float bee[beeBufferSize] = {};// = {};
     float* beeItt = bee;
     std::fill(beeItt, beeItt + beeBufferSize, 0);
 
+    float dee[deeBufferSize] = {};// = {};
+    float* deeItt = dee;
+    std::fill(deeItt, deeItt + deeBufferSize, 0);
+
     beemat(bee, 6, (nbPoints * 3), deriv, nbPoints);
+    deemat(dee, 6, e, v);
     //matmul(deriv, const CBLAS_TRANSPOSE TransA, float* B, float* C, int m, int k, int n)
 
-    for (int i = 0; i < 6 * (nbPoints * 3); ++i)
+    for (int i = 0; i < 6 * 6; ++i)
     {
-        std::cout << "beemat " << bee[i] << std::endl;
+        std::cout << "dee " << dee[i] << std::endl;
     }
 
 }
