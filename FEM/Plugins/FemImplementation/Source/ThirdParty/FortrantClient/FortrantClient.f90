@@ -121,6 +121,7 @@ implicit none
     REAL(iwp) deriv(dims, nbPoints)
     REAL(iwp) bee(6, nbPoints * 3)
     REAL(iwp) dee(6, 6)
+    REAL(iwp) btdb( nbPoints * 3, nbPoints * 3)
     REAL(iwp)::v = 0.3_iwp, e = 10000.0_iwp
         
     !REAL ARRAY_B (2:8, -3:20)
@@ -138,9 +139,11 @@ implicit none
     call beemat(bee, deriv)
     call deemat(dee, e, v)
     
-    do i = LBOUND (dee, 1), UBOUND (dee, 1)
-      do j = LBOUND (dee, 2), UBOUND (dee, 2)
-         Print *, dee(i, j)
+    btdb =  MATMUL(MATMUL(TRANSPOSE(bee), dee), bee)
+    
+    do i = LBOUND (btdb, 1), UBOUND (btdb, 1)
+      do j = LBOUND (btdb, 2), UBOUND (btdb, 2)
+         Print *, btdb(i, j)
          !write(*, '(f9.1)') bee(i, j)
       end do
     end do

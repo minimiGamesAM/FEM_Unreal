@@ -153,9 +153,9 @@ FEMIMP_DLL_API void matmul(float* A, float* B, float* C, int m, int k, int n)
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
 }
 
-void matmul(float* A, const CBLAS_TRANSPOSE TransA, float* B, float* C, int m, int k, int n)
+void matmulTransA(float* A, float* B, float* C, int m, int k, int n)
 {
-    cblas_sgemm(CblasRowMajor, TransA, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
+    cblas_sgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
 }
 
 // mkl_?getrfnp could be an alternative withouh using pivot
@@ -280,21 +280,32 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
     const int deeBufferSize = 6 * 6;
     //float* bee = new float[beeBufferSize];// = {};
     
-    float bee[beeBufferSize] = {};// = {};
+    float bee[beeBufferSize] = {};
     float* beeItt = bee;
-    std::fill(beeItt, beeItt + beeBufferSize, 0);
+    std::fill(beeItt, beeItt + beeBufferSize, 0.0f);
 
-    float dee[deeBufferSize] = {};// = {};
+    float dee[deeBufferSize] = {};
     float* deeItt = dee;
-    std::fill(deeItt, deeItt + deeBufferSize, 0);
+    std::fill(deeItt, deeItt + deeBufferSize, 0.0f);
 
     beemat(bee, 6, (nbPoints * 3), deriv, nbPoints);
     deemat(dee, 6, e, v);
-    //matmul(deriv, const CBLAS_TRANSPOSE TransA, float* B, float* C, int m, int k, int n)
 
-    for (int i = 0; i < 6 * 6; ++i)
+    float temporal[beeBufferSize] = {};
+    float* tempItt = temporal;
+    std::fill(tempItt, tempItt + beeBufferSize, 0.0f);
+
+    const int btdbBufferSize = (nbPoints * 3) * (nbPoints * 3);
+    float btdb[btdbBufferSize] = {};
+    float* btdbItt = btdb;
+    std::fill(btdbItt, btdbItt + btdbBufferSize, 0.0f);
+
+    matmulTransA(bee, dee, temporal, nbPoints * 3, 6, 6);
+    matmul(temporal, bee, btdb, nbPoints * 3, 6, nbPoints * 3);
+    
+    for (int i = 0; i < btdbBufferSize; ++i)
     {
-        std::cout << "dee " << dee[i] << std::endl;
+        std::cout << btdb[i] << std::endl;
     }
 
 }
