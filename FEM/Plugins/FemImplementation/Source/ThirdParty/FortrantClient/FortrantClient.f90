@@ -11,12 +11,50 @@
 !  PURPOSE:  Entry point for the console application.
 !
 !****************************************************************************
+module main
 
-    module mathLibFEM  
-        
     contains
-          
-       SUBROUTINE invert(matrix)
+    
+    SUBROUTINE deemat(dee, e, v)
+        !
+        ! This subroutine returns the elastic dee matrix for ih=3 (plane strain),
+        ! ih=4 (axisymmetry or plane strain elastoplasticity) or ih=6
+        ! (three dimensions).
+        !
+         IMPLICIT NONE
+         INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+         REAL(iwp),INTENT(IN)::e,v
+         REAL(iwp),INTENT(OUT)::dee(:,:)
+         REAL(iwp)::v1, v2, c, vv, zero = 0.0_iwp, pt5 = 0.5_iwp, one = 1.0_iwp, two = 2.0_iwp
+         INTEGER::i,ih
+         dee = zero  
+         ih = UBOUND(dee, 1)
+         v1= one - v
+         c = e / ((one + v)*(one - two * v))
+         SELECT CASE(ih)
+         CASE(6)
+           v2=v/(one-v)
+           vv=(one-two*v)/(one-v)*pt5
+           DO i=1,3
+             dee(i,i)=one
+           END DO
+           DO i=4,6
+             dee(i,i)=vv
+           END DO
+           dee(1,2)=v2
+           dee(2,1)=v2
+           dee(1,3)=v2
+           dee(3,1)=v2
+           dee(2,3)=v2
+           dee(3,2)=v2
+           dee=dee*e/(two*(one+v)*vv)
+         CASE DEFAULT
+           WRITE(*,*)'wrong size for dee matrix'
+         END SELECT
+        RETURN
+    END SUBROUTINE deemat
+    
+    SUBROUTINE invert(matrix)
             !
             ! This subroutine inverts a small square matrix onto itself.
             !
@@ -72,9 +110,134 @@
                END DO
              END IF
             RETURN
-       END SUBROUTINE invert
-       
-       SUBROUTINE beemat(bee, deriv)
+    END SUBROUTINE invert
+    
+    SUBROUTINE getname(argv,nlen)
+        !
+        ! This subroutine reads the base name of data file.
+        !
+             IMPLICIT NONE
+             INTEGER::narg
+             INTEGER,INTENT(OUT)::nlen
+             INTEGER::lnblnk,iargc
+             CHARACTER(*),INTENT(OUT)::argv
+             LOGICAL found
+             narg=IARGC()
+             IF(narg<1)THEN
+               WRITE(*,*)'Please enter the base name of data file: '
+               READ(*,*)argv
+              ELSE
+               CALL getarg(1,argv)
+             ENDIF
+             nlen=LNBLNK(argv)
+             INQUIRE(FILE=argv(1:nlen)//'.dat',EXIST=found)
+             IF(.NOT.found)THEN
+              WRITE(*,*)'Data file not found: ',argv(1:nlen)//'.dat'
+              WRITE(*,*)'Please create or check spelling.'
+              STOP
+             ENDIF
+            RETURN
+    END SUBROUTINE getname
+    
+    SUBROUTINE mesh(g_coord,g_num,argv,nlen,ips)
+        !
+        ! This subroutine produces a PostScript output file "*.msh" displaying
+        ! the undeformed finite element mesh.
+        !
+         IMPLICIT NONE
+         INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+         REAL(iwp),INTENT(IN)::g_coord(:,:)
+         INTEGER,INTENT(IN)::g_num(:,:),ips,nlen
+         CHARACTER(*),INTENT(IN)::argv
+         REAL(iwp)::xmin,xmax,ymin,ymax,width,height,scale=72,sxy,xo,yo,x,y,      &
+           pt5=0.5_iwp,opt5=1.5_iwp,fpt5=5.5_iwp,d8=8.0_iwp,ept5=8.5_iwp,         &
+           d11=11.0_iwp
+         INTEGER::i,ii,j,jj,nn,nod,nel
+         OPEN(ips,FILE=argv(1:nlen)//'.msh')
+        !
+        !                       compute size of mesh
+        !
+         nn=UBOUND(g_coord,2)
+         xmin=g_coord(1,1)
+         xmax=g_coord(1,1)
+         ymin=g_coord(2,1)
+         ymax=g_coord(2,1)
+         DO i=2,nn
+           IF(g_coord(1,i)<xmin)xmin=g_coord(1,i)      
+           IF(g_coord(1,i)>xmax)xmax=g_coord(1,i)      
+           IF(g_coord(2,i)<ymin)ymin=g_coord(2,i)      
+           IF(g_coord(2,i)>ymax)ymax=g_coord(2,i)      
+         END DO
+         width =xmax-xmin
+         height=ymax-ymin
+        !
+        !                       allow 1.5" margin minimum on each side of figure
+        !
+         IF(height.GE.d11/ept5*width)THEN
+        !
+        !                       height governs the scale
+        !
+           sxy=scale*d8/height
+           xo=scale*pt5*(ept5-d8*width/height)
+           yo=scale*opt5
+         ELSE
+        !
+        !                       width governs the scale
+        !
+           sxy=scale*fpt5/width
+           xo=scale*opt5
+           yo=scale*pt5*(d11-fpt5*height/width)
+         END IF
+        !
+        !                       start PostScript output
+        !
+         WRITE(ips,'(a)')'%!PS-Adobe-1.0'
+         WRITE(ips,'(a)')'%%DocumentFonts: none'
+         WRITE(ips,'(a)')'%%Pages: 1'
+         WRITE(ips,'(a)')'%%EndComments'
+         WRITE(ips,'(a)')'/m {moveto} def'
+         WRITE(ips,'(a)')'/l {lineto} def'
+         WRITE(ips,'(a)')'/s {stroke} def'
+         WRITE(ips,'(a)')'/c {closepath} def'
+         WRITE(ips,'(a)')'%%EndProlog'
+         WRITE(ips,'(a)')'%%Page: 0 1'
+         WRITE(ips,'(a)')'gsave'
+         WRITE(ips,'(2f9.2,a)') xo, yo, ' translate'
+         WRITE(ips,'(f9.2,a)') 0.5, ' setlinewidth'
+        !
+        !                       draw the mesh
+        !
+         nod=UBOUND(g_num,1)
+         nel=UBOUND(g_num,2)
+         IF(nod==5)nod=4
+         IF(nod==9)nod=8
+         IF(nod==10)nod=9
+         IF(nod==15)nod=12
+         DO i=1,nel
+           ii=g_num(1,i)
+           IF(ii==0)CYCLE
+           x=sxy*(g_coord(1,ii)-xmin)
+           y=sxy*(g_coord(2,ii)-ymin)
+           WRITE(ips,'(2f9.2,a)')x,y,' m'
+           DO j=2,nod
+             jj=g_num(j,i)
+             x=sxy*(g_coord(1,jj)-xmin)
+             y=sxy*(g_coord(2,jj)-ymin)
+             WRITE(ips,'(2f9.2,a)') x, y,' l'
+           END DO
+           WRITE(ips,'(a)')'c s'
+         END DO
+        !
+        !                       close output file
+        !
+         WRITE(ips,'(a)')'grestore'
+         WRITE(ips,'(a)')'showpage'
+         CLOSE(ips)
+        !
+        RETURN
+    END SUBROUTINE mesh
+    
+    SUBROUTINE beemat(bee, deriv)
             !
             ! This subroutine forms the bee matrix in 2-d (ih=3 or 4) or 3-d (ih=6).
             !
@@ -121,50 +284,35 @@
                WRITE(*,*)'wrong dimension for nst in bee matrix'        
              END SELECT   
             RETURN
-       END SUBROUTINE beemat
-       
-       SUBROUTINE deemat(dee, e, v)
+    END SUBROUTINE beemat
+    
+end module main   
+
+module geom
+
+    contains
+    
+    SUBROUTINE formnf(nf)
         !
-        ! This subroutine returns the elastic dee matrix for ih=3 (plane strain),
-        ! ih=4 (axisymmetry or plane strain elastoplasticity) or ih=6
-        ! (three dimensions).
+        ! This subroutine forms the nf matrix.
         !
          IMPLICIT NONE
-         INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
-         REAL(iwp),INTENT(IN)::e,v
-         REAL(iwp),INTENT(OUT)::dee(:,:)
-         REAL(iwp)::v1, v2, c, vv, zero = 0.0_iwp, pt5 = 0.5_iwp, one = 1.0_iwp, two = 2.0_iwp
-         INTEGER::i,ih
-         dee = zero  
-         ih = UBOUND(dee, 1)
-         v1= one - v
-         c = e / ((one + v)*(one - two * v))
-         SELECT CASE(ih)
-         CASE(6)
-           v2=v/(one-v)
-           vv=(one-two*v)/(one-v)*pt5
-           DO i=1,3
-             dee(i,i)=one
+         INTEGER,INTENT(IN OUT)::nf(:,:)
+         INTEGER::i,j,m
+         m=0
+         DO j=1,UBOUND(nf,2)
+           DO i=1,UBOUND(nf,1)
+             IF(nf(i,j)/=0)THEN
+               m=m+1
+               nf(i,j)=m
+             END IF
            END DO
-           DO i=4,6
-             dee(i,i)=vv
-           END DO
-           dee(1,2)=v2
-           dee(2,1)=v2
-           dee(1,3)=v2
-           dee(3,1)=v2
-           dee(2,3)=v2
-           dee(3,2)=v2
-           dee=dee*e/(two*(one+v)*vv)
-         CASE DEFAULT
-           WRITE(*,*)'wrong size for dee matrix'
-         END SELECT
+         END DO
         RETURN
-       END SUBROUTINE deemat
-       
-   
-    end module mathLibFEM 
-  
+    END SUBROUTINE formnf
+    
+end module geom
+      
     FUNCTION determinant(jac)RESULT(det)
            !
            ! This function returns the determinant of a 1x1, 2x2 or 3x3
@@ -193,9 +341,46 @@
     
 program FortrantClient
 
-use mathLibFEM  
+use main
+use geom
+
 implicit none
-        
+      
+    !!INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+    !!INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
+    !!  nn,nod,nodof,nprops=3,np_types,nr,nst 
+    !!REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp
+    !!CHARACTER(len=15)::argv,element
+    !!!-----------------------dynamic arrays------------------------------------
+    !!INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),kdiag(:),nf(:,:), &
+    !!  no(:),node(:),num(:),sense(:)    
+    !!REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:), &
+    !!  eld(:),fun(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
+    !!  loads(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:)  
+    !!!-----------------------input and initialisation--------------------------
+    !!CALL getname(argv,nlen)
+    !!OPEN(10,FILE=argv(1:nlen)//'.dat') 
+    !!OPEN(11,FILE=argv(1:nlen)//'.res')
+    !!READ(10,*)element,nod,nels,nn,nip,nodof,nst,ndim,np_types 
+    !!ndof=nod*nodof
+    !!ALLOCATE(nf(nodof,nn),points(nip,ndim),dee(nst,nst),g_coord(ndim,nn),    &
+    !!  coord(nod,ndim),jac(ndim,ndim),weights(nip),num(nod),g_num(nod,nels),  &
+    !!  der(ndim,nod),deriv(ndim,nod),bee(nst,ndof),km(ndof,ndof),eld(ndof),   &
+    !!  sigma(nst),g(ndof),g_g(ndof,nels),gc(ndim),fun(nod),etype(nels),       &
+    !!  prop(nprops,np_types))
+    !!READ(10,*)prop 
+    !!etype=1 
+    !!IF(np_types>1)READ(10,*)etype
+    !!READ(10,*)g_coord 
+    !!READ(10,*)g_num
+    !!IF(ndim==2)CALL mesh(g_coord,g_num,argv,nlen,12)
+    !!nf=1 
+    !!READ(10,*)nr,(k,nf(:,k),i=1,nr) 
+    !!CALL formnf(nf) 
+    !!neq=MAXVAL(nf) 
+    !!ALLOCATE(kdiag(neq),loads(0:neq),gravlo(0:neq)) 
+    !!kdiag=0
+    
     INTEGER, PARAMETER::iwp=SELECTED_REAL_KIND(15)
     
     INTEGER, PARAMETER::dims = 3
@@ -236,7 +421,7 @@ implicit none
     btdb =  MATMUL(MATMUL(TRANSPOSE(bee), dee), bee)
     
     !integration
-    btdb = btdb * 1 / 6 * det
+    btdb = btdb * det / 6
     
     do i = LBOUND (btdb, 1), UBOUND (btdb, 1)
       do j = LBOUND (btdb, 2), UBOUND (btdb, 2)
@@ -244,14 +429,7 @@ implicit none
          !write(*, '(f9.1)') bee(i, j)
       end do
     end do
-    !
-    !
-    !res2 = LBOUND (ARRAY_B, 2)
-    !
-    !Print *, res2
     
-    !call show_consts(res2)
-
     pause
     
 end program FortrantClient
