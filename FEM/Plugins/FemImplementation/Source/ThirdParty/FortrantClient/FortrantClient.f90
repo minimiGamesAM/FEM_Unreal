@@ -286,6 +286,48 @@ module main
             RETURN
     END SUBROUTINE beemat
     
+    SUBROUTINE num_to_g(num,nf,g)
+        !
+        ! This subroutine finds the g vector from num and nf.
+        !
+         IMPLICIT NONE
+         INTEGER,INTENT(IN)::num(:),nf(:,:)  
+         INTEGER,INTENT(OUT)::g(:)
+         INTEGER::i,k,nod,nodof 
+         nod=UBOUND(num,1) 
+         nodof=UBOUND(nf,1)
+         DO i=1,nod
+           k=i*nodof
+           g(k-nodof+1:k)=nf(:,num(i))
+         END DO
+        RETURN
+    END SUBROUTINE num_to_g  
+    
+    SUBROUTINE fkdiag(kdiag,g)
+        !
+        ! This subroutine computes the skyline profile.
+        !
+         IMPLICIT NONE
+         INTEGER,INTENT(IN)::g(:)
+         INTEGER,INTENT(OUT)::kdiag(:)
+         INTEGER::idof,i,iwp1,j,im,k
+         idof=SIZE(g)
+         DO i=1,idof
+           iwp1=1
+           IF(g(i)/=0)THEN
+             DO j=1,idof
+               IF(g(j)/=0)THEN
+                 im=g(i)-g(j)+1
+                 IF(im>iwp1)iwp1=im
+               END IF
+             END DO
+             k=g(i)
+             IF(iwp1>kdiag(k))kdiag(k)=iwp1
+           END IF
+         END DO
+        RETURN
+    END SUBROUTINE fkdiag
+    
 end module main   
 
 module geom
@@ -346,89 +388,104 @@ use geom
 
 implicit none
       
-    !!INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
-    !!INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
-    !!  nn,nod,nodof,nprops=3,np_types,nr,nst 
-    !!REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp
-    !!CHARACTER(len=15)::argv,element
-    !!!-----------------------dynamic arrays------------------------------------
-    !!INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),kdiag(:),nf(:,:), &
-    !!  no(:),node(:),num(:),sense(:)    
-    !!REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:), &
-    !!  eld(:),fun(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
-    !!  loads(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:)  
-    !!!-----------------------input and initialisation--------------------------
-    !!CALL getname(argv,nlen)
-    !!OPEN(10,FILE=argv(1:nlen)//'.dat') 
-    !!OPEN(11,FILE=argv(1:nlen)//'.res')
-    !!READ(10,*)element,nod,nels,nn,nip,nodof,nst,ndim,np_types 
-    !!ndof=nod*nodof
-    !!ALLOCATE(nf(nodof,nn),points(nip,ndim),dee(nst,nst),g_coord(ndim,nn),    &
-    !!  coord(nod,ndim),jac(ndim,ndim),weights(nip),num(nod),g_num(nod,nels),  &
-    !!  der(ndim,nod),deriv(ndim,nod),bee(nst,ndof),km(ndof,ndof),eld(ndof),   &
-    !!  sigma(nst),g(ndof),g_g(ndof,nels),gc(ndim),fun(nod),etype(nels),       &
-    !!  prop(nprops,np_types))
-    !!READ(10,*)prop 
-    !!etype=1 
-    !!IF(np_types>1)READ(10,*)etype
-    !!READ(10,*)g_coord 
-    !!READ(10,*)g_num
-    !!IF(ndim==2)CALL mesh(g_coord,g_num,argv,nlen,12)
-    !!nf=1 
-    !!READ(10,*)nr,(k,nf(:,k),i=1,nr) 
-    !!CALL formnf(nf) 
-    !!neq=MAXVAL(nf) 
-    !!ALLOCATE(kdiag(neq),loads(0:neq),gravlo(0:neq)) 
-    !!kdiag=0
-    
-    INTEGER, PARAMETER::iwp=SELECTED_REAL_KIND(15)
-    
-    INTEGER, PARAMETER::dims = 3
-    INTEGER, PARAMETER::nbPoints = 4
-        
-    INTEGER res, i, j
-    REAL(iwp)::det
-    REAL(iwp) determinant ! para llamar la funcion.
-    REAL(iwp) coord(nbPoints, dims)
-    REAL(iwp) der(dims, nbPoints)
-    REAL(iwp) jac(dims, dims)
-    REAL(iwp) deriv(dims, nbPoints)
-    REAL(iwp) bee(6, nbPoints * 3)
-    REAL(iwp) dee(6, 6)
-    REAL(iwp) btdb( nbPoints * 3, nbPoints * 3)
-    REAL(iwp)::v = 0.3_iwp, e = 10000.0_iwp
-      
-    coord(1, : ) = (/ 0, 0, 1 /)
-    coord(2, : ) = (/ 1, 0, 0 /)
-    coord(3, : ) = (/ 1, 1, 0 /)
-    coord(4, : ) = (/ 0, 0, 0 /)
-    
-    der(1, : ) = (/ 0, 1, 0, -1 /)
-    der(2, : ) = (/ 0,-1, 1, 0  /)
-    der(3, : ) = (/ 1, 0, 0, -1 /)
-    
-    jac = MATMUL(der, coord)
-    
-    det = determinant(jac)
-    
-    call invert(jac)
-      
-    deriv = MATMUL(jac, der)
-     
-    call beemat(bee, deriv)
-    call deemat(dee, e, v)
-    
-    btdb =  MATMUL(MATMUL(TRANSPOSE(bee), dee), bee)
-    
-    !integration
-    btdb = btdb * det / 6
-    
-    do i = LBOUND (btdb, 1), UBOUND (btdb, 1)
-      do j = LBOUND (btdb, 2), UBOUND (btdb, 2)
-         Print *, btdb(i, j)
-         !write(*, '(f9.1)') bee(i, j)
-      end do
-    end do
+    INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+    INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
+      nn,nod,nodof,nprops=3,np_types,nr,nst 
+    REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp
+    CHARACTER(len=15)::argv,element
+    !-----------------------dynamic arrays------------------------------------
+    INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),kdiag(:),nf(:,:), &
+      no(:),node(:),num(:),sense(:)    
+    REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:), &
+      eld(:),fun(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
+      loads(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:)  
+    !-----------------------input and initialisation--------------------------
+    CALL getname(argv,nlen)
+    OPEN(10,FILE=argv(1:nlen)//'.dat') 
+    OPEN(11,FILE=argv(1:nlen)//'.res')
+    READ(10,*)element,nod,nels,nn,nip,nodof,nst,ndim,np_types 
+    ndof=nod*nodof
+    ALLOCATE(nf(nodof,nn),points(nip,ndim),dee(nst,nst),g_coord(ndim,nn),    &
+      coord(nod,ndim),jac(ndim,ndim),weights(nip),num(nod),g_num(nod,nels),  &
+      der(ndim,nod),deriv(ndim,nod),bee(nst,ndof),km(ndof,ndof),eld(ndof),   &
+      sigma(nst),g(ndof),g_g(ndof,nels),gc(ndim),fun(nod),etype(nels),       &
+      prop(nprops,np_types))
+    READ(10,*)prop 
+    etype=1 
+    IF(np_types>1)READ(10,*)etype
+    READ(10,*)g_coord 
+    READ(10,*)g_num
+    IF(ndim==2)CALL mesh(g_coord,g_num,argv,nlen,12)
+    nf=1 
+    READ(10,*)nr,(k,nf(:,k),i=1,nr) 
+    CALL formnf(nf) 
+    neq=MAXVAL(nf) 
+    ALLOCATE(kdiag(neq),loads(0:neq),gravlo(0:neq)) 
+    kdiag=0
+    !-----------------------loop the elements to find global arrays sizes-----
+    elements_1: DO iel=1,nels
+      num=g_num(:,iel) 
+      CALL num_to_g(num,nf,g) 
+      g_g(:,iel)=g
+      CALL fkdiag(kdiag,g)
+    END DO elements_1
+    DO i=2,neq 
+      kdiag(i)=kdiag(i)+kdiag(i-1) 
+    END DO 
+    ALLOCATE(kv(kdiag(neq)))
+    WRITE(11,'(2(A,I5))')                                                    &
+      " There are",neq," equations and the skyline storage is",kdiag(neq)
+    !-----------------------element stiffness integration and assembly--------
+ 
+ 
+    !INTEGER, PARAMETER::iwp=SELECTED_REAL_KIND(15)
+    !
+    !INTEGER, PARAMETER::dims = 3
+    !INTEGER, PARAMETER::nbPoints = 4
+    !    
+    !INTEGER res, i, j
+    !REAL(iwp)::det
+    !REAL(iwp) determinant ! para llamar la funcion.
+    !REAL(iwp) coord(nbPoints, dims)
+    !REAL(iwp) der(dims, nbPoints)
+    !REAL(iwp) jac(dims, dims)
+    !REAL(iwp) deriv(dims, nbPoints)
+    !REAL(iwp) bee(6, nbPoints * 3)
+    !REAL(iwp) dee(6, 6)
+    !REAL(iwp) btdb( nbPoints * 3, nbPoints * 3)
+    !REAL(iwp)::v = 0.3_iwp, e = 10000.0_iwp
+    !  
+    !coord(1, : ) = (/ 0, 0, 1 /)
+    !coord(2, : ) = (/ 1, 0, 0 /)
+    !coord(3, : ) = (/ 1, 1, 0 /)
+    !coord(4, : ) = (/ 0, 0, 0 /)
+    !
+    !der(1, : ) = (/ 0, 1, 0, -1 /)
+    !der(2, : ) = (/ 0,-1, 1, 0  /)
+    !der(3, : ) = (/ 1, 0, 0, -1 /)
+    !
+    !jac = MATMUL(der, coord)
+    !
+    !det = determinant(jac)
+    !
+    !call invert(jac)
+    !  
+    !deriv = MATMUL(jac, der)
+    ! 
+    !call beemat(bee, deriv)
+    !call deemat(dee, e, v)
+    !
+    !btdb =  MATMUL(MATMUL(TRANSPOSE(bee), dee), bee)
+    !
+    !!integration
+    !btdb = btdb * det / 6
+    !
+    !do i = LBOUND (btdb, 1), UBOUND (btdb, 1)
+    !  do j = LBOUND (btdb, 2), UBOUND (btdb, 2)
+    !     Print *, btdb(i, j)
+    !     !write(*, '(f9.1)') bee(i, j)
+    !  end do
+    !end do
     
     pause
     
