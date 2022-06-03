@@ -3,6 +3,7 @@
 #include "FemImpLibrary.h"
 #include <functional>
 #include <algorithm>
+#include <map>
 
 void testInvert(float* jac, const int dim)
 {
@@ -106,4 +107,35 @@ int main()
 	int tetId = 0;
 	elemStiffnessMatrix(vertices, &tets[tetId * 4]);
 	
+	const int nodof = 3;
+	const int nbNodes = verticesSize / 3;
+	int* nf = new int[nodof * verticesSize / 3];
+
+	int count = 1;
+	std::map<int, bool> nodeInactif;
+
+	nodeInactif[2] = true;
+	nodeInactif[3] = true;
+	nodeInactif[4] = true;
+	
+	for (int i = 0; i < nbNodes; ++i)
+	{
+		for (int j = 0; j < nodof; ++j)
+		{
+			if (nodeInactif.count(i))
+			{
+				nf[i * nodof + j] = 0;
+			}
+			else
+			{
+				nf[i * nodof + j] = count;
+				count++;
+			}
+		}
+	}
+
+	for (int i = 0; i < nbNodes * nodof; ++i)
+	{
+		std::cout << "nf " << nf[i] << std::endl;
+	}
 }

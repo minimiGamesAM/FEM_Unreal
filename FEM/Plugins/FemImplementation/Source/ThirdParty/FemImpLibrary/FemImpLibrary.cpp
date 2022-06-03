@@ -305,10 +305,20 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
     
     for (int i = 0; i < btdbBufferSize; ++i)
     {
-        std::cout << btdb[i] << std::endl;
+        btdb[i] *= det / 6;
     }
 
+    for (int i = 0; i < btdbBufferSize; ++i)
+    {
+        std::cout << btdb[i] << std::endl;
+    }
 }
+
+FEMIMP_DLL_API void assemblyOfElements(float* verticesBuffer, const int nbNodes)
+{
+   
+}
+
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
