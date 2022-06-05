@@ -387,7 +387,10 @@ use main
 use geom
 
 implicit none
-      
+     
+    !neq    = number of equations
+    !nr     = number of restrained nodes
+
     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
     INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
       nn,nod,nodof,nprops=3,np_types,nr,nst 
@@ -403,30 +406,47 @@ implicit none
     CALL getname(argv,nlen)
     OPEN(10,FILE=argv(1:nlen)//'.dat') 
     OPEN(11,FILE=argv(1:nlen)//'.res')
-    READ(10,*)element,nod,nels,nn,nip,nodof,nst,ndim,np_types 
+    !nod        = number of node per element
+    !nels       = total number of elements
+    !nn         = total number of nodes in the problem
+    !nip        = total number of integrating points
+    !nodof      = number of freedoms per node (x, y, z, etc)
+    !nst        = number of stress / strain terms
+    !ndim       = number of dimensions
+    !np_types   = 
+    READ(10,*) element, nod, nels, nn, nip, nodof, nst, ndim, np_types 
     ndof=nod*nodof
-    ALLOCATE(nf(nodof,nn),points(nip,ndim),dee(nst,nst),g_coord(ndim,nn),    &
-      coord(nod,ndim),jac(ndim,ndim),weights(nip),num(nod),g_num(nod,nels),  &
-      der(ndim,nod),deriv(ndim,nod),bee(nst,ndof),km(ndof,ndof),eld(ndof),   &
-      sigma(nst),g(ndof),g_g(ndof,nels),gc(ndim),fun(nod),etype(nels),       &
-      prop(nprops,np_types))
-    READ(10,*)prop 
-    etype=1 
+    
+    ALLOCATE( nf(nodof, nn), points(nip, ndim), dee(nst, nst), g_coord(ndim, nn),    &
+      coord(nod, ndim), jac(ndim, ndim), weights(nip), num(nod), g_num(nod, nels),  &
+      der(ndim, nod), deriv(ndim, nod), bee(nst, ndof), km(ndof, ndof), eld(ndof),   &
+      sigma(nst), g(ndof), g_g(ndof, nels), gc(ndim), fun(nod), etype(nels),       &
+      prop(nprops, np_types))
+    
+    READ(10,*)prop
+    
+    etype=1
+    
     IF(np_types>1)READ(10,*)etype
+    
     READ(10,*)g_coord 
     READ(10,*)g_num
+    
     IF(ndim==2)CALL mesh(g_coord,g_num,argv,nlen,12)
+    
     nf=1 
+    
     READ(10,*)nr,(k,nf(:,k),i=1,nr) 
     CALL formnf(nf) 
-    neq=MAXVAL(nf) 
-    ALLOCATE(kdiag(neq),loads(0:neq),gravlo(0:neq)) 
+    
+    neq = MAXVAL(nf) 
+    ALLOCATE(kdiag(neq), loads(0 : neq), gravlo(0 : neq)) 
     kdiag=0
     !-----------------------loop the elements to find global arrays sizes-----
     elements_1: DO iel=1,nels
       num=g_num(:,iel) 
       CALL num_to_g(num,nf,g) 
-      g_g(:,iel)=g
+      g_g(:, iel) = g
       CALL fkdiag(kdiag,g)
     END DO elements_1
     DO i=2,neq 
