@@ -387,36 +387,52 @@ use main
 use geom
 
 implicit none
-     
-    !neq    = number of equations
-    !nr     = number of restrained nodes
-
+    
+    !ndim       = number of dimensions
+    !ndof       = number of degree of freedom per element
+    !nels       = total number of elements
+    !neq        = number of equations (total number of non-zero freedoms)
+    !nip        = number of intregation points per element
+    !neq        = number of degree of freedom in the mesh
+    !nn         = total number of nodes in the problem
+    !nod        = number of node per element
+    !nodof      = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+    !nprops     = number of material properties
+    !nr         = number of restrained nodes (puede ser por lo menos en uno de los freedoms)
+    !nst        = number of stress / strain terms
+    
     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
     INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
       nn,nod,nodof,nprops=3,np_types,nr,nst 
     REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp
     CHARACTER(len=15)::argv,element
     !-----------------------dynamic arrays------------------------------------
+    !num        = element node number vector
     INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),kdiag(:),nf(:,:), &
       no(:),node(:),num(:),sense(:)    
     REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:), &
       eld(:),fun(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
       loads(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:)  
     !-----------------------input and initialisation--------------------------
+    
     CALL getname(argv,nlen)
+    !!argv = 'p54_2'
+    !!nlen = 5
+    
     OPEN(10,FILE=argv(1:nlen)//'.dat') 
     OPEN(11,FILE=argv(1:nlen)//'.res')
-    !nod        = number of node per element
-    !nels       = total number of elements
-    !nn         = total number of nodes in the problem
-    !nip        = total number of integrating points
-    !nodof      = number of freedoms per node (x, y, z, etc)
-    !nst        = number of stress / strain terms
-    !ndim       = number of dimensions
-    !np_types   = 
+    
+    !prop       = material property (e, v, gamma)
+    !nodef      = nodes to be fixed
+    
     READ(10,*) element, nod, nels, nn, nip, nodof, nst, ndim, np_types 
     ndof=nod*nodof
     
+    !nf         = nodal freedom array (nodof rows and nn colums)
+    !km         = element stiffness matrix
+    !eld        = element displacement vector
+    !g          = element steering vector
+    !g_g        = global element steering matrix 
     ALLOCATE( nf(nodof, nn), points(nip, ndim), dee(nst, nst), g_coord(ndim, nn),    &
       coord(nod, ndim), jac(ndim, ndim), weights(nip), num(nod), g_num(nod, nels),  &
       der(ndim, nod), deriv(ndim, nod), bee(nst, ndof), km(ndof, ndof), eld(ndof),   &
@@ -444,6 +460,7 @@ implicit none
     kdiag=0
     !-----------------------loop the elements to find global arrays sizes-----
     elements_1: DO iel=1,nels
+      !get element node number vector
       num=g_num(:,iel) 
       CALL num_to_g(num,nf,g) 
       g_g(:, iel) = g
