@@ -13,6 +13,28 @@
 
 //using namespace sycl;
 
+namespace
+{
+    int formnf(int* nf, const int nodof, const int nn)
+    {
+        int m = 0;
+
+        for (int j = 0; j < nn; ++j)
+        {
+            for (int i = 0; i < nodof; ++i)
+            {
+                if (nf[j + nn * i] != 0)
+                {
+                    m = m + 1;
+                    nf[j + nn * i] = m;
+                }
+            }
+        }
+
+        return m;
+    }
+}
+
 float matrixInversion()
 {
     lapack_int m = 3;
@@ -239,7 +261,36 @@ void deemat(float* dee, int nbRowsDee, float e, float v)
     dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
 }                                         
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer)
+FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num)
+{
+    //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+    const int nodof = 3;
+    //nn = total number of nodes in the problem
+    const int nn = 8;
+
+    //nf = nodal freedom array(nodof rows and nn colums)
+    int nf[nodof * nn] = {  0, 1, 0, 1, 0, 0, 1, 1,
+                            0, 0, 0, 0, 1, 1, 1, 1,
+                            1, 1, 0, 0, 1, 0, 0, 1 };
+      
+    //neq = number of degree of freedom in the mesh
+    int neq = formnf(nf, nodof, nn);
+
+    for (int i = 0; i < nodof * nn; ++i)
+    {
+    	std::cout << "nf " << nf[i] << std::endl;
+    }
+
+    std::cout << neq << std::endl;
+    //nod = number of node per element
+    const int nod = 4;
+    //ndof = number of degree of freedom per element
+    const int ndof = nod * nodof;
+
+
+}
+
+FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer)
 {
     const int nbPoints = 4;
     const int dim = 3;

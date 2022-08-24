@@ -71,6 +71,7 @@ void unitTest()
 
 	std::cout << "*******************" << std::endl;
 }
+
 int main()
 {
 	//unitTest();
@@ -87,55 +88,71 @@ int main()
 
 	//float det = basicTest(buffer, 2, bufferTets, 2);
 
-	const int verticesSize = 18;
+	const int verticesSize = 24;
 	float vertices[verticesSize] = {
-		0, 0, 1,
-		0, 1, 1,
-		0, 0, 0,
-		0, 1, 0,
-		1, 0, 0,
-		1, 1, 0
-	};
-	
-	const int tetsSize = 3 * 4;
+
+		0.0f, 1.0f,	 0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+		0.0f, 0.0f,	 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		0.0f, 0.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, -1.0f };
+		
+	const int tetsSize = 6 * 4;
 	int tets[tetsSize] = {
-		0, 4, 5, 2,
-		1, 0, 5, 2,
-		1, 2, 5, 3
+		1, 3, 4, 7,
+		1, 4, 2, 7,
+		1, 2, 5, 7,
+		6, 4, 8, 7,
+		6, 2, 4, 7,
+		6, 5, 2, 7
 	};
 	
-	int tetId = 0;
-	elemStiffnessMatrix(vertices, &tets[tetId * 4]);
-	
-	const int nodof = 3;
-	const int nbNodes = verticesSize / 3;
-	int* nf = new int[nodof * verticesSize / 3];
+	/////////////////transpose////////////////////////////////////
+	int tetsTemp[tetsSize] = {};
 
-	int count = 1;
-	std::map<int, bool> nodeInactif;
-
-	nodeInactif[2] = true;
-	nodeInactif[3] = true;
-	nodeInactif[4] = true;
-	
-	for (int i = 0; i < nbNodes; ++i)
+	for (int i = 0; i < 6; ++i)
 	{
-		for (int j = 0; j < nodof; ++j)
+		for (int j = 0; j < 4; ++j)
 		{
-			if (nodeInactif.count(i))
-			{
-				nf[i * nodof + j] = 0;
-			}
-			else
-			{
-				nf[i * nodof + j] = count;
-				count++;
-			}
+			tetsTemp[i + j * 6] = tets[j + i * 4];
 		}
 	}
 
-	for (int i = 0; i < nbNodes * nodof; ++i)
-	{
-		std::cout << "nf " << nf[i] << std::endl;
-	}
+	std::copy(tetsTemp, tetsTemp + tetsSize, tets);
+	////////////////////////////////////////////////////////////////
+
+
+	std::for_each(tets, tets + tetsSize, [](int& i) { i = i - 1; });
+	int tetId = 0;
+	elemStiffnessMatrix(vertices, tets);// &tets[tetId * 4]);
+	
+	//const int nodof = 3;
+	//const int nbNodes = verticesSize / 3;
+	//int* nf = new int[nodof * verticesSize / 3];
+	//
+	//int count = 1;
+	//std::map<int, bool> nodeInactif;
+	//
+	//nodeInactif[2] = true;
+	//nodeInactif[3] = true;
+	//nodeInactif[4] = true;
+	//
+	//for (int i = 0; i < nbNodes; ++i)
+	//{
+	//	for (int j = 0; j < nodof; ++j)
+	//	{
+	//		if (nodeInactif.count(i))
+	//		{
+	//			nf[i * nodof + j] = 0;
+	//		}
+	//		else
+	//		{
+	//			nf[i * nodof + j] = count;
+	//			count++;
+	//		}
+	//	}
+	//}
+	//
+	//for (int i = 0; i < nbNodes * nodof; ++i)
+	//{
+	//	std::cout << "nf " << nf[i] << std::endl;
+	//}
 }
