@@ -104,24 +104,9 @@ int main()
 		6, 2, 4, 7,
 		6, 5, 2, 7
 	};
-	
-	/////////////////transpose////////////////////////////////////
-	int tetsTemp[tetsSize] = {};
-
-	for (int i = 0; i < 6; ++i)
-	{
-		for (int j = 0; j < 4; ++j)
-		{
-			tetsTemp[i + j * 6] = tets[j + i * 4];
-		}
-	}
-
-	std::copy(tetsTemp, tetsTemp + tetsSize, tets);
-	////////////////////////////////////////////////////////////////
 
 
 	std::for_each(tets, tets + tetsSize, [](int& i) { i = i - 1; });
-	int tetId = 0;
 	elemStiffnessMatrix(vertices, tets);// &tets[tetId * 4]);
 	
 	//const int nodof = 3;

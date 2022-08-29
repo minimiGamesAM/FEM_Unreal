@@ -33,6 +33,17 @@ namespace
 
         return m;
     }
+
+    void num_to_g(const int* num, const int* nf, int* g, const int nod, const int nodof, const int nn)
+    {
+        for (int j = 0; j < nod; ++j)
+        {
+            for (int k = 0; k < nodof; ++k)
+            {
+                g[k + j * nodof] = nf[num[j] + k * nn];
+            }
+        }
+    }
 }
 
 float matrixInversion()
@@ -269,23 +280,33 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num)
     const int nn = 8;
 
     //nf = nodal freedom array(nodof rows and nn colums)
-    int nf[nodof * nn] = {  0, 1, 0, 1, 0, 0, 1, 1,
+    int nf[nodof * nn] = {  0, 1, 0, 1, 0, 1, 0, 1,
                             0, 0, 0, 0, 1, 1, 1, 1,
-                            1, 1, 0, 0, 1, 0, 0, 1 };
+                            1, 1, 0, 0, 1, 1, 0, 0 };
       
     //neq = number of degree of freedom in the mesh
     int neq = formnf(nf, nodof, nn);
-
-    for (int i = 0; i < nodof * nn; ++i)
-    {
-    	std::cout << "nf " << nf[i] << std::endl;
-    }
-
-    std::cout << neq << std::endl;
+       
     //nod = number of node per element
     const int nod = 4;
     //ndof = number of degree of freedom per element
     const int ndof = nod * nodof;
+    
+    for (int i = 0; i < 6; ++i)
+    {
+        int g[ndof] = {};
+        int* num = &g_num[4 * i];
+
+        num_to_g(num, nf, g, nod, nodof, nn);
+        
+        //for (int ii = 0; ii < ndof; ++ii)
+        //{
+        //    std::cout << "g MMG " << g[ii] << std::endl;
+        //}
+        //std::cout << "***" << std::endl;
+        
+    }
+    
 
 
 }
