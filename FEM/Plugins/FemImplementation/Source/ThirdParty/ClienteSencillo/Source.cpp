@@ -95,7 +95,8 @@ int main()
 		0.0f, 0.0f,	 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
 		0.0f, 0.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, -1.0f };
 		
-	const int tetsSize = 6 * 4;
+	const int nbTets = 6;
+	const int tetsSize = nbTets * 4;
 	int tets[tetsSize] = {
 		1, 3, 4, 7,
 		1, 4, 2, 7,
@@ -107,7 +108,7 @@ int main()
 
 
 	std::for_each(tets, tets + tetsSize, [](int& i) { i = i - 1; });
-	elemStiffnessMatrix(vertices, tets);// &tets[tetId * 4]);
+	elemStiffnessMatrix(vertices, tets, nbTets);// &tets[tetId * 4]);
 	
 	//const int nodof = 3;
 	//const int nbNodes = verticesSize / 3;

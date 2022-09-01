@@ -272,7 +272,7 @@ void deemat(float* dee, int nbRowsDee, float e, float v)
     dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
 }                                         
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num)
+FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int nels)
 {
     //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
     const int nodof = 3;
@@ -292,23 +292,28 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num)
     //ndof = number of degree of freedom per element
     const int ndof = nod * nodof;
     
-    for (int i = 0; i < 6; ++i)
+    int* g_g = new int[ndof * nels];
+
+    for (int i = 0; i < nels; ++i)
     {
         int g[ndof] = {};
         int* num = &g_num[4 * i];
 
         num_to_g(num, nf, g, nod, nodof, nn);
-        
-        //for (int ii = 0; ii < ndof; ++ii)
-        //{
-        //    std::cout << "g MMG " << g[ii] << std::endl;
-        //}
-        //std::cout << "***" << std::endl;
-        
+         
+        for (int j = 0; j < ndof; ++j)
+        {
+            g_g[i + j * nels] = g[j];
+        }
     }
-    
-
-
+        
+    //for (int i = 0; i < nels; ++i)
+    //{
+    //    for (int j = 0; j < ndof; ++j)
+    //    {
+    //        std::cout << "final " << g_g[i + j * nels] << std::endl;
+    //    }
+    //}
 }
 
 FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer)
