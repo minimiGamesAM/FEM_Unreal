@@ -44,6 +44,31 @@ namespace
             }
         }
     }
+
+    //This subroutine computes the skyline profile.
+    void fkdiag(int* kdiag, const int* g, const int ndof)
+    {
+        int idof = ndof;
+        for (int i = 0; i < idof; ++i)
+        {
+            int iwp1 = 1;
+
+            if (g[i] != 0)
+            {
+                for (int j = 0; j < idof; ++j)
+                {
+                    if (g[j] != 0)
+                    {
+                        int im = g[i] - g[j] + 1;
+                        if (im > iwp1) iwp1 = im;
+                    }
+                }
+
+                int k = g[i] - 1;
+                if (iwp1 > kdiag[k]) kdiag[k] = iwp1;
+            }
+        }
+    }
 }
 
 float matrixInversion()
@@ -294,6 +319,12 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     
     int* g_g = new int[ndof * nels];
 
+    // skyline profile
+    int* kdiag = new int[neq];
+    std::fill(kdiag, kdiag + neq, 0);
+
+    //---------------------- loop the elements to find global arrays sizes---- -
+
     for (int i = 0; i < nels; ++i)
     {
         int g[ndof] = {};
@@ -305,14 +336,20 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         {
             g_g[i + j * nels] = g[j];
         }
+
+        fkdiag(kdiag, g, ndof);
     }
-        
-    //for (int i = 0; i < nels; ++i)
+
+    for (int i = 1; i < neq; ++i)
+    {
+        kdiag[i] = kdiag[i] + kdiag[i - 1];
+    }
+          
+    //----------------------- element stiffness integration and assembly--------
+ 
+    //for (int i = 0; i < neq; ++i)
     //{
-    //    for (int j = 0; j < ndof; ++j)
-    //    {
-    //        std::cout << "final " << g_g[i + j * nels] << std::endl;
-    //    }
+    //    std::cout << "kdiag " << i << " " << kdiag[i] << std::endl;
     //}
 }
 
