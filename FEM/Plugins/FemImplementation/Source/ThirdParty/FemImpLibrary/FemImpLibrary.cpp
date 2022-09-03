@@ -10,6 +10,8 @@
 #include "mkl.h"
 #include "mkl_pblas.h"
 #include <algorithm>
+#include <functional>
+#include <iterator>
 
 //using namespace sycl;
 
@@ -67,6 +69,40 @@ namespace
                 int k = g[i] - 1;
                 if (iwp1 > kdiag[k]) kdiag[k] = iwp1;
             }
+        }
+    }
+
+    void deemat(float* dee, int nbRowsDee, float e, float v)
+    {
+        float ih = nbRowsDee;
+        float one(1.0f), two(2.0f), pt5 = 0.5f;
+        float v1 = one - v;
+        float c = e / ((one + v) * (one - two * v));
+
+        float v2 = v / (one - v);
+        float vv = (one - two * v) / (one - v) * pt5;
+        
+        for (int i = 1; i <= 3; ++i)
+        {
+            dee[i - 1 + (i - 1) * nbRowsDee] = one;
+        }
+
+        for (int i = 4; i <= 6; ++i)
+        {
+            dee[i - 1 + (i - 1) * nbRowsDee] = vv;
+        }
+
+        //v2 *= factor;
+        dee[1 + 0 * nbRowsDee] = v2; //dee[1, 2] = v2  
+        dee[0 + 1 * nbRowsDee] = v2; //dee[2, 1] = v2
+        dee[2 + 0 * nbRowsDee] = v2; //dee[1, 3] = v2
+        dee[0 + 2 * nbRowsDee] = v2; //dee[3, 1] = v2
+        dee[2 + 1 * nbRowsDee] = v2; //dee[2, 3] = v2
+        dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
+
+        for (int i = 0; i < nbRowsDee* nbRowsDee; ++i)
+        {
+            dee[i] *= e / (two * (one + v) * vv);
         }
     }
 }
@@ -266,36 +302,7 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
     }
 }
 
-void deemat(float* dee, int nbRowsDee, float e, float v)
-{
-    float ih = nbRowsDee;
-    float one(1.0f), two(2.0f), pt5 = 0.5f;
-    float v1 = one - v;
-    float c = e / ((one + v) * (one - two * v));
-    
-    float v2 = v / (one - v);
-    float vv = (one - two * v) / (one - v) * pt5;
-
-    float factor = e / (two * (one + v) * vv);
-
-    for (int i = 1; i <= 3; ++i)
-    {
-        dee[i - 1 + (i - 1) * nbRowsDee] = one * factor;
-    }
-
-    for (int i = 4; i <= 6; ++i)
-    {
-        dee[i - 1 + (i - 1) * nbRowsDee] = vv * factor;
-    }
-
-    v2 *= factor;
-    dee[1 + 0 * nbRowsDee] = v2; //dee[1, 2] = v2  
-    dee[0 + 1 * nbRowsDee] = v2; //dee[2, 1] = v2
-    dee[2 + 0 * nbRowsDee] = v2; //dee[1, 3] = v2
-    dee[0 + 2 * nbRowsDee] = v2; //dee[3, 1] = v2
-    dee[2 + 1 * nbRowsDee] = v2; //dee[2, 3] = v2
-    dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
-}                                         
+                                  
 
 FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int nels)
 {
@@ -344,9 +351,41 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     {
         kdiag[i] = kdiag[i] + kdiag[i - 1];
     }
-          
+    
+    float* kv = new float[kdiag[neq - 1]];
+    std::fill(kv, kv + kdiag[neq - 1], 0.0f);
+    
+    float* gravlo = new float[neq];
+    std::fill(gravlo, gravlo + neq, 0.0f);
+
     //----------------------- element stiffness integration and assembly--------
  
+    
+    //call sample, but for tet there is just one point
+    float points[] = { 0.25f, 0.25f, 0.25f };
+    float weights = 1.0f / 6.0f;
+    
+    //nst = number of stress / strain terms
+    const int nst = 6;
+    const float e = 100.0f;
+    const float v = 0.3f;
+    
+    for (int i = 0; i < nels; ++i)
+    {
+        float dee[nst * nst] = {};
+        std::fill(std::begin(dee), std::end(dee), 0.0f);
+        deemat(dee, nst, e, v);
+
+        //std::for_each(std::begin(dee), std::end(dee), [](float v) {
+        //
+        //    std::cout << "dee " << v << std::endl;
+        //    });
+        //
+        //std::cout << "****" << std::endl;
+    }
+
+
+
     //for (int i = 0; i < neq; ++i)
     //{
     //    std::cout << "kdiag " << i << " " << kdiag[i] << std::endl;
