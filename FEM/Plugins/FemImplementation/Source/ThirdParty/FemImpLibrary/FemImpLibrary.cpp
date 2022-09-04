@@ -311,6 +311,9 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     //nn = total number of nodes in the problem
     const int nn = 8;
 
+    //ndim = number of dimensions
+    const int ndim = 3;
+
     //nf = nodal freedom array(nodof rows and nn colums)
     int nf[nodof * nn] = {  0, 1, 0, 1, 0, 1, 0, 1,
                             0, 0, 0, 0, 1, 1, 1, 1,
@@ -376,15 +379,25 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         std::fill(std::begin(dee), std::end(dee), 0.0f);
         deemat(dee, nst, e, v);
 
-        //std::for_each(std::begin(dee), std::end(dee), [](float v) {
+        int* num = &g_num[4 * i];
+
+        float coord[nod * ndim] = {};
+                
+        for (int j = 0; j < nod; ++j)
+        {
+            for (int k = 0; k < ndim; ++k)
+            {
+                coord[k + j * ndim] = g_coord[num[j] + k * nn];
+            }
+        }
+
+        //std::for_each(std::begin(coord), std::end(coord), [](float v) {
         //
-        //    std::cout << "dee " << v << std::endl;
+        //    std::cout << "coord " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;
     }
-
-
 
     //for (int i = 0; i < neq; ++i)
     //{
