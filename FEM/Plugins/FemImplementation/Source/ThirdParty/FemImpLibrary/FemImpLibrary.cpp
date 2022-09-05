@@ -302,8 +302,6 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
     }
 }
 
-                                  
-
 FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int nels)
 {
     //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
@@ -311,22 +309,25 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     //nn = total number of nodes in the problem
     const int nn = 8;
 
+    //nip = number of intregation points per element
+    const int nip = 1;
+
     //ndim = number of dimensions
     const int ndim = 3;
 
     //nf = nodal freedom array(nodof rows and nn colums)
-    int nf[nodof * nn] = {  0, 1, 0, 1, 0, 1, 0, 1,
+    int nf[nodof * nn] = { 0, 1, 0, 1, 0, 1, 0, 1,
                             0, 0, 0, 0, 1, 1, 1, 1,
                             1, 1, 0, 0, 1, 1, 0, 0 };
-      
+
     //neq = number of degree of freedom in the mesh
     int neq = formnf(nf, nodof, nn);
-       
+
     //nod = number of node per element
     const int nod = 4;
     //ndof = number of degree of freedom per element
     const int ndof = nod * nodof;
-    
+
     int* g_g = new int[ndof * nels];
 
     // skyline profile
@@ -341,7 +342,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         int* num = &g_num[4 * i];
 
         num_to_g(num, nf, g, nod, nodof, nn);
-         
+
         for (int j = 0; j < ndof; ++j)
         {
             g_g[i + j * nels] = g[j];
@@ -354,25 +355,43 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     {
         kdiag[i] = kdiag[i] + kdiag[i - 1];
     }
-    
+
     float* kv = new float[kdiag[neq - 1]];
     std::fill(kv, kv + kdiag[neq - 1], 0.0f);
-    
+
     float* gravlo = new float[neq];
     std::fill(gravlo, gravlo + neq, 0.0f);
 
     //----------------------- element stiffness integration and assembly--------
- 
-    
+
+
     //call sample, but for tet there is just one point
     float points[] = { 0.25f, 0.25f, 0.25f };
     float weights = 1.0f / 6.0f;
-    
+
     //nst = number of stress / strain terms
     const int nst = 6;
     const float e = 100.0f;
     const float v = 0.3f;
-    
+
+    //km = element stiffness matrix
+    float km[ndof * ndof] = {};
+
+    //eld = element displacement vector
+    float eld[ndof] = {};
+
+    float fun[4] = { 0.25f, 0.25f, 0.25f, 0.25f };
+        
+    float der[ndim * nod] = {
+            1.0f, 0.0f, 0.0f, -1.0f,
+            0.0f, 1.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, 1.0f, -1.0f
+    };
+
+    float jac[ndim * ndim] = {};
+    float deriv[ndim * nod] = {};
+    float bee[nst * ndof] = {};
+
     for (int i = 0; i < nels; ++i)
     {
         float dee[nst * nst] = {};
@@ -391,9 +410,30 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
             }
         }
 
-        //std::for_each(std::begin(coord), std::end(coord), [](float v) {
+        int g[ndof] = {};
+        for (int j = 0; j < ndof; ++j)
+        {
+            g[j] = g_g[i + j * nels];
+        }
+
+        std::fill(std::begin(km), std::end(km), 0.0f);
+        std::fill(std::begin(eld), std::end(eld), 0.0f);
+        
+        // calculate jac
+        
+        matmul(der, coord, jac, ndim, nod, ndim);
+        float det = invert(jac, ndim);
+
+        // calculate the derivative in x, y, z
+        matmul(jac, der, deriv, ndim, ndim, nod);
+
+        std::fill(std::begin(bee), std::end(bee), 0.0f);
+        beemat(bee, nst, ndof, deriv, nod);
+                
+
+        //std::for_each(std::begin(deriv), std::end(deriv), [](float v) {
         //
-        //    std::cout << "coord " << v << std::endl;
+        //    std::cout << "deriv " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;
