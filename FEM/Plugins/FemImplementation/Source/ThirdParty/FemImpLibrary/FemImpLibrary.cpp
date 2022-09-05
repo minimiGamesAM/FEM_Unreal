@@ -105,6 +105,31 @@ namespace
             dee[i] *= e / (two * (one + v) * vv);
         }
     }
+
+    void fsparv(float* kv, const float* km, int* g, const int* kdiag, const int idof)
+    {
+        for (int i = 0; i < idof; ++i)
+        {
+            int k = g[i];
+
+            if(k != 0)
+            {
+                for(int j = 0; j < idof; ++j)
+                {
+                    if(g[j] != 0)
+                    {
+                        int iw = k - g[j];
+                        if (iw >= 0)
+                        {
+                            int ival = kdiag[k - 1] - iw - 1;
+                            kv[ival] = kv[ival] + km[i + j * idof];
+                        }
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 float matrixInversion()
@@ -419,8 +444,8 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         std::fill(std::begin(km), std::end(km), 0.0f);
         std::fill(std::begin(eld), std::end(eld), 0.0f);
         
+        ////// for each point of integration, we have just one for 3d tets
         // calculate jac
-        
         matmul(der, coord, jac, ndim, nod, ndim);
         float det = invert(jac, ndim);
 
@@ -443,9 +468,14 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
             eld[i - 1] = fun[int(i / nodof) - 1] * det * weights;
         }
         
-        //std::for_each(std::begin(eld), std::end(eld), [](float v) {
+        ////// end for each point
+        
+        fsparv(kv, km, g, kdiag, ndof);
+
+        
+        //std::for_each(kv, kv + kdiag[neq - 1], [](float v) {
         //
-        //    std::cout << "eld " << v << std::endl;
+        //    std::cout << "kv " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;
