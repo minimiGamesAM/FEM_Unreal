@@ -438,11 +438,14 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
 
         std::for_each(std::begin(km), std::end(km), [&](float& v) { v *= det * weights; });
         
-        ////////////
-
-        //std::for_each(std::begin(km), std::end(km), [](float v) {
+        for (int i = nodof; i <= ndof; i += nodof)
+        {
+            eld[i - 1] = fun[int(i / nodof) - 1] * det * weights;
+        }
+        
+        //std::for_each(std::begin(eld), std::end(eld), [](float v) {
         //
-        //    std::cout << "kmmm " << v << std::endl;
+        //    std::cout << "eld " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;

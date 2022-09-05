@@ -1642,7 +1642,7 @@ implicit none
     END IF
  
     !----------------------------------------------------------------------- 
-    ! Probando la notacion eld(1:12:4) = 2 significa llenar de numero 2 desde 1 a 12 saltando 4 por ejemplo
+    ! Probando la notacion eld(1:12:4) = 2 --> significa llenar de numero 2 desde 1 a 12 saltando 4 por ejemplo
     !INTEGER, PARAMETER::iwp=SELECTED_REAL_KIND(15)
     !INTEGER i
     !
