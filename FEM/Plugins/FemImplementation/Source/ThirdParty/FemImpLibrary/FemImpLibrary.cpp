@@ -429,11 +429,20 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
 
         std::fill(std::begin(bee), std::end(bee), 0.0f);
         beemat(bee, nst, ndof, deriv, nod);
-                
+        
+        float temporal[nst * ndof] = {};
+        std::fill(std::begin(temporal), std::end(temporal), 0.0f);
+        
+        matmulTransA(bee, dee, temporal, ndof, nst, nst);
+        matmul(temporal, bee, km, ndof, nst, ndof);
 
-        //std::for_each(std::begin(deriv), std::end(deriv), [](float v) {
+        std::for_each(std::begin(km), std::end(km), [&](float& v) { v *= det * weights; });
+        
+        ////////////
+
+        //std::for_each(std::begin(km), std::end(km), [](float v) {
         //
-        //    std::cout << "deriv " << v << std::endl;
+        //    std::cout << "kmmm " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;
