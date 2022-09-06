@@ -1453,6 +1453,86 @@ module main
      END DO
     RETURN
     END SUBROUTINE fsparv
+    
+    SUBROUTINE sparin(kv,kdiag)
+    !
+    ! This subroutine performs Cholesky factorisation on a symmetric
+    ! skyline global matrix.
+    !
+     IMPLICIT NONE
+     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+     REAL(iwp),INTENT(IN OUT)::kv(:)
+     INTEGER,INTENT(IN)::kdiag(:)
+     INTEGER::n,i,ki,l,kj,j,ll,m,k
+     REAL(iwp)::x
+     n=UBOUND(kdiag,1)  
+     kv(1)=SQRT(kv(1))
+     DO i=2,n
+       ki=kdiag(i)-i
+       l=kdiag(i-1)-ki+1
+       DO j=l,i
+         x=kv(ki+j)
+         kj=kdiag(j)-j
+         IF(j/=1)THEN
+           ll=kdiag(j-1)-kj+1
+           ll=max(l,ll)
+           IF(ll/=j)THEN
+             m=j-1
+             DO k=ll,m 
+               x=x-kv(ki+k)*kv(kj+k) 
+             END DO
+           END IF
+         END IF
+         kv(ki+j)=x/kv(kj+j)
+       END DO
+       kv(ki+i)=SQRT(x)
+     END DO
+    RETURN
+    END SUBROUTINE sparin
+    
+    SUBROUTINE spabac(kv,loads,kdiag)
+    !
+    ! This subroutine performs Cholesky forward and back-substitution
+    ! on a symmetric skyline global matrix.
+    !
+     IMPLICIT NONE
+     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+     REAL(iwp),INTENT(IN)::kv(:)
+     REAL(iwp),INTENT(IN OUT)::loads(0:)
+     INTEGER,INTENT(IN)::kdiag(:)
+     INTEGER::n,i,ki,l,m,j,it,k
+     REAL(iwp)::x
+     n=UBOUND(kdiag,1)
+     loads(1)=loads(1)/kv(1)
+     DO i=2,n
+       ki=kdiag(i)-i
+       l=kdiag(i-1)-ki+1 
+       x=loads(i)
+       IF(l/=i)THEN
+         m=i-1
+         DO j=l,m 
+           x=x-kv(ki+j)*loads(j)
+         END DO
+       END IF
+       loads(i)=x/kv(ki+i)
+     END DO
+     DO it=2,n
+       i=n+2-it
+       ki=kdiag(i)-i
+       x=loads(i)/kv(ki+i)
+       loads(i)=x
+       l=kdiag(i-1)-ki+1
+       IF(l/=i)THEN
+         m=i-1
+         DO k=l,m
+           loads(k)=loads(k)-x*kv(ki+k)
+         END DO
+       END IF
+     END DO
+     loads(1)=loads(1)/kv(1)
+    RETURN
+    END SUBROUTINE spabac    
+
 end module main   
 
 module geom
@@ -1640,6 +1720,20 @@ implicit none
       kv(kdiag(no))=kv(kdiag(no))+penalty 
       loads(no)=kv(kdiag(no))*value
     END IF
+ 
+    !-----------------------equation solution---------------------------------
+    CALL sparin(kv,kdiag) 
+    CALL spabac(kv,loads,kdiag) 
+    loads(0)=zero
+ 
+    IF(ndim==3)THEN 
+      WRITE(11,'(/A)')"  Node   x-disp      y-disp      z-disp"
+    ELSE 
+      WRITE(11,'(/A)')"  Node   x-disp      y-disp"
+    END IF
+    DO k=1,nn 
+      WRITE(11,'(I5,3E12.4)')k,loads(nf(:,k)) 
+    END DO
  
     !----------------------------------------------------------------------- 
     ! Probando la notacion eld(1:12:4) = 2 --> significa llenar de numero 2 desde 1 a 12 saltando 4 por ejemplo
