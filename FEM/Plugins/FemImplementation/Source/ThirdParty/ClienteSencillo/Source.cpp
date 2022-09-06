@@ -106,9 +106,19 @@ int main()
 		6, 5, 2, 7
 	};
 
-
 	std::for_each(tets, tets + tetsSize, [](int& i) { i = i - 1; });
-	elemStiffnessMatrix(vertices, tets, nbTets);// &tets[tetId * 4]);
+	
+	//loads in kN (node 1, 2, 5, 6)
+	// 1  0.0  0.0 - 0.1667   2  0.0  0.0 - 0.3333
+	// 5  0.0  0.0 - 0.3333   6  0.0  0.0 - 0.1667
+
+	float loads[12] = { 0.0f,  0.0f, -0.1667f,
+						0.0f,  0.0f, -0.3333f,
+						0.0f,  0.0f, -0.3333f,
+						0.0f,  0.0f, -0.1667f
+	};
+		
+	elemStiffnessMatrix(vertices, tets, loads, nbTets);// &tets[tetId * 4]);
 	
 	//const int nodof = 3;
 	//const int nbNodes = verticesSize / 3;

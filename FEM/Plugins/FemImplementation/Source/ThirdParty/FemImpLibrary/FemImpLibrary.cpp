@@ -327,7 +327,7 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
     }
 }
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int nels)
+FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads, const int nels)
 {
     //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
     const int nodof = 3;
@@ -339,6 +339,12 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
 
     //ndim = number of dimensions
     const int ndim = 3;
+
+    //nprops = number of material properties
+    const int nprops = 3;
+
+    //np_types = number of diffent property types
+    const int np_types = 1;
 
     //nf = nodal freedom array(nodof rows and nn colums)
     int nf[nodof * nn] = { 0, 1, 0, 1, 0, 1, 0, 1,
@@ -352,6 +358,13 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     const int nod = 4;
     //ndof = number of degree of freedom per element
     const int ndof = nod * nodof;
+
+    //prop = material property(e, v, gamma)
+    float* prop = new float[nprops * np_types];
+    
+    prop[0] = 100.0f;
+    prop[1] = 0.3f;
+    prop[2] = 0.0f;
 
     int* g_g = new int[ndof * nels];
 
@@ -381,9 +394,11 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         kdiag[i] = kdiag[i] + kdiag[i - 1];
     }
 
+    //kv = global stiffness matrix
     float* kv = new float[kdiag[neq - 1]];
     std::fill(kv, kv + kdiag[neq - 1], 0.0f);
 
+    //gravlo = global gravity loading vector 
     float* gravlo = new float[neq];
     std::fill(gravlo, gravlo + neq, 0.0f);
 
@@ -398,6 +413,9 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
     const int nst = 6;
     const float e = 100.0f;
     const float v = 0.3f;
+
+    int* etype = new int[nels];
+    std::fill(etype, etype + nels, 1);
 
     //km = element stiffness matrix
     float km[ndof * ndof] = {};
@@ -426,7 +444,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
         int* num = &g_num[4 * i];
 
         float coord[nod * ndim] = {};
-                
+
         for (int j = 0; j < nod; ++j)
         {
             for (int k = 0; k < ndim; ++k)
@@ -443,7 +461,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
 
         std::fill(std::begin(km), std::end(km), 0.0f);
         std::fill(std::begin(eld), std::end(eld), 0.0f);
-        
+
         ////// for each point of integration, we have just one for 3d tets
         // calculate jac
         matmul(der, coord, jac, ndim, nod, ndim);
@@ -454,32 +472,64 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, const int ne
 
         std::fill(std::begin(bee), std::end(bee), 0.0f);
         beemat(bee, nst, ndof, deriv, nod);
-        
+
         float temporal[nst * ndof] = {};
         std::fill(std::begin(temporal), std::end(temporal), 0.0f);
-        
+
         matmulTransA(bee, dee, temporal, ndof, nst, nst);
         matmul(temporal, bee, km, ndof, nst, ndof);
 
         std::for_each(std::begin(km), std::end(km), [&](float& v) { v *= det * weights; });
-        
-        for (int i = nodof; i <= ndof; i += nodof)
+
+        for (int j = nodof; j <= ndof; j += nodof)
         {
-            eld[i - 1] = fun[int(i / nodof) - 1] * det * weights;
+            eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
         }
-        
+
         ////// end for each point
-        
+
         fsparv(kv, km, g, kdiag, ndof);
 
-        
+        for (int j = 0; j < nels; ++j)
+        {
+            gravlo[j] += -eld[j] * prop[etype[i] - 1 + np_types * 2];
+        }
+    }
+
+    // TOBE implemented
+    //IF(fixed_freedoms /= 0)THEN
+    //    ALLOCATE(node(fixed_freedoms), sense(fixed_freedoms), &
+    //        value(fixed_freedoms), no(fixed_freedoms))
+    //    READ(10, *)(node(i), sense(i), value(i), i = 1, fixed_freedoms)
+    //    DO  i = 1, fixed_freedoms
+    //    no(i) = nf(sense(i), node(i))
+    //    END DO
+    //    kv(kdiag(no)) = kv(kdiag(no)) + penalty
+    //    loads(no) = kv(kdiag(no)) * value
+    //END IF
+
+
+
+
+
+    //loads = global load (displacement) vector
+    //float* loads = new float[neq];
+    //std::fill(loads, loads, 0.0f);
+
+
+        //for (int j = 0; j < nels; ++j)
+        //{
+        //    //nprops * np_types
+        //    std::cout << "gravlo " << gravlo[j] << std::endl;
+        //}
+
         //std::for_each(kv, kv + kdiag[neq - 1], [](float v) {
         //
         //    std::cout << "kv " << v << std::endl;
         //    });
         //
         //std::cout << "****" << std::endl;
-    }
+    
 
     //for (int i = 0; i < neq; ++i)
     //{
