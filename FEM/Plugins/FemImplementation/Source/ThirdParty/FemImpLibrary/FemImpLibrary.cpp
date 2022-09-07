@@ -130,6 +130,45 @@ namespace
 
         }
     }
+
+    void sparin(float* kv, int* kdiag, int neq)
+    {
+        int n = neq;
+        kv[0] = std::sqrt(kv[0]);
+
+        for (int i = 2; i <= n; ++i)
+        {
+            float x = 0.0f;
+            int ki = kdiag[i - 1] - i;
+            int l = kdiag[i - 1 - 1] - ki + 1;
+
+            for (int j = l; j <= i; ++j)
+            {
+                x = kv[ki + j - 1];
+                int kj = kdiag[j - 1] - j;
+
+                if (j != 1)
+                {
+                    int ll = kdiag[j - 1 - 1] - kj + 1;
+                    ll = std::max(l, ll);
+
+                    if (ll != j)
+                    {
+                        int m = j - 1;
+
+                        for (int k = ll; k <= m; ++k)
+                        {
+                            x = x - kv[ki + k - 1] * kv[kj + k - 1];
+                        }
+                    }
+                }
+
+                kv[ki + j - 1] = x / kv[kj + j - 1];
+            }
+
+            kv[ki + i - 1] = std::sqrt(x);
+        }
+    }
 }
 
 float matrixInversion()
@@ -508,8 +547,18 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     //    loads(no) = kv(kdiag(no)) * value
     //END IF
 
+    sparin(kv, kdiag, neq);
 
+    //std::for_each(kv, kv + neq, [](float v) {
+    //
+    //    std::cout << "kv sparin " << v << std::endl;
+    //    });
 
+    //for (int j = 0; j < 69; ++j)
+    //{
+    //    //nprops * np_types
+    //    std::cout << "kv ooo " << kv[j] << std::endl;
+    //}
 
 
     //loads = global load (displacement) vector
