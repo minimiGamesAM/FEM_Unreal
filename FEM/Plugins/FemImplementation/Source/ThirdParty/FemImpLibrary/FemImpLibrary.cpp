@@ -131,6 +131,10 @@ namespace
         }
     }
 
+    // 
+    // This subroutine performs Cholesky factorisation on a symmetric
+    // skyline global matrix.
+    // 
     void sparin(float* kv, int* kdiag, int neq)
     {
         int n = neq;
@@ -168,6 +172,56 @@ namespace
 
             kv[ki + i - 1] = std::sqrt(x);
         }
+    }
+
+    // 
+    // This subroutine performs Cholesky forwardand back - substitution
+    // on a symmetric skyline global matrix.
+    // 
+    void spabac(const float* kv, float* loads, const int* kdiag, int neq)
+    {
+        int n = neq;
+        loads[0] = loads[0] / kv[0];
+
+        for (int i = 2; i <= n; ++i)
+        {
+            int ki = kdiag[i - 1] - i;
+            int l = kdiag[i - 1 - 1] - ki + 1;
+            float x = loads[i - 1];
+
+            if (l /= i)
+            {
+                int m = i - 1;
+                for (int j = l; j <= m; ++j)
+                {
+                    x = x - kv[ki + j - 1] * loads[j - 1];
+                }
+            }
+            
+            loads[i - 1] = x / kv[ki + i - 1];
+                
+        }
+
+        for (int it = 2; it <= n; ++it)
+        {
+            int i = n + 2 - it;
+            int ki = kdiag[i - 1] - i;
+            float x = loads[i - 1] / kv[ki + i - 1];
+            loads[i - 1] = x;
+            int l = kdiag[i - 1 - 1] - ki + 1;
+
+            if (l /= i)
+            {
+                int m = i - 1;
+                for (int k = l; k <= m; ++k)
+                {
+                    loads[k - 1] = loads[k - 1] - x * kv[ki + k - 1];
+                }
+
+            }
+        }
+
+        loads[0] = loads[0] / kv[0];
     }
 }
 
@@ -366,7 +420,7 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
     }
 }
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads, const int nels)
+FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads, const int nels, const int* loads_nodes_ids, const int loadsNodeSize)
 {
     //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
     const int nodof = 3;
@@ -547,18 +601,43 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     //    loads(no) = kv(kdiag(no)) * value
     //END IF
 
+    //////////////////
+    float* loads_nf = new float[neq + 1];
+
+    loads_nf[0] = 0;
+
+    for (int n = 0; n < nn; ++n)
+    {
+        auto itt = std::find(loads_nodes_ids, loads_nodes_ids + loadsNodeSize, n + 1);
+
+        for (int dof = 0; dof < nodof; ++dof)
+        {
+            int k = nf[dof * nn + n];
+            
+            loads_nf[k] = 0.0f;
+
+            if (k != 0 && itt != (loads_nodes_ids + loadsNodeSize))
+            {
+                auto dis = std::distance(loads_nodes_ids, itt);
+                loads_nf[k] = loads[dis * nodof + dof];
+            }
+        }
+    }
+        
+    ///////////////////
+
     sparin(kv, kdiag, neq);
+    spabac(kv, loads_nf, kdiag, neq);
 
     //std::for_each(kv, kv + neq, [](float v) {
     //
     //    std::cout << "kv sparin " << v << std::endl;
     //    });
 
-    //for (int j = 0; j < 69; ++j)
-    //{
-    //    //nprops * np_types
-    //    std::cout << "kv ooo " << kv[j] << std::endl;
-    //}
+    for (int j = 0; j < neq + 1; ++j)
+    {
+        std::cout << "loads_nf " << loads_nf[j] << std::endl;
+    }
 
 
     //loads = global load (displacement) vector

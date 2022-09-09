@@ -112,13 +112,22 @@ int main()
 	// 1  0.0  0.0 - 0.1667   2  0.0  0.0 - 0.3333
 	// 5  0.0  0.0 - 0.3333   6  0.0  0.0 - 0.1667
 
-	float loads[12] = { 0.0f,  0.0f, -0.1667f,
-						0.0f,  0.0f, -0.3333f,
-						0.0f,  0.0f, -0.3333f,
-						0.0f,  0.0f, -0.1667f
+	const int dim = 3;
+	const int loadsNodeSize = 4;
+
+	float loads[loadsNodeSize * dim] = {	0.0f,  0.0f, -0.1667f,
+											0.0f,  0.0f, -0.3333f,
+											0.0f,  0.0f, -0.3333f,
+											0.0f,  0.0f, -0.1667f
+	};
+
+	int loads_nodes_ids[loadsNodeSize] = { 1,
+									 2,
+									 5,
+									 6
 	};
 		
-	elemStiffnessMatrix(vertices, tets, loads, nbTets);// &tets[tetId * 4]);
+	elemStiffnessMatrix(vertices, tets, loads, nbTets, loads_nodes_ids, loadsNodeSize);// &tets[tetId * 4]);
 	
 	//const int nodof = 3;
 	//const int nbNodes = verticesSize / 3;

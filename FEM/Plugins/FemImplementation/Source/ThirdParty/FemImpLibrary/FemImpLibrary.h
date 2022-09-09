@@ -13,7 +13,12 @@
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize, int* tetsBuffer, int tetsBufferSize);
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer, int* tetsBuffer, float* loads, const int nels);
+FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer,
+	int* tetsBuffer,
+	float* loads,
+	const int nels,
+	const int* loads_nodes_ids,
+	const int loadsNodeSize);
 
 FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer);
 
