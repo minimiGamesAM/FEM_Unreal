@@ -181,47 +181,47 @@ namespace
     void spabac(const float* kv, float* loads, const int* kdiag, int neq)
     {
         int n = neq;
-        loads[0] = loads[0] / kv[0];
+        loads[1] = loads[1] / kv[0];
 
         for (int i = 2; i <= n; ++i)
         {
             int ki = kdiag[i - 1] - i;
             int l = kdiag[i - 1 - 1] - ki + 1;
-            float x = loads[i - 1];
+            float x = loads[i];
 
-            if (l /= i)
+            if (l != i)
             {
                 int m = i - 1;
                 for (int j = l; j <= m; ++j)
                 {
-                    x = x - kv[ki + j - 1] * loads[j - 1];
+                    x = x - kv[ki + j - 1] * loads[j];
                 }
             }
-            
-            loads[i - 1] = x / kv[ki + i - 1];
-                
+
+            loads[i] = x / kv[ki + i - 1];
+
         }
 
         for (int it = 2; it <= n; ++it)
         {
             int i = n + 2 - it;
             int ki = kdiag[i - 1] - i;
-            float x = loads[i - 1] / kv[ki + i - 1];
-            loads[i - 1] = x;
+            float x = loads[i] / kv[ki + i - 1];
+            loads[i] = x;
             int l = kdiag[i - 1 - 1] - ki + 1;
 
-            if (l /= i)
+            if (l != i)
             {
                 int m = i - 1;
                 for (int k = l; k <= m; ++k)
                 {
-                    loads[k - 1] = loads[k - 1] - x * kv[ki + k - 1];
+                    loads[k] = loads[k] - x * kv[ki + k - 1];
                 }
 
             }
         }
 
-        loads[0] = loads[0] / kv[0];
+        loads[1] = loads[1] / kv[0];
     }
 }
 
@@ -634,10 +634,10 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     //    std::cout << "kv sparin " << v << std::endl;
     //    });
 
-    for (int j = 0; j < neq + 1; ++j)
-    {
-        std::cout << "loads_nf " << loads_nf[j] << std::endl;
-    }
+    //for (int j = 0; j < neq + 1; ++j)
+    //{
+    //    std::cout << "loads " << loads_nf[j] << std::endl;
+    //}
 
 
     //loads = global load (displacement) vector
