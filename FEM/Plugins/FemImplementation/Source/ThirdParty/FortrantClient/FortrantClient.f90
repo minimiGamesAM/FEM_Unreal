@@ -1605,6 +1605,8 @@ implicit none
     !nprops     = number of material properties
     !nr         = number of restrained nodes (puede ser por lo menos en uno de los freedoms)
     !nst        = number of stress / strain terms
+    !gc         = Integrating point coordinates
+    !sigma      = stress terms
     
     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
     INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
@@ -1735,6 +1737,33 @@ implicit none
       WRITE(11,'(I5,3E12.4)')k,loads(nf(:,k)) 
     END DO
  
+    !-----------------------recover stresses at element Gauss-points----------
+    
+    elements_3: DO iel=1,nels
+        CALL deemat(dee,prop(1,etype(iel)),prop(2,etype(iel))) 
+        num=g_num(:,iel)
+        coord=TRANSPOSE(g_coord(:,num)) 
+        g=g_g(:,iel) 
+        eld=loads(g)
+        int_pts_2: DO i=1,nip
+          CALL shape_der(der,points,i) 
+          CALL shape_fun(fun,points,i)
+          gc=MATMUL(fun,coord) 
+          jac=MATMUL(der,coord) 
+          CALL invert(jac)
+          deriv=MATMUL(jac,der) 
+          CALL beemat(bee,deriv)
+          sigma=MATMUL(dee,MATMUL(bee,eld))
+          IF(ndim==3)THEN 
+            WRITE(11,'(I8,4X,3E12.4)')iel,gc
+            WRITE(11,'(6E12.4)')sigma
+          ELSE 
+            WRITE(11,'(I8,2E12.4,5X,3E12.4)')iel,gc,sigma
+          END IF
+        END DO int_pts_2
+    END DO elements_3
+    
+    
     !----------------------------------------------------------------------- 
     ! Probando la notacion eld(1:12:4) = 2 --> significa llenar de numero 2 desde 1 a 12 saltando 4 por ejemplo
     !INTEGER, PARAMETER::iwp=SELECTED_REAL_KIND(15)
