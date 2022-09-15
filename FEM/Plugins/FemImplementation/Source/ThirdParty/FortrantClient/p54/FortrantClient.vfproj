@@ -5,8 +5,8 @@
 		<Platform Name="x64"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
-				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" AdditionalIncludeDirectories="$(SolutionDir)\library" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" AdditionalLibraryDirectories="$(SolutionDir)\library\Debug;%(AdditionalLibraryDirectories)" GenerateDebugInformation="true" SubSystem="subSystemConsole" AdditionalDependencies="library.lib"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFCustomBuildTool"/>
