@@ -33,19 +33,30 @@ implicit none
     !nst        = number of stress / strain terms
     !gc         = Integrating point coordinates
     !sigma      = stress terms
+    !x0         = old displacements
+    !x1         = new displacements
+    !d1x0       = old velocity
+    !d1x1       = new velocity
+    !d2x0       = old acceleration
+    !d2x1       = new acceleration
+    !theta      = time integration weighting parameter
+    !fk         = Rayleigh damping parameter on stiffness
+    !fm         = Rayleigh damping parameter on mass
+    !nres       = node number at witch time history is to be printed
     
     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
     INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
-      nn,nod,nodof,nprops=3,np_types,nr,nst 
-    REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp
+      nn,nod,nodof,nprops=3,np_types,nr,nst,nstep,nres 
+    REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp,c1,c2,c3,c4,theta,time,dtim,fm,fk 
     CHARACTER(len=15)::argv,element
     !-----------------------dynamic arrays------------------------------------
     !num        = element node number vector
     INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),kdiag(:),nf(:,:), &
       no(:),node(:),num(:),sense(:)    
-    REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:), &
-      eld(:),fun(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
-      loads(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:)  
+    REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:),ecm(:,:), &
+      d1x0(:),d1x1(:),d2x0(:),d2x1(:),eld(:),fun(:),f1(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
+      loads(:),mm(:,:),mv(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:), &
+      x0(:), x1(:)  
     
    !! REAL(iwp) determinant ! para llamar la funcion. ?????? no estaba en el codigo
     
@@ -72,7 +83,7 @@ implicit none
     ALLOCATE( nf(nodof, nn), points(nip, ndim), dee(nst, nst), g_coord(ndim, nn),    &
       coord(nod, ndim), jac(ndim, ndim), weights(nip), num(nod), g_num(nod, nels),  &
       der(ndim, nod), deriv(ndim, nod), bee(nst, ndof), km(ndof, ndof), eld(ndof),   &
-      sigma(nst), g(ndof), g_g(ndof, nels), gc(ndim), fun(nod), etype(nels),       &
+      sigma(nst), g(ndof), g_g(ndof, nels), mm(ndof,ndof), ecm(ndof,ndof), gc(ndim), fun(nod), etype(nels),       &
       prop(nprops, np_types))
     
     READ(10,*)prop
@@ -92,7 +103,8 @@ implicit none
     CALL formnf(nf) 
     
     neq = MAXVAL(nf) 
-    ALLOCATE(kdiag(neq), loads(0 : neq), gravlo(0 : neq)) 
+    ALLOCATE(x0(0:neq),d1x0(0:neq),x1(0:neq),d2x0(0:neq), &
+        d1x1(0:neq),d2x1(0:neq),kdiag(neq), loads(0 : neq), gravlo(0 : neq)) 
     kdiag=0
     !-----------------------loop the elements to find global arrays sizes-----
     elements_1: DO iel=1,nels
@@ -105,7 +117,7 @@ implicit none
     DO i=2,neq 
       kdiag(i)=kdiag(i)+kdiag(i-1) 
     END DO 
-    ALLOCATE(kv(kdiag(neq)))
+    ALLOCATE(kv(kdiag(neq)), mv(kdiag(neq)),f1(kdiag(neq)))
     WRITE(11,'(2(A,I5))')                                                    &
       " There are",neq," equations and the skyline storage is",kdiag(neq)
     
@@ -118,7 +130,8 @@ implicit none
       num=g_num(:,iel)
       coord=TRANSPOSE(g_coord(:,num)) 
       g=g_g(:,iel) 
-      km=zero 
+      km=zero
+      mm=zero
       eld=zero
       int_pts_1: DO i=1,nip
         CALL shape_fun(fun,points,i) 
@@ -129,11 +142,55 @@ implicit none
         deriv=MATMUL(jac,der) 
         CALL beemat(bee,deriv)
         km=km+MATMUL(MATMUL(transpose(bee),dee),bee)*det*weights(i)
+        CALL ecmat(ecm,fun,ndof,nodof)
+        mm=mm+ecm*det*weights(i)*prop(3,etype(iel))
         eld(nodof:ndof:nodof)=eld(nodof:ndof:nodof)+fun(:)*det*weights(i)
       END DO int_pts_1
-      CALL fsparv(kv,km,g,kdiag) 
+      CALL fsparv(kv,km,g,kdiag)
+      CALL fsparv(mv,mm,g,kdiag)
       gravlo(g)=gravlo(g)-eld*prop(3,etype(iel))
     END DO elements_2
+    
+    !-----------------------initial conditions and factorise equations--------
+    
+    dtim = 1.0
+    theta = 0.5
+    fm = 0.005
+    fk = 0.272
+        
+    x0=0.0
+    d1x0=0.0
+    d2x0=0.0
+    c1=(1-theta)*dtim
+    c2=fk-c1
+    c3=fm+1.0/(theta*dtim)
+    c4=fk+theta*dtim
+    f1=c3*mv+c4*kv
+    CALL sparin(f1,kdiag)
+    time=zero
+    
+    !-----------------------time stepping loop--------------------------------
+    
+    nres = 2
+    
+    WRITE(11,'(/A,I5)')" Result at node",nres
+    WRITE(11,'(A)')"    time        load        x-disp      y-disp"
+    !WRITE(11,'(4E12.4)')time,load(time),x0(nf(:,nres))
+    
+    nstep = 20
+    !timesteps: DO j=1,nstep
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     loads=zero 
     READ(10,*)loaded_nodes,(k,loads(nf(:,k)),i=1,loaded_nodes)
     loads=loads+gravlo 
