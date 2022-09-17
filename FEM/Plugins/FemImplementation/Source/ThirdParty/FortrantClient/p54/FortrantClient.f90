@@ -43,10 +43,12 @@ implicit none
     !fk         = Rayleigh damping parameter on stiffness
     !fm         = Rayleigh damping parameter on mass
     !nres       = node number at witch time history is to be printed
+    !val        = applied nodal load weightings
+    !npri       = output printed every npri time step
     
     INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
-    INTEGER::fixed_freedoms,i,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
-      nn,nod,nodof,nprops=3,np_types,nr,nst,nstep,nres 
+    INTEGER::fixed_freedoms,i,j,iel,k,loaded_nodes,ndim,ndof,nels,neq,nip,nlen,&
+      nn,nod,nodof,npri,nprops=3,np_types,nr,nst,nstep,nres 
     REAL(iwp)::det,penalty=1.0e20_iwp,zero=0.0_iwp,c1,c2,c3,c4,theta,time,dtim,fm,fk 
     CHARACTER(len=15)::argv,element
     !-----------------------dynamic arrays------------------------------------
@@ -55,7 +57,7 @@ implicit none
       no(:),node(:),num(:),sense(:)    
     REAL(iwp),ALLOCATABLE::bee(:,:),coord(:,:),dee(:,:),der(:,:),deriv(:,:),ecm(:,:), &
       d1x0(:),d1x1(:),d2x0(:),d2x1(:),eld(:),fun(:),f1(:),gc(:),gravlo(:),g_coord(:,:),jac(:,:),km(:,:),kv(:),     &
-      loads(:),mm(:,:),mv(:),points(:,:),prop(:,:),sigma(:),value(:),weights(:), &
+      loads(:),mm(:,:),mv(:),points(:,:),prop(:,:),sigma(:),value(:),val(:,:),weights(:), &
       x0(:), x1(:)  
     
    !! REAL(iwp) determinant ! para llamar la funcion. ?????? no estaba en el codigo
@@ -105,7 +107,14 @@ implicit none
     neq = MAXVAL(nf) 
     ALLOCATE(x0(0:neq),d1x0(0:neq),x1(0:neq),d2x0(0:neq), &
         d1x1(0:neq),d2x1(0:neq),kdiag(neq), loads(0 : neq), gravlo(0 : neq)) 
+    
+    loaded_nodes = 1
+    ALLOCATE(node(loaded_nodes),val(loaded_nodes,ndim))
+    
+    nres = 6
+    node(1) = nres
     kdiag=0
+    
     !-----------------------loop the elements to find global arrays sizes-----
     elements_1: DO iel=1,nels
       !get element node number vector
@@ -170,16 +179,36 @@ implicit none
     time=zero
     
     !-----------------------time stepping loop--------------------------------
-    
-    nres = 2
-    
+        
     WRITE(11,'(/A,I5)')" Result at node",nres
-    WRITE(11,'(A)')"    time        load        x-disp      y-disp"
-    !WRITE(11,'(4E12.4)')time,load(time),x0(nf(:,nres))
+    WRITE(11,'(A)')"    time        load        x-disp      y-disp      z-disp"
+    WRITE(11,'(5E12.4)')time,load(time),x0(nf(:,nres))
     
     nstep = 20
+    npri = 1
     !timesteps: DO j=1,nstep
 
+    timesteps: DO j=1,nstep
+        time=time+dtim
+        loads=zero
+        x1=c3*x0+d1x0/theta
+        DO i=1,loaded_nodes
+          loads(nf(:,node(i)))=                                                &
+            val(i,:)*(theta*dtim*load(time)+c1*load(time-dtim))
+        END DO
+        CALL linmul_sky(mv,x1,d1x1,kdiag)
+        d1x1=loads+d1x1
+        loads=c2*x0
+        CALL linmul_sky(kv,loads,x1,kdiag)
+        x1=x1+d1x1
+        CALL spabac(f1,x1,kdiag)
+        d1x1=(x1-x0)/(theta*dtim)-d1x0*(1.0-theta)/theta
+        d2x1=(d1x1-d1x0)/(theta*dtim)-d2x0*(1.0-theta)/theta
+        x0=x1
+        d1x0=d1x1
+        d2x0=d2x1
+        IF(j/npri*npri==j)WRITE(11,'(5E12.4)')time,load(time),x0(nf(:,nres))
+    END DO timesteps
     
     
     
@@ -190,62 +219,71 @@ implicit none
     
     
     
+    !loads=zero 
+    !READ(10,*)loaded_nodes,(k,loads(nf(:,k)),i=1,loaded_nodes)
+    !loads=loads+gravlo 
+    !READ(10,*)fixed_freedoms
+    !IF(fixed_freedoms/=0)THEN
+    !  ALLOCATE(node(fixed_freedoms),sense(fixed_freedoms),                   &
+    !    value(fixed_freedoms),no(fixed_freedoms))
+    !  READ(10,*)(node(i),sense(i),value(i),i=1,fixed_freedoms)
+    !  DO  i=1,fixed_freedoms 
+    !    no(i)=nf(sense(i),node(i)) 
+    !  END DO 
+    !  kv(kdiag(no))=kv(kdiag(no))+penalty 
+    !  loads(no)=kv(kdiag(no))*value
+    !END IF
+    !
+    !!-----------------------equation solution---------------------------------
+    !CALL sparin(kv,kdiag) 
+    !CALL spabac(kv,loads,kdiag) 
+    !loads(0)=zero
+    !
+    !IF(ndim==3)THEN 
+    !  WRITE(11,'(/A)')"  Node   x-disp      y-disp      z-disp"
+    !ELSE 
+    !  WRITE(11,'(/A)')"  Node   x-disp      y-disp"
+    !END IF
+    !DO k=1,nn 
+    !  WRITE(11,'(I5,3E12.4)')k,loads(nf(:,k)) 
+    !END DO
+    !
+    !!-----------------------recover stresses at element Gauss-points----------
+    !
+    !elements_3: DO iel=1,nels
+    !    CALL deemat(dee,prop(1,etype(iel)),prop(2,etype(iel))) 
+    !    num=g_num(:,iel)
+    !    coord=TRANSPOSE(g_coord(:,num)) 
+    !    g=g_g(:,iel) 
+    !    eld=loads(g)
+    !    int_pts_2: DO i=1,nip
+    !      CALL shape_der(der,points,i) 
+    !      CALL shape_fun(fun,points,i)
+    !      gc=MATMUL(fun,coord) 
+    !      jac=MATMUL(der,coord) 
+    !      CALL invert(jac)
+    !      deriv=MATMUL(jac,der) 
+    !      CALL beemat(bee,deriv)
+    !      sigma=MATMUL(dee,MATMUL(bee,eld))
+    !      IF(ndim==3)THEN 
+    !        WRITE(11,'(I8,4X,3E12.4)')iel,gc
+    !        WRITE(11,'(6E12.4)')sigma
+    !      ELSE 
+    !        WRITE(11,'(I8,2E12.4,5X,3E12.4)')iel,gc,sigma
+    !      END IF
+    !    END DO int_pts_2
+    !END DO elements_3
     
-    loads=zero 
-    READ(10,*)loaded_nodes,(k,loads(nf(:,k)),i=1,loaded_nodes)
-    loads=loads+gravlo 
-    READ(10,*)fixed_freedoms
-    IF(fixed_freedoms/=0)THEN
-      ALLOCATE(node(fixed_freedoms),sense(fixed_freedoms),                   &
-        value(fixed_freedoms),no(fixed_freedoms))
-      READ(10,*)(node(i),sense(i),value(i),i=1,fixed_freedoms)
-      DO  i=1,fixed_freedoms 
-        no(i)=nf(sense(i),node(i)) 
-      END DO 
-      kv(kdiag(no))=kv(kdiag(no))+penalty 
-      loads(no)=kv(kdiag(no))*value
-    END IF
- 
-    !-----------------------equation solution---------------------------------
-    CALL sparin(kv,kdiag) 
-    CALL spabac(kv,loads,kdiag) 
-    loads(0)=zero
- 
-    IF(ndim==3)THEN 
-      WRITE(11,'(/A)')"  Node   x-disp      y-disp      z-disp"
-    ELSE 
-      WRITE(11,'(/A)')"  Node   x-disp      y-disp"
-    END IF
-    DO k=1,nn 
-      WRITE(11,'(I5,3E12.4)')k,loads(nf(:,k)) 
-    END DO
- 
-    !-----------------------recover stresses at element Gauss-points----------
-    
-    elements_3: DO iel=1,nels
-        CALL deemat(dee,prop(1,etype(iel)),prop(2,etype(iel))) 
-        num=g_num(:,iel)
-        coord=TRANSPOSE(g_coord(:,num)) 
-        g=g_g(:,iel) 
-        eld=loads(g)
-        int_pts_2: DO i=1,nip
-          CALL shape_der(der,points,i) 
-          CALL shape_fun(fun,points,i)
-          gc=MATMUL(fun,coord) 
-          jac=MATMUL(der,coord) 
-          CALL invert(jac)
-          deriv=MATMUL(jac,der) 
-          CALL beemat(bee,deriv)
-          sigma=MATMUL(dee,MATMUL(bee,eld))
-          IF(ndim==3)THEN 
-            WRITE(11,'(I8,4X,3E12.4)')iel,gc
-            WRITE(11,'(6E12.4)')sigma
-          ELSE 
-            WRITE(11,'(I8,2E12.4,5X,3E12.4)')iel,gc,sigma
-          END IF
-        END DO int_pts_2
-    END DO elements_3
-    
+    !-----------------------Load-time function--------------------------------
+ CONTAINS
+FUNCTION load(t) RESULT(load_result)
+    IMPLICIT NONE     
+    INTEGER,PARAMETER::iwp=SELECTED_REAL_KIND(15)
+    REAL(iwp),INTENT(IN)::t
+    REAL(iwp)::load_result
+    load_result=COS(0.3_iwp*t)
+    RETURN
+ END FUNCTION load
     
     !----------------------------------------------------------------------- 
     ! Probando la notacion eld(1:12:4) = 2 --> significa llenar de numero 2 desde 1 a 12 saltando 4 por ejemplo
