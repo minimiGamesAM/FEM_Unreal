@@ -324,6 +324,13 @@ float dotProduct(MKL_INT n, float* x, float* y)
     return cblas_sdot(n, x, 1, y, 1);
 }
 
+float addVectors(float* X, float a, float* Y, float b, float* R, float n)
+{
+    cblas_sscal(n, b, Y, 1);
+    cblas_scopy(n, Y, 1, R, 1);
+    cblas_saxpy(n, a, X, 1, R, 1);
+}
+
 float vectorOperation(float* verticesBuffer, int verticesBufferSize)
 {
     //MKL_INT  n, incx, incy, i;
@@ -420,6 +427,25 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
     }
 }
 
+namespace {
+    
+    void ecmat(float* ecm, float* nt, float* tn, const float* fun, const int ndof, const int nodof)
+    {
+        int nod = ndof / nodof;
+        
+        for (int i = 1; i <= nod; ++i)
+        {
+            for (int j = 1; j <= nodof; ++j)
+            {
+                nt[((i - 1) * nodof + j - 1) * nodof + j - 1] = fun[i - 1];
+                tn[(j - 1) * ndof + (i - 1) * nodof + j - 1] = fun[i - 1];
+            }
+        }
+
+        matmul(nt, tn, ecm, ndof, nodof, ndof);
+    }
+}
+
 FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads, const int nels, const int* loads_nodes_ids, const int loadsNodeSize)
 {
     //nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
@@ -457,7 +483,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     
     prop[0] = 100.0f;
     prop[1] = 0.3f;
-    prop[2] = 0.0f;
+    prop[2] = 1.0f;
 
     int* g_g = new int[ndof * nels];
 
@@ -491,12 +517,18 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     float* kv = new float[kdiag[neq - 1]];
     std::fill(kv, kv + kdiag[neq - 1], 0.0f);
 
+    //global consisten mass
+    float* mv = new float[kdiag[neq - 1]];
+    std::fill(mv, mv + kdiag[neq - 1], 0.0f);
+
+    //left hand side matrix (stored as a skyline) 
+    float* f1 = new float[kdiag[neq - 1]];
+
     //gravlo = global gravity loading vector 
     float* gravlo = new float[neq];
     std::fill(gravlo, gravlo + neq, 0.0f);
 
     //----------------------- element stiffness integration and assembly--------
-
 
     //call sample, but for tet there is just one point
     float points[] = { 0.25f, 0.25f, 0.25f };
@@ -527,9 +559,14 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     float jac[ndim * ndim] = {};
     float deriv[ndim * nod] = {};
     float bee[nst * ndof] = {};
+    
+    //mm = element mass matrix;
+    float mm[ndof * ndof] = {};
 
     for (int i = 0; i < nels; ++i)
     {
+        std::fill(std::begin(mm), std::end(mm), 0.0f);
+
         float dee[nst * nst] = {};
         std::fill(std::begin(dee), std::end(dee), 0.0f);
         deemat(dee, nst, e, v);
@@ -555,6 +592,8 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
         std::fill(std::begin(km), std::end(km), 0.0f);
         std::fill(std::begin(eld), std::end(eld), 0.0f);
 
+        float mm[ndof * ndof] = {};
+        std::fill(std::begin(mm), std::end(mm), 0.0f);
         ////// for each point of integration, we have just one for 3d tets
         // calculate jac
         matmul(der, coord, jac, ndim, nod, ndim);
@@ -579,9 +618,27 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
             eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
         }
 
-        ////// end for each point
+        float ecm[ndof * ndof] = {};
+        float nt[ndof * nodof] = {};
+        float tn[nodof * ndof] = {};
+
+        std::fill(std::begin(ecm), std::end(ecm), 0.0f);
+        std::fill(std::begin(nt), std::end(nt), 0.0f);
+        std::fill(std::begin(tn), std::end(tn), 0.0f);
+
+        ecmat(ecm, nt, tn, fun, ndof, nodof);
+
+        for (int j = 0; j < ndof * ndof; ++j)
+        {
+            mm[j] = mm[j] + ecm[j] * det * weights * prop[2];
+        }
+        
+        ////// end for each integration point
 
         fsparv(kv, km, g, kdiag, ndof);
+        fsparv(mv, mm, g, kdiag, ndof);
+
+        //fsparv(kv, km, g, kdiag, ndof);
 
         for (int j = 0; j < nels; ++j)
         {
@@ -589,80 +646,88 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
         }
     }
 
-    // TOBE implemented
-    //IF(fixed_freedoms /= 0)THEN
-    //    ALLOCATE(node(fixed_freedoms), sense(fixed_freedoms), &
-    //        value(fixed_freedoms), no(fixed_freedoms))
-    //    READ(10, *)(node(i), sense(i), value(i), i = 1, fixed_freedoms)
-    //    DO  i = 1, fixed_freedoms
-    //    no(i) = nf(sense(i), node(i))
-    //    END DO
-    //    kv(kdiag(no)) = kv(kdiag(no)) + penalty
-    //    loads(no) = kv(kdiag(no)) * value
-    //END IF
+    //---------------------- - initial conditions and factorise equations--------
 
-    //////////////////
-    float* loads_nf = new float[neq + 1];
+    // x0 = old displacements
+    // x1 = new displacements
+    // d1x0 = old velocity
+    // d1x1 = new velocity
+    // d2x0 = old acceleration
+    // d2x1 = new acceleration
+    // theta = time integration weighting parameter
+    // fk = Rayleigh damping parameter on stiffness
+    // fm = Rayleigh damping parameter on mass
 
-    loads_nf[0] = 0;
+    // 
+    float dtim = 1.0f;
+    float theta = 0.5f;
+    float fm = 0.005f;
+    float fk = 0.272f;
+    
+    float* x0 = new float[neq + 1];
+    float* d1x0 = new float[neq + 1];
+    float* x1 = new float[neq + 1];
+    float* d2x0 = new float[neq + 1];
+    float* d1x1 = new float[neq + 1];
+    float* d2x1 = new float[neq + 1];
 
-    for (int n = 0; n < nn; ++n)
-    {
-        auto itt = std::find(loads_nodes_ids, loads_nodes_ids + loadsNodeSize, n + 1);
+    //number of loaded nodes
+    const int loaded_nodes = 1;
+    int node[loaded_nodes] = {};
+    
+    //val = applied nodal load weightings
+    float val[loaded_nodes * ndim] = {};
 
-        for (int dof = 0; dof < nodof; ++dof)
-        {
-            int k = nf[dof * nn + n];
-            
-            loads_nf[k] = 0.0f;
+    // for debug purposes //
+    //nres = node number at witch time history is to be printed
+    int nres = 6;
+    node[0] = nres;
+    ////////////////////////
+    
+    std::fill(x0, x0 + neq + 1, 0.0f);
+    std::fill(d1x0, d1x0 + neq + 1, 0.0f);
+    std::fill(d2x0, d2x0 + neq + 1, 0.0f);
+    float c1 = (1.0f - theta) * dtim;
+    float c2 = fk - c1;
+    float c3 = fm + 1.0f / (theta * dtim);
+    float c4 = fk + theta * dtim;
 
-            if (k != 0 && itt != (loads_nodes_ids + loadsNodeSize))
-            {
-                auto dis = std::distance(loads_nodes_ids, itt);
-                loads_nf[k] = loads[dis * nodof + dof];
-            }
-        }
-    }
-        
-    ///////////////////
+    addVectors(mv, c3, kv, c4, f1, kdiag[neq - 1]);
 
-    sparin(kv, kdiag, neq);
-    spabac(kv, loads_nf, kdiag, neq);
-
-    //std::for_each(kv, kv + neq, [](float v) {
-    //
-    //    std::cout << "kv sparin " << v << std::endl;
-    //    });
-
-    //for (int j = 0; j < neq + 1; ++j)
+    //for (int i = 0; i < kdiag[neq - 1]; ++i)
     //{
-    //    std::cout << "loads " << loads_nf[j] << std::endl;
+    //    std::cout << "f1 " << f1[i] << std::endl;
     //}
-
-
-    //loads = global load (displacement) vector
-    //float* loads = new float[neq];
-    //std::fill(loads, loads, 0.0f);
-
-
-        //for (int j = 0; j < nels; ++j)
-        //{
-        //    //nprops * np_types
-        //    std::cout << "gravlo " << gravlo[j] << std::endl;
-        //}
-
-        //std::for_each(kv, kv + kdiag[neq - 1], [](float v) {
-        //
-        //    std::cout << "kv " << v << std::endl;
-        //    });
-        //
-        //std::cout << "****" << std::endl;
     
 
-    //for (int i = 0; i < neq; ++i)
+    ////////////////////
+    //float* loads_nf = new float[neq + 1];
+    //
+    //loads_nf[0] = 0;
+    //
+    //for (int n = 0; n < nn; ++n)
     //{
-    //    std::cout << "kdiag " << i << " " << kdiag[i] << std::endl;
+    //    auto itt = std::find(loads_nodes_ids, loads_nodes_ids + loadsNodeSize, n + 1);
+    //
+    //    for (int dof = 0; dof < nodof; ++dof)
+    //    {
+    //        int k = nf[dof * nn + n];
+    //        
+    //        loads_nf[k] = 0.0f;
+    //
+    //        if (k != 0 && itt != (loads_nodes_ids + loadsNodeSize))
+    //        {
+    //            auto dis = std::distance(loads_nodes_ids, itt);
+    //            loads_nf[k] = loads[dis * nodof + dof];
+    //        }
+    //    }
     //}
+    //    
+    /////////////////////
+    //
+    //sparin(kv, kdiag, neq);
+    //spabac(kv, loads_nf, kdiag, neq);
+
 }
 
 FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer)
