@@ -331,6 +331,11 @@ float addVectors(float* X, float a, float* Y, float b, float* R, float n)
     cblas_saxpy(n, a, X, 1, R, 1);
 }
 
+float addVectors(float a, float* X, float* Y, float n)
+{
+    cblas_saxpy(n, a, X, 1, Y, 1);
+}
+
 float vectorOperation(float* verticesBuffer, int verticesBufferSize)
 {
     //MKL_INT  n, incx, incy, i;
@@ -443,6 +448,46 @@ namespace {
         }
 
         matmul(nt, tn, ecm, ndof, nodof, ndof);
+    }
+
+    void linmul_sky(const float* kv, const float* disps, float* loads, const int* kdiag, int neq)
+    {
+        //
+        //This subroutine forms the product of symmetric matrix stored as
+        //a skylineand a vector.
+        //
+
+        int n = neq;
+        int low = 0;
+
+        for (int i = 1; i <= n; ++i)
+        {
+            float x = 0.0f;
+            int lup = kdiag[i - 1];
+            if (i == 1)low = lup;
+            if (i != 1)low = kdiag[i - 1 - 1] + 1;
+
+            for (int j = low; j <= lup; ++j)
+            {
+                x = x + kv[j - 1] * disps[i + j - lup];
+            }
+
+            loads[i] = x;
+            if (i != 1)
+            {
+                lup = lup - 1;
+                for (int j = low; j <= lup; ++j)
+                {
+                    int k = i + j - lup - 1;
+                    loads[k] = loads[k] + kv[j - 1] * disps[i];
+                }
+            }
+        }
+    }
+
+    float load(float t)
+    {
+        return std::cos(0.3f * t);
     }
 }
 
@@ -672,16 +717,25 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     float* d2x1 = new float[neq + 1];
 
     //number of loaded nodes
-    const int loaded_nodes = 1;
+    const int loaded_nodes = 2;
     int node[loaded_nodes] = {};
     
     //val = applied nodal load weightings
     float val[loaded_nodes * ndim] = {};
+    
+    for (int i = 0; i < loaded_nodes; ++i)
+    {
+        for (int j = 0; j < ndim; ++j)
+        {
+            val[i * loaded_nodes + j] = 0.25f;
+        }
+    }
 
     // for debug purposes //
     //nres = node number at witch time history is to be printed
     int nres = 6;
     node[0] = nres;
+    node[1] = 2;
     ////////////////////////
     
     std::fill(x0, x0 + neq + 1, 0.0f);
@@ -693,11 +747,66 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     float c4 = fk + theta * dtim;
 
     addVectors(mv, c3, kv, c4, f1, kdiag[neq - 1]);
+    sparin(f1, kdiag, neq);
 
-    //for (int i = 0; i < kdiag[neq - 1]; ++i)
+    float time = 0;
+    float nstep = 20;
+
+    int npri = 1; 
+
+    float* loads2 = new float[neq];
+
+    for (int i = 0; i < 1; ++i)
+    {
+        time = time + dtim;
+        std::fill(loads2, loads2 + neq, 0.0f);
+
+        addVectors(x0, c3, d1x0, 1.0f / theta, x1, neq + 1);
+        
+        float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
+
+        for (int j = 1; j <= loaded_nodes; ++j)
+        {
+            for (int k = 0; k < ndim; ++k)
+            {
+                loads2[nf[nn * k + node[j - 1] - 1]] = val[(j - 1) * loaded_nodes + k] * temporal;
+            }
+        }
+
+        linmul_sky(mv, x1, d1x1, kdiag, neq);
+
+        addVectors(1.0f, loads2, d1x0, neq + 1);
+
+        cblas_scopy(neq + 1, x0, 1, loads2, 1);
+        cblas_sscal(neq + 1, c2, loads2, 1);
+
+        linmul_sky(kv, loads2, x1, kdiag, neq);
+        
+        addVectors(1.0f, d1x1, x1, neq + 1);
+
+        spabac(f1, x1, kdiag, neq);
+
+        float a = 1.0f / (theta * dtim);
+        float b = (1.0f - theta) / theta;
+
+        //d1x1 = a * (x1 - x0) - b * d1x0;
+        addVectors(x1, a, x0, -a, d1x1, neq + 1);
+        addVectors(-b, d1x0, d1x1, neq + 1);
+
+        //d2x1 = (d1x1 - d1x0) / (theta * dtim) - d2x0 * (1.0 - theta) / theta
+    }
+    
+    for (int i = 0; i < neq; ++i)
+    {
+        std::cout << "loads " << i << " " << loads2[i] << std::endl;
+    }
+
+    //int j = 0;
+    //for (int i = 0; i < nodof * nn; ++i)
     //{
-    //    std::cout << "f1 " << f1[i] << std::endl;
+    //    std::cout << "nf " << i % nn + 1 << " " << nf[i] << std::endl;
     //}
+    
     
 
     ////////////////////

@@ -108,11 +108,15 @@ implicit none
     ALLOCATE(x0(0:neq),d1x0(0:neq),x1(0:neq),d2x0(0:neq), &
         d1x1(0:neq),d2x1(0:neq),kdiag(neq), loads(0 : neq), gravlo(0 : neq)) 
     
-    loaded_nodes = 1
-    ALLOCATE(node(loaded_nodes),val(loaded_nodes,ndim))
-    
+    loaded_nodes = 2
     nres = 6
+    ALLOCATE(node(loaded_nodes),val(loaded_nodes,ndim))
+    val(1, :) = 0.25
+    val(2, :) = 0.25
+       
     node(1) = nres
+    node(2) = 2
+    
     kdiag=0
     
     !-----------------------loop the elements to find global arrays sizes-----
@@ -187,7 +191,7 @@ implicit none
     nstep = 20
     npri = 1
     !timesteps: DO j=1,nstep
-
+        
     timesteps: DO j=1,nstep
         time=time+dtim
         loads=zero
