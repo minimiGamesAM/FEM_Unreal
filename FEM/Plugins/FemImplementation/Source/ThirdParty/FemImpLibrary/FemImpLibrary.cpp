@@ -704,7 +704,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     // fm = Rayleigh damping parameter on mass
 
     // 
-    float dtim = 1.0f;
+    float dtim = 0.2f;
     float theta = 0.5f;
     float fm = 0.005f;
     float fk = 0.272f;
@@ -749,17 +749,21 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     addVectors(mv, c3, kv, c4, f1, kdiag[neq - 1]);
     sparin(f1, kdiag, neq);
 
+    //!---------------------- - time stepping loop--------------------------------
+
     float time = 0;
     float nstep = 20;
 
+    std::cout << "time    " << time << "      load     " << load(time) << "     x     " << x0[nf[nres]] << "     y     " << x0[nf[nres + nn]] << "     z     " << x0[nf[nres + 2 * nn]] << std::endl;
+
     int npri = 1; 
 
-    float* loads2 = new float[neq];
+    float* loads2 = new float[neq + 1];
 
-    for (int i = 0; i < 1; ++i)
+    for (int i = 1; i <= nstep; ++i)
     {
         time = time + dtim;
-        std::fill(loads2, loads2 + neq, 0.0f);
+        std::fill(loads2, loads2 + neq + 1, 0.0f);
 
         addVectors(x0, c3, d1x0, 1.0f / theta, x1, neq + 1);
         
@@ -769,21 +773,24 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
         {
             for (int k = 0; k < ndim; ++k)
             {
-                loads2[nf[nn * k + node[j - 1] - 1]] = val[(j - 1) * loaded_nodes + k] * temporal;
+                loads2[nf[nn * k + node[j - 1] - 1]] = 
+                    val[(j - 1) * loaded_nodes + k] * temporal;
             }
         }
 
         linmul_sky(mv, x1, d1x1, kdiag, neq);
-
-        addVectors(1.0f, loads2, d1x0, neq + 1);
-
+        
+        //d1x1=loads+d1x1
+        addVectors(1.0f, loads2, d1x1, neq + 1);
+        
         cblas_scopy(neq + 1, x0, 1, loads2, 1);
         cblas_sscal(neq + 1, c2, loads2, 1);
 
         linmul_sky(kv, loads2, x1, kdiag, neq);
-        
+               
+        //x1=x1+d1x1
         addVectors(1.0f, d1x1, x1, neq + 1);
-
+        
         spabac(f1, x1, kdiag, neq);
 
         float a = 1.0f / (theta * dtim);
@@ -793,13 +800,36 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
         addVectors(x1, a, x0, -a, d1x1, neq + 1);
         addVectors(-b, d1x0, d1x1, neq + 1);
 
-        //d2x1 = (d1x1 - d1x0) / (theta * dtim) - d2x0 * (1.0 - theta) / theta
+        //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
+        addVectors(d1x1, a, d1x0, -a, d2x1, neq + 1);
+        addVectors(-b, d2x0, d2x1, neq + 1);
+
+        cblas_scopy(neq + 1, x1, 1, x0, 1);
+        cblas_scopy(neq + 1, d1x1, 1, d1x0, 1);
+        cblas_scopy(neq + 1, d2x1, 1, d2x0, 1);
+        
+        
+
+        //for (int k = 0; k <= neq; ++k)
+        //{
+        //    std::cout << "time    " << time << "      load     " << load(time) << "  " << k << "  " << x0[k] << std::endl;
+        //}
+        
+        if (i / npri * npri == i)
+        {
+            std::cout << "time    " << time << "      load     " << load(time) << "     x     " << x0[nf[nres - 1]] << "     y     " << x0[nf[nres + nn - 1]] << "     z     " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        }
     }
+
+    //for (int kk = 0; kk < neq + 1; ++kk)
+    //{
+    //    std::cout << kk << " x1    " << x1[kk] << std::endl;
+    //}
     
-    for (int i = 0; i < neq; ++i)
-    {
-        std::cout << "loads " << i << " " << loads2[i] << std::endl;
-    }
+    //for (int i = 0; i < neq; ++i)
+    //{
+    //    std::cout << "loads " << i << " " << loads2[i] << std::endl;
+    //}
 
     //int j = 0;
     //for (int i = 0; i < nodof * nn; ++i)

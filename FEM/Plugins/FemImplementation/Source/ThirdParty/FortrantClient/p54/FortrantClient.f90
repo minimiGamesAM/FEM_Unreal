@@ -190,8 +190,7 @@ implicit none
     
     nstep = 20
     npri = 1
-    !timesteps: DO j=1,nstep
-        
+            
     timesteps: DO j=1,nstep
         time=time+dtim
         loads=zero
@@ -203,6 +202,9 @@ implicit none
         CALL linmul_sky(mv,x1,d1x1,kdiag)
         d1x1=loads+d1x1
         loads=c2*x0
+        
+        !IF(j == 2) WRITE(11,'(1E12.4)')x1(:)
+        
         CALL linmul_sky(kv,loads,x1,kdiag)
         x1=x1+d1x1
         CALL spabac(f1,x1,kdiag)
