@@ -124,11 +124,8 @@ void prueba()
 	factory.update();
 }
 
-
 int main()
 {
-	
-	
 	//unitTest();
 	
 	//float* buffer = new float[2];
@@ -143,49 +140,6 @@ int main()
 
 	//float det = basicTest(buffer, 2, bufferTets, 2);
 
-
-	const int dim = 3;
-	//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
-	const int nodof = 3;
-	//nn = total number of nodes in the problem
-	const int nn = 8;
-
-
-	const int verticesSize = nodof * nn;
-	float vertices[verticesSize] = {
-
-		0.0f, 1.0f,	 0.0f,  1.0f, 0.0f, 1.0f,  0.0f, 1.0f,
-		0.0f, 0.0f,	 0.0f,  0.0f, 1.0f, 1.0f,  1.0f, 1.0f,
-		0.0f, 0.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, -1.0f };
-		
-	const int nbTets = 6;
-	const int tetsSize = nbTets * 4;
-	int tets[tetsSize] = {
-		1, 3, 4, 7,
-		1, 4, 2, 7,
-		1, 2, 5, 7,
-		6, 4, 8, 7,
-		6, 2, 4, 7,
-		6, 5, 2, 7
-	};
-
-	std::for_each(tets, tets + tetsSize, [](int& i) { i = i - 1; });
-	
-	const int loadsNodeSize = 4;
-	float loads[loadsNodeSize * dim] = {	0.0f,  0.0f, -0.1667f,
-											0.0f,  0.0f, -0.3333f,
-											0.0f,  0.0f, -0.3333f,
-											0.0f,  0.0f, -0.1667f
-	};
-
-	int loads_nodes_ids[loadsNodeSize] = { 1,
-									 2,
-									 5,
-									 6
-	};
-		
-	//elemStiffnessMatrix(vertices, tets, loads, nbTets, loads_nodes_ids, loadsNodeSize);// &tets[tetId * 4]);
-	
-	prueba<float>();
+	prueba<double>();
 
 }

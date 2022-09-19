@@ -30,30 +30,9 @@ private:
 
 template class FEMIMP_DLL_API FEM_Factory<float>;
 template class FEMIMP_DLL_API FEM_Factory<double>;
-//{
-//
-//public:
-//	void create(int ndim, int nodof, int nels);
-//	void init(float* g_coord, int* g_num, int* in_nf, int in_nn);
-//	void update();
-//
-//private:
-//	Fem_Algoritm<float>* femAlg;
-//};
-
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize, int* tetsBuffer, int tetsBufferSize);
 
-FEMIMP_DLL_API void elemStiffnessMatrix(float* verticesBuffer,
-	int* tetsBuffer,
-	float* loads,
-	const int nels,
-	const int* loads_nodes_ids,
-	const int loadsNodeSize);
-
-FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer);
-
-FEMIMP_DLL_API void assemblyOfElements(float* verticesBuffer, int nbNodes);
 
 //Funtions to unit test
 
