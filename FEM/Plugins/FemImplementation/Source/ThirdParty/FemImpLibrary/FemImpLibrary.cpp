@@ -13,6 +13,7 @@
 #include <functional>
 #include <iterator>
 
+#include <vector>
 //using namespace sycl;
 
 namespace
@@ -754,8 +755,8 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     float time = 0;
     float nstep = 20;
 
-    std::cout << "time    " << time << "      load     " << load(time) << "     x     " << x0[nf[nres]] << "     y     " << x0[nf[nres + nn]] << "     z     " << x0[nf[nres + 2 * nn]] << std::endl;
-
+    std::cout << "time  raw  " << time << "      load   raw  " << load(time) << "     x   raw  " << x0[nf[nres - 1]] << "     y   raw  " << x0[nf[nres + nn - 1]] << "     z  raw   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+    
     int npri = 1; 
 
     float* loads2 = new float[neq + 1];
@@ -817,56 +818,362 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
         
         if (i / npri * npri == i)
         {
-            std::cout << "time    " << time << "      load     " << load(time) << "     x     " << x0[nf[nres - 1]] << "     y     " << x0[nf[nres + nn - 1]] << "     z     " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+            std::cout << "time  raw  " << time << "      load   raw  " << load(time) << "     x   raw  " << x0[nf[nres - 1]] << "     y   raw  " << x0[nf[nres + nn - 1]] << "     z  raw   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        }
+    }
+}
+
+class Fem_Algoritm
+{
+private:
+    //ndim = number of dimensions
+    int ndim;
+
+    //nodof = number of freedoms per node (x, y, z)
+    int nodof;
+
+    //nn = total number of nodes in the problem
+    int nn;
+
+    //nels = number of elements
+    int nels;
+
+    //neq = number of degree of freedom in the mesh
+    int neq;
+
+    //nod = number of node per element
+    const int nod = 4;
+
+    //nf = nodal freedom array(nodof rows and nn colums)
+    int* nf;
+    
+    float fun[4] = { 0.25f, 0.25f, 0.25f, 0.25f };
+
+    float der[3 * 4] = 
+    { //[ndim * nod] = {
+            1.0f, 0.0f, 0.0f, -1.0f,
+            0.0f, 1.0f, 0.0f, -1.0f,
+            0.0f, 0.0f, 1.0f, -1.0f
+    };
+
+    // skyline profile
+    std::vector<int> kdiag;
+
+    //kv = global stiffness matrix
+    std::vector<float> kv;
+   
+    //global consisten mass
+    std::vector<float> mv;
+
+    //left hand side matrix (stored as a skyline) 
+    std::vector<float> f1;
+
+    //gravlo = global gravity loading vector 
+    std::vector<float> gravlo;
+
+public:
+    Fem_Algoritm(int ndim, int nodof, int nels)
+        : ndim(ndim), nodof(nodof), nn(0), nels(nels), neq(0)
+    {
+    }
+
+    void init(float* g_coord, int* g_num, int* in_nf, int in_nn)
+    {
+        nn = in_nn;
+        
+        //nip = number of intregation points per element
+        const int nip = 1;
+        
+        //nprops = number of material properties
+        const int nprops = 3;
+        
+        //np_types = number of diffent property types
+        const int np_types = 1;
+        
+        nf = new int[nodof * nn];
+        
+        std::copy(in_nf, in_nf + nodof * nn, nf);
+               
+        neq = formnf(nf, nodof, nn);
+               
+        //ndof = number of degree of freedom per element
+        int ndof = nod * nodof;
+        
+        //prop = material property(e, v, gamma)
+        std::vector<float> prop(nprops * np_types, 0.0f);
+        
+        prop[0] = 100.0f;
+        prop[1] = 0.3f;
+        prop[2] = 1.0f;
+        
+        std::vector<int> g_g(ndof * nels, 0);
+               
+        kdiag.resize(neq, 0);
+               
+        //---------------------- loop the elements to find global arrays sizes---- -
+        
+        std::vector<int> g(ndof, 0);
+        
+        for (int i = 0; i < nels; ++i)
+        {
+            int* num = &g_num[4 * i];
+        
+            num_to_g(num, nf, &g[0], nod, nodof, nn);
+        
+            for (int j = 0; j < ndof; ++j)
+            {
+                g_g[i + j * nels] = g[j];
+            }
+        
+            fkdiag(&kdiag[0], &g[0], ndof);
+        }
+        
+        for (int i = 1; i < neq; ++i)
+        {
+            kdiag[i] = kdiag[i] + kdiag[i - 1];
+        }
+        
+        kv.resize(kdiag[neq - 1], 0.0f);
+        mv.resize(kdiag[neq - 1], 0.0f);
+        f1.resize(kdiag[neq - 1], 0.0f);
+               
+        gravlo.resize(neq, 0.0f);
+         
+        //----------------------- element stiffness integration and assembly--------
+        
+        //call sample, but for tet there is just one point
+        float points[] = { 0.25f, 0.25f, 0.25f };
+        float weights = 1.0f / 6.0f;
+        
+        //nst = number of stress / strain terms
+        const int nst = 6;
+        const float e = 100.0f;
+        const float v = 0.3f;
+        
+        int* etype = new int[nels];
+        std::fill(etype, etype + nels, 1);
+        
+        //km = element stiffness matrix
+        std::vector<float> km(ndof * ndof, 0.0f);
+        std::vector<float> jac  (ndim * ndim, 0.0f);
+        std::vector<float> deriv(ndim * nod,  0.0f);
+        std::vector<float> bee  (nst * ndof,  0.0f);
+        //mm = element mass matrix;
+        std::vector<float> mm(ndof * ndof, 0.0f);
+        
+        for (int i = 0; i < nels; ++i)
+        {
+            std::fill(std::begin(mm), std::end(mm), 0.0f);
+        
+            float dee[nst * nst] = {};
+            std::fill(std::begin(dee), std::end(dee), 0.0f);
+            deemat(dee, nst, e, v);
+        
+            int* num = &g_num[4 * i];
+        
+            std::vector<float> coord(nod * ndim, 0.0f);
+        
+            for (int j = 0; j < nod; ++j)
+            {
+                for (int k = 0; k < ndim; ++k)
+                {
+                    coord[k + j * ndim] = g_coord[num[j] + k * nn];
+                }
+            }
+        
+            std::vector<int> g(ndof, 0);
+            for (int j = 0; j < ndof; ++j)
+            {
+                g[j] = g_g[i + j * nels];
+            }
+        
+            std::fill(std::begin(km), std::end(km), 0.0f);
+            //std::fill(std::begin(eld), std::end(eld), 0.0f);
+        
+            std::vector<float> mm(ndof * ndof, 0.0f);
+            ////// for each point of integration, we have just one for 3d tets
+            // calculate jac
+            matmul(der, &coord[0], &jac[0], ndim, nod, ndim);
+            float det = invert(&jac[0], ndim);
+        
+            // calculate the derivative in x, y, z
+            matmul(&jac[0], der, &deriv[0], ndim, ndim, nod);
+        
+            std::fill(std::begin(bee), std::end(bee), 0.0f);
+            beemat(&bee[0], nst, ndof, &deriv[0], nod);
+        
+            std::vector<float> temporal(nst * ndof, 0.0f);
+                    
+            matmulTransA(&bee[0], dee, &temporal[0], ndof, nst, nst);
+            matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
+        
+            std::for_each(std::begin(km), std::end(km), [&](float& v) { v *= det * weights; });
+        
+            //for (int j = nodof; j <= ndof; j += nodof)
+            //{
+            //    eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
+            //}
+        
+            std::vector<float> ecm(ndof* ndof, 0.0f);  
+            std::vector<float> nt (ndof * nodof, 0.0f);
+            std::vector<float> tn (nodof * ndof, 0.0f);
+                
+            ecmat(&ecm[0], &nt[0], &tn[0], fun, ndof, nodof);
+        
+            for (int j = 0; j < ndof * ndof; ++j)
+            {
+                mm[j] = mm[j] + ecm[j] * det * weights * prop[2];
+            }
+        
+            ////// end for each integration point
+        
+            fsparv(&kv[0], &km[0], &g[0], &kdiag[0], ndof);
+            fsparv(&mv[0], &mm[0], &g[0], &kdiag[0], ndof);
+
+            for (int j = 0; j < nels; ++j)
+            {
+                //gravlo[j] += -eld[j] * prop[etype[i] - 1 + np_types * 2];
+            }
         }
     }
 
-    //for (int kk = 0; kk < neq + 1; ++kk)
-    //{
-    //    std::cout << kk << " x1    " << x1[kk] << std::endl;
-    //}
-    
-    //for (int i = 0; i < neq; ++i)
-    //{
-    //    std::cout << "loads " << i << " " << loads2[i] << std::endl;
-    //}
+    void update()
+    {
+        //---------------------- - initial conditions and factorise equations--------
 
-    //int j = 0;
-    //for (int i = 0; i < nodof * nn; ++i)
-    //{
-    //    std::cout << "nf " << i % nn + 1 << " " << nf[i] << std::endl;
-    //}
-    
-    
+        // x0 = old displacements
+        // x1 = new displacements
+        // d1x0 = old velocity
+        // d1x1 = new velocity
+        // d2x0 = old acceleration
+        // d2x1 = new acceleration
+        // theta = time integration weighting parameter
+        // fk = Rayleigh damping parameter on stiffness
+        // fm = Rayleigh damping parameter on mass
 
-    ////////////////////
-    //float* loads_nf = new float[neq + 1];
-    //
-    //loads_nf[0] = 0;
-    //
-    //for (int n = 0; n < nn; ++n)
-    //{
-    //    auto itt = std::find(loads_nodes_ids, loads_nodes_ids + loadsNodeSize, n + 1);
-    //
-    //    for (int dof = 0; dof < nodof; ++dof)
-    //    {
-    //        int k = nf[dof * nn + n];
-    //        
-    //        loads_nf[k] = 0.0f;
-    //
-    //        if (k != 0 && itt != (loads_nodes_ids + loadsNodeSize))
-    //        {
-    //            auto dis = std::distance(loads_nodes_ids, itt);
-    //            loads_nf[k] = loads[dis * nodof + dof];
-    //        }
-    //    }
-    //}
-    //    
-    /////////////////////
-    //
-    //sparin(kv, kdiag, neq);
-    //spabac(kv, loads_nf, kdiag, neq);
+        // 
+        float dtim = 0.2f;
+        float theta = 0.5f;
+        float fm = 0.005f;
+        float fk = 0.272f;
 
+        std::vector<float> x0   (neq + 1, 0.0f);
+        std::vector<float> d1x0 (neq + 1, 0.0f);
+        std::vector<float> x1   (neq + 1, 0.0f);
+        std::vector<float> d2x0 (neq + 1, 0.0f);
+        std::vector<float> d1x1 (neq + 1, 0.0f);
+        std::vector<float> d2x1 (neq + 1, 0.0f);
+
+        //number of loaded nodes
+        const int loaded_nodes = 2;
+        int node[loaded_nodes] = {};
+
+        //val = applied nodal load weightings
+        std::vector<float> val(loaded_nodes * ndim, 0.0f);
+
+        for (int i = 0; i < loaded_nodes; ++i)
+        {
+            for (int j = 0; j < ndim; ++j)
+            {
+                val[i * loaded_nodes + j] = 0.25f;
+            }
+        }
+
+        // for debug purposes //
+        //nres = node number at witch time history is to be printed
+        int nres = 6;
+        node[0] = nres;
+        node[1] = 2;
+        ////////////////////////
+
+        float c1 = (1.0f - theta) * dtim;
+        float c2 = fk - c1;
+        float c3 = fm + 1.0f / (theta * dtim);
+        float c4 = fk + theta * dtim;
+
+        addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
+        sparin(&f1[0], &kdiag[0], neq);
+
+        //!---------------------- - time stepping loop--------------------------------
+
+        float time = 0;
+        float nstep = 20;
+
+        std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+       
+        int npri = 1;
+
+        float* loads2 = new float[neq + 1];
+
+        for (int i = 1; i <= nstep; ++i)
+        {
+            time = time + dtim;
+            std::fill(loads2, loads2 + neq + 1, 0.0f);
+
+            addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
+
+            float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
+
+            for (int j = 1; j <= loaded_nodes; ++j)
+            {
+                for (int k = 0; k < ndim; ++k)
+                {
+                    loads2[nf[nn * k + node[j - 1] - 1]] =
+                        val[(j - 1) * loaded_nodes + k] * temporal;
+                }
+            }
+
+            linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
+
+            //d1x1=loads+d1x1
+            addVectors(1.0f, loads2, &d1x1[0], neq + 1);
+
+            cblas_scopy(neq + 1, &x0[0], 1, loads2, 1);
+            cblas_sscal(neq + 1, c2, loads2, 1);
+
+            linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
+
+            //x1=x1+d1x1
+            addVectors(1.0f, &d1x1[0], &x1[0], neq + 1);
+
+            spabac(&f1[0], &x1[0], &kdiag[0], neq);
+
+            float a = 1.0f / (theta * dtim);
+            float b = (1.0f - theta) / theta;
+
+            //d1x1 = a * (x1 - x0) - b * d1x0;
+            addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
+            addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
+
+            //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
+            addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
+            addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
+
+            cblas_scopy(neq + 1, &x1[0], 1, &x0[0], 1);
+            cblas_scopy(neq + 1, &d1x1[0], 1, &d1x0[0], 1);
+            cblas_scopy(neq + 1, &d2x1[0], 1, &d2x0[0], 1);
+
+            if (i / npri * npri == i)
+            {
+                std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+            }
+        }
+    }
+};
+
+void FEM_Factory::create(int ndim, int nodof, int nels)
+{
+    femAlg = new Fem_Algoritm(ndim, nodof, nels);
+}
+
+void FEM_Factory::init(float* g_coord, int* g_num, int* in_nf, int in_nn)
+{
+    femAlg->init(g_coord, g_num, in_nf, in_nn);
+}
+
+void FEM_Factory::update()
+{
+    femAlg->update();
 }
 
 FEMIMP_DLL_API void elemStiffnessMatrixReference(float* verticesBuffer, int* tetsBuffer)
@@ -961,3 +1268,6 @@ FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, in
     //MessageBox(NULL, TEXT("BASIC DLL CARGADO INTEL."), TEXT("Third Party Plugin"), MB_OK);
     return dotResult;
 }
+
+
+

@@ -74,6 +74,8 @@ void unitTest()
 
 int main()
 {
+	FEM_Factory factory = FEM_Factory();
+	
 	//unitTest();
 	
 	//float* buffer = new float[2];
@@ -129,35 +131,18 @@ int main()
 		
 	elemStiffnessMatrix(vertices, tets, loads, nbTets, loads_nodes_ids, loadsNodeSize);// &tets[tetId * 4]);
 	
-	//const int nodof = 3;
-	//const int nbNodes = verticesSize / 3;
-	//int* nf = new int[nodof * verticesSize / 3];
-	//
-	//int count = 1;
-	//std::map<int, bool> nodeInactif;
-	//
-	//nodeInactif[2] = true;
-	//nodeInactif[3] = true;
-	//nodeInactif[4] = true;
-	//
-	//for (int i = 0; i < nbNodes; ++i)
-	//{
-	//	for (int j = 0; j < nodof; ++j)
-	//	{
-	//		if (nodeInactif.count(i))
-	//		{
-	//			nf[i * nodof + j] = 0;
-	//		}
-	//		else
-	//		{
-	//			nf[i * nodof + j] = count;
-	//			count++;
-	//		}
-	//	}
-	//}
-	//
-	//for (int i = 0; i < nbNodes * nodof; ++i)
-	//{
-	//	std::cout << "nf " << nf[i] << std::endl;
-	//}
+	//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+	const int nodof = 3;
+	//nn = total number of nodes in the problem
+	const int nn = 8;
+	
+	int nf[nodof * nn] = { 0, 1, 0, 1, 0, 1, 0, 1,
+							0, 0, 0, 0, 1, 1, 1, 1,
+							1, 1, 0, 0, 1, 1, 0, 0 };
+
+	
+	factory.create(dim, nodof, nbTets);
+	factory.init(vertices, tets, nf, nn);
+	factory.update();
+
 }
