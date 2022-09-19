@@ -73,15 +73,16 @@ namespace
         }
     }
 
-    void deemat(float* dee, int nbRowsDee, float e, float v)
+    template<class T>
+    void deemat(T* dee, int nbRowsDee, T e, T v)
     {
-        float ih = nbRowsDee;
-        float one(1.0f), two(2.0f), pt5 = 0.5f;
-        float v1 = one - v;
-        float c = e / ((one + v) * (one - two * v));
+        T ih = nbRowsDee;
+        T one(T(1.0)), two(T(2.0)), pt5 = T(0.5);
+        T v1 = one - v;
+        T c = e / ((one + v) * (one - two * v));
 
-        float v2 = v / (one - v);
-        float vv = (one - two * v) / (one - v) * pt5;
+        T v2 = v / (one - v);
+        T vv = (one - two * v) / (one - v) * pt5;
         
         for (int i = 1; i <= 3; ++i)
         {
@@ -107,7 +108,8 @@ namespace
         }
     }
 
-    void fsparv(float* kv, const float* km, int* g, const int* kdiag, const int idof)
+    template<class T>
+    void fsparv(T* kv, const T* km, int* g, const int* kdiag, const int idof)
     {
         for (int i = 0; i < idof; ++i)
         {
@@ -135,15 +137,16 @@ namespace
     // 
     // This subroutine performs Cholesky factorisation on a symmetric
     // skyline global matrix.
-    // 
-    void sparin(float* kv, int* kdiag, int neq)
+    //
+    template<class T>
+    void sparin(T* kv, int* kdiag, int neq)
     {
         int n = neq;
         kv[0] = std::sqrt(kv[0]);
 
         for (int i = 2; i <= n; ++i)
         {
-            float x = 0.0f;
+            T x = T(0.0);
             int ki = kdiag[i - 1] - i;
             int l = kdiag[i - 1 - 1] - ki + 1;
 
@@ -178,8 +181,9 @@ namespace
     // 
     // This subroutine performs Cholesky forwardand back - substitution
     // on a symmetric skyline global matrix.
-    // 
-    void spabac(const float* kv, float* loads, const int* kdiag, int neq)
+    //
+    template<class T>
+    void spabac(const T* kv, T* loads, const int* kdiag, int neq)
     {
         int n = neq;
         loads[1] = loads[1] / kv[0];
@@ -188,7 +192,7 @@ namespace
         {
             int ki = kdiag[i - 1] - i;
             int l = kdiag[i - 1 - 1] - ki + 1;
-            float x = loads[i];
+            T x = loads[i];
 
             if (l != i)
             {
@@ -207,7 +211,7 @@ namespace
         {
             int i = n + 2 - it;
             int ki = kdiag[i - 1] - i;
-            float x = loads[i] / kv[ki + i - 1];
+            T x = loads[i] / kv[ki + i - 1];
             loads[i] = x;
             int l = kdiag[i - 1 - 1] - ki + 1;
 
@@ -226,6 +230,7 @@ namespace
     }
 }
 
+/// INTEL ///////////////////////////////
 float matrixInversion()
 {
     lapack_int m = 3;
@@ -320,21 +325,58 @@ void matrixProductVector()
     //PrintArrayS(&layout, FULLPRINT, GENERAL_MATRIX, &m, &n, a, &lda, "A");
 }
 
+void copyVec(int n, const float* x, float* y)
+{
+    cblas_scopy(n, x, 1, y, 1);
+}
+
+void copyVec(int n, const double* x, double* y)
+{
+    cblas_dcopy(n, x, 1, y, 1);
+}
+
+void scalVecProduct(int n, const float a, float* x)
+{
+    cblas_sscal(n, a, x, 1);
+}
+
+void scalVecProduct(int n, const double a, double* x)
+{
+    cblas_dscal(n, a, x, 1);
+}
+
 float dotProduct(MKL_INT n, float* x, float* y)
 {
     return cblas_sdot(n, x, 1, y, 1);
 }
 
-float addVectors(float* X, float a, float* Y, float b, float* R, float n)
+double dotProduct(MKL_INT n, double* x, double* y)
+{
+    return cblas_ddot(n, x, 1, y, 1);
+}
+
+void addVectors(float* X, float a, float* Y, float b, float* R, float n)
 {
     cblas_sscal(n, b, Y, 1);
     cblas_scopy(n, Y, 1, R, 1);
     cblas_saxpy(n, a, X, 1, R, 1);
 }
 
-float addVectors(float a, float* X, float* Y, float n)
+void addVectors(double* X, double a, double* Y, double b, double* R, double n)
+{
+    cblas_dscal(n, b, Y, 1);
+    cblas_dcopy(n, Y, 1, R, 1);
+    cblas_daxpy(n, a, X, 1, R, 1);
+}
+
+void addVectors(float a, float* X, float* Y, float n)
 {
     cblas_saxpy(n, a, X, 1, Y, 1);
+}
+
+void addVectors(double a, double* X, double* Y, double n)
+{
+    cblas_daxpy(n, a, X, 1, Y, 1);
 }
 
 float vectorOperation(float* verticesBuffer, int verticesBufferSize)
@@ -373,9 +415,14 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
 }
 
 // C = alpha A * B + beta * C
-FEMIMP_DLL_API void matmul(float* A, float* B, float* C, int m, int k, int n)
+void matmul(float* A, float* B, float* C, int m, int k, int n)
 {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
+}
+
+void matmul(double* A, double* B, double* C, int m, int k, int n)
+{
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
 }
 
 void matmulTransA(float* A, float* B, float* C, int m, int k, int n)
@@ -383,8 +430,13 @@ void matmulTransA(float* A, float* B, float* C, int m, int k, int n)
     cblas_sgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
 }
 
+void matmulTransA(double* A, double* B, double* C, int m, int k, int n)
+{
+    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
+}
+
 // mkl_?getrfnp could be an alternative withouh using pivot
-FEMIMP_DLL_API float invert(float* A, int m)
+float invert(float* A, int m)
 {
     lapack_int* ipiv = new lapack_int[m];
         
@@ -403,10 +455,32 @@ FEMIMP_DLL_API float invert(float* A, int m)
     return determinant;
 }
 
-void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColumsDerivs)
+double invert(double* A, int m)
+{
+    lapack_int* ipiv = new lapack_int[m];
+
+    auto info = LAPACKE_dgetrf(CblasRowMajor, m, m, A, m, ipiv);
+
+    double determinant = 1.0;
+
+    for (int i = 0; i < m; ++i)
+    {
+        determinant = determinant * A[i + i * m];
+        determinant = ipiv[i] - 1 != i ? -determinant : determinant;
+    }
+
+    LAPACKE_dgetri(CblasRowMajor, m, A, m, ipiv);
+
+    return determinant;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
+template<class T>
+void beemat(T* bee, int nbRowsBee, int nbColumsBee, T* deriv, int nbColumsDerivs)
 {
     int k, l, n, ih(nbRowsBee), nod(nbColumsDerivs);
-    float x, y, z;
+    T x, y, z;
 
     //ih = UBOUND(bee, 1) 
     //nod = UBOUND(deriv, 2)
@@ -435,7 +509,8 @@ void beemat(float* bee, int nbRowsBee, int nbColumsBee, float* deriv, int nbColu
 
 namespace {
     
-    void ecmat(float* ecm, float* nt, float* tn, const float* fun, const int ndof, const int nodof)
+    template<class T>
+    void ecmat(T* ecm, T* nt, T* tn, const T* fun, const int ndof, const int nodof)
     {
         int nod = ndof / nodof;
         
@@ -451,7 +526,8 @@ namespace {
         matmul(nt, tn, ecm, ndof, nodof, ndof);
     }
 
-    void linmul_sky(const float* kv, const float* disps, float* loads, const int* kdiag, int neq)
+    template<class T>
+    void linmul_sky(const T* kv, const T* disps, T* loads, const int* kdiag, int neq)
     {
         //
         //This subroutine forms the product of symmetric matrix stored as
@@ -463,7 +539,7 @@ namespace {
 
         for (int i = 1; i <= n; ++i)
         {
-            float x = 0.0f;
+            T x = T(0.0);
             int lup = kdiag[i - 1];
             if (i == 1)low = lup;
             if (i != 1)low = kdiag[i - 1 - 1] + 1;
@@ -486,9 +562,10 @@ namespace {
         }
     }
 
-    float load(float t)
+    template<class T>
+    float load(T t)
     {
-        return std::cos(0.3f * t);
+        return std::cos(T(0.3) * t);
     }
 }
 
@@ -823,6 +900,7 @@ FEMIMP_DLL_API void elemStiffnessMatrix(float* g_coord, int* g_num, float* loads
     }
 }
 
+template<class T>
 class Fem_Algoritm
 {
 private:
@@ -847,29 +925,29 @@ private:
     //nf = nodal freedom array(nodof rows and nn colums)
     int* nf;
     
-    float fun[4] = { 0.25f, 0.25f, 0.25f, 0.25f };
+    T fun[4] = { T(0.25), T(0.25), T(0.25), T(0.25) };
 
-    float der[3 * 4] = 
+    T der[3 * 4] = 
     { //[ndim * nod] = {
-            1.0f, 0.0f, 0.0f, -1.0f,
-            0.0f, 1.0f, 0.0f, -1.0f,
-            0.0f, 0.0f, 1.0f, -1.0f
+            T(1.0), T(0.0), T(0.0), T(-1.0),
+            T(0.0), T(1.0), T(0.0), T(-1.0),
+            T(0.0), T(0.0), T(1.0), T(-1.0)
     };
 
     // skyline profile
     std::vector<int> kdiag;
 
     //kv = global stiffness matrix
-    std::vector<float> kv;
+    std::vector<T> kv;
    
     //global consisten mass
-    std::vector<float> mv;
+    std::vector<T> mv;
 
     //left hand side matrix (stored as a skyline) 
-    std::vector<float> f1;
+    std::vector<T> f1;
 
     //gravlo = global gravity loading vector 
-    std::vector<float> gravlo;
+    std::vector<T> gravlo;
 
 public:
     Fem_Algoritm(int ndim, int nodof, int nels)
@@ -877,7 +955,7 @@ public:
     {
     }
 
-    void init(float* g_coord, int* g_num, int* in_nf, int in_nn)
+    void init(T* g_coord, int* g_num, int* in_nf, int in_nn)
     {
         nn = in_nn;
         
@@ -900,11 +978,11 @@ public:
         int ndof = nod * nodof;
         
         //prop = material property(e, v, gamma)
-        std::vector<float> prop(nprops * np_types, 0.0f);
+        std::vector<T> prop(nprops * np_types, 0.0f);
         
-        prop[0] = 100.0f;
-        prop[1] = 0.3f;
-        prop[2] = 1.0f;
+        prop[0] = T(100.0);
+        prop[1] = T(0.3);
+        prop[2] = T(1.0);
         
         std::vector<int> g_g(ndof * nels, 0);
                
@@ -933,45 +1011,45 @@ public:
             kdiag[i] = kdiag[i] + kdiag[i - 1];
         }
         
-        kv.resize(kdiag[neq - 1], 0.0f);
-        mv.resize(kdiag[neq - 1], 0.0f);
-        f1.resize(kdiag[neq - 1], 0.0f);
+        kv.resize(kdiag[neq - 1], T(0.0));
+        mv.resize(kdiag[neq - 1], T(0.0));
+        f1.resize(kdiag[neq - 1], T(0.0));
                
-        gravlo.resize(neq, 0.0f);
+        gravlo.resize(neq, T(0.0));
          
         //----------------------- element stiffness integration and assembly--------
         
         //call sample, but for tet there is just one point
-        float points[] = { 0.25f, 0.25f, 0.25f };
-        float weights = 1.0f / 6.0f;
+        T points[] = { T(0.25), T(0.25), T(0.25) };
+        T weights = T(1.0) / T(6.0);
         
         //nst = number of stress / strain terms
         const int nst = 6;
-        const float e = 100.0f;
-        const float v = 0.3f;
+        const T e = T(100.0);
+        const T v = T(0.3);
         
         int* etype = new int[nels];
         std::fill(etype, etype + nels, 1);
         
         //km = element stiffness matrix
-        std::vector<float> km(ndof * ndof, 0.0f);
-        std::vector<float> jac  (ndim * ndim, 0.0f);
-        std::vector<float> deriv(ndim * nod,  0.0f);
-        std::vector<float> bee  (nst * ndof,  0.0f);
+        std::vector<T> km(ndof * ndof, T(0.0));
+        std::vector<T> jac  (ndim * ndim, T(0.0));
+        std::vector<T> deriv(ndim * nod, T(0.0));
+        std::vector<T> bee  (nst * ndof, T(0.0));
         //mm = element mass matrix;
-        std::vector<float> mm(ndof * ndof, 0.0f);
+        std::vector<T> mm(ndof * ndof, 0.0f);
         
         for (int i = 0; i < nels; ++i)
         {
-            std::fill(std::begin(mm), std::end(mm), 0.0f);
+            std::fill(std::begin(mm), std::end(mm), T(0.0));
         
-            float dee[nst * nst] = {};
-            std::fill(std::begin(dee), std::end(dee), 0.0f);
+            T dee[nst * nst] = {};
+            std::fill(std::begin(dee), std::end(dee), T(0.0));
             deemat(dee, nst, e, v);
         
             int* num = &g_num[4 * i];
         
-            std::vector<float> coord(nod * ndim, 0.0f);
+            std::vector<T> coord(nod * ndim, T(0.0));
         
             for (int j = 0; j < nod; ++j)
             {
@@ -987,36 +1065,35 @@ public:
                 g[j] = g_g[i + j * nels];
             }
         
-            std::fill(std::begin(km), std::end(km), 0.0f);
-            //std::fill(std::begin(eld), std::end(eld), 0.0f);
-        
-            std::vector<float> mm(ndof * ndof, 0.0f);
+            std::fill(std::begin(km), std::end(km), T(0.0));
+            
+            std::vector<T> mm(ndof * ndof, T(0.0));
             ////// for each point of integration, we have just one for 3d tets
             // calculate jac
             matmul(der, &coord[0], &jac[0], ndim, nod, ndim);
-            float det = invert(&jac[0], ndim);
+            T det = invert(&jac[0], ndim);
         
             // calculate the derivative in x, y, z
             matmul(&jac[0], der, &deriv[0], ndim, ndim, nod);
         
-            std::fill(std::begin(bee), std::end(bee), 0.0f);
+            std::fill(std::begin(bee), std::end(bee), T(0.0));
             beemat(&bee[0], nst, ndof, &deriv[0], nod);
         
-            std::vector<float> temporal(nst * ndof, 0.0f);
+            std::vector<T> temporal(nst * ndof, T(0.0));
                     
             matmulTransA(&bee[0], dee, &temporal[0], ndof, nst, nst);
             matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
         
-            std::for_each(std::begin(km), std::end(km), [&](float& v) { v *= det * weights; });
+            std::for_each(std::begin(km), std::end(km), [&](T& v) { v *= det * weights; });
         
             //for (int j = nodof; j <= ndof; j += nodof)
             //{
             //    eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
             //}
         
-            std::vector<float> ecm(ndof* ndof, 0.0f);  
-            std::vector<float> nt (ndof * nodof, 0.0f);
-            std::vector<float> tn (nodof * ndof, 0.0f);
+            std::vector<T> ecm(ndof* ndof, T(0.0));
+            std::vector<T> nt (ndof * nodof, T(0.0));
+            std::vector<T> tn (nodof * ndof, T(0.0));
                 
             ecmat(&ecm[0], &nt[0], &tn[0], fun, ndof, nodof);
         
@@ -1029,11 +1106,6 @@ public:
         
             fsparv(&kv[0], &km[0], &g[0], &kdiag[0], ndof);
             fsparv(&mv[0], &mm[0], &g[0], &kdiag[0], ndof);
-
-            for (int j = 0; j < nels; ++j)
-            {
-                //gravlo[j] += -eld[j] * prop[etype[i] - 1 + np_types * 2];
-            }
         }
     }
 
@@ -1052,30 +1124,30 @@ public:
         // fm = Rayleigh damping parameter on mass
 
         // 
-        float dtim = 0.2f;
-        float theta = 0.5f;
-        float fm = 0.005f;
-        float fk = 0.272f;
+        T dtim  = T(0.2);
+        T theta = T(0.5);
+        T fm    = T(0.005);
+        T fk    = T(0.272);
 
-        std::vector<float> x0   (neq + 1, 0.0f);
-        std::vector<float> d1x0 (neq + 1, 0.0f);
-        std::vector<float> x1   (neq + 1, 0.0f);
-        std::vector<float> d2x0 (neq + 1, 0.0f);
-        std::vector<float> d1x1 (neq + 1, 0.0f);
-        std::vector<float> d2x1 (neq + 1, 0.0f);
+        std::vector<T> x0   (neq + 1, T(0.0));
+        std::vector<T> d1x0 (neq + 1, T(0.0));
+        std::vector<T> x1   (neq + 1, T(0.0));
+        std::vector<T> d2x0 (neq + 1, T(0.0));
+        std::vector<T> d1x1 (neq + 1, T(0.0));
+        std::vector<T> d2x1 (neq + 1, T(0.0));
 
         //number of loaded nodes
         const int loaded_nodes = 2;
         int node[loaded_nodes] = {};
 
         //val = applied nodal load weightings
-        std::vector<float> val(loaded_nodes * ndim, 0.0f);
+        std::vector<T> val(loaded_nodes * ndim, T(0.0));
 
         for (int i = 0; i < loaded_nodes; ++i)
         {
             for (int j = 0; j < ndim; ++j)
             {
-                val[i * loaded_nodes + j] = 0.25f;
+                val[i * loaded_nodes + j] = T(0.25);
             }
         }
 
@@ -1086,29 +1158,29 @@ public:
         node[1] = 2;
         ////////////////////////
 
-        float c1 = (1.0f - theta) * dtim;
-        float c2 = fk - c1;
-        float c3 = fm + 1.0f / (theta * dtim);
-        float c4 = fk + theta * dtim;
+        T c1 = (T(1.0) - theta) * dtim;
+        T c2 = fk - c1;
+        T c3 = fm + T(1.0) / (theta * dtim);
+        T c4 = fk + theta * dtim;
 
         addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
         sparin(&f1[0], &kdiag[0], neq);
 
         //!---------------------- - time stepping loop--------------------------------
 
-        float time = 0;
-        float nstep = 20;
+        T time = T(0);
+        T nstep = T(20);
 
         std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
        
         int npri = 1;
 
-        float* loads2 = new float[neq + 1];
+        T* loads2 = new T[neq + 1];
 
         for (int i = 1; i <= nstep; ++i)
         {
             time = time + dtim;
-            std::fill(loads2, loads2 + neq + 1, 0.0f);
+            std::fill(loads2, loads2 + neq + 1, T(0.0));
 
             addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
 
@@ -1126,20 +1198,20 @@ public:
             linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
 
             //d1x1=loads+d1x1
-            addVectors(1.0f, loads2, &d1x1[0], neq + 1);
+            addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
 
-            cblas_scopy(neq + 1, &x0[0], 1, loads2, 1);
-            cblas_sscal(neq + 1, c2, loads2, 1);
+            copyVec(neq + 1, &x0[0], loads2);
+            scalVecProduct(neq + 1, c2, loads2);
 
             linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
 
             //x1=x1+d1x1
-            addVectors(1.0f, &d1x1[0], &x1[0], neq + 1);
+            addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
 
             spabac(&f1[0], &x1[0], &kdiag[0], neq);
 
-            float a = 1.0f / (theta * dtim);
-            float b = (1.0f - theta) / theta;
+            T a = T(1.0) / (theta * dtim);
+            T b = (T(1.0) - theta) / theta;
 
             //d1x1 = a * (x1 - x0) - b * d1x0;
             addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
@@ -1149,29 +1221,32 @@ public:
             addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
             addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
 
-            cblas_scopy(neq + 1, &x1[0], 1, &x0[0], 1);
-            cblas_scopy(neq + 1, &d1x1[0], 1, &d1x0[0], 1);
-            cblas_scopy(neq + 1, &d2x1[0], 1, &d2x0[0], 1);
+            copyVec(neq + 1, &x1[0], &x0[0]);
+            copyVec(neq + 1, &d1x1[0], &d1x0[0]);
+            copyVec(neq + 1, &d2x1[0], &d2x0[0]);
 
             if (i / npri * npri == i)
             {
-                std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+                std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
             }
         }
     }
 };
 
-void FEM_Factory::create(int ndim, int nodof, int nels)
+template<class T>
+void FEM_Factory<T>::create(int ndim, int nodof, int nels)
 {
-    femAlg = new Fem_Algoritm(ndim, nodof, nels);
+    femAlg = new Fem_Algoritm<T>(ndim, nodof, nels);
 }
 
-void FEM_Factory::init(float* g_coord, int* g_num, int* in_nf, int in_nn)
+template<class T>
+void FEM_Factory<T>::init(T* g_coord, int* g_num, int* in_nf, int in_nn)
 {
     femAlg->init(g_coord, g_num, in_nf, in_nn);
 }
 
-void FEM_Factory::update()
+template<class T>
+void FEM_Factory<T>::update()
 {
     femAlg->update();
 }
