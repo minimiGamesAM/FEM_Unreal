@@ -355,27 +355,33 @@ double dotProduct(MKL_INT n, double* x, double* y)
     return cblas_ddot(n, x, 1, y, 1);
 }
 
-void addVectors(float* X, float a, float* Y, float b, float* R, float n)
+void addVectors(const float* X, const float a, const float* Y, const float b, float* R, const float n)
 {
-    cblas_sscal(n, b, Y, 1);
+    //x = a * x
     cblas_scopy(n, Y, 1, R, 1);
+    cblas_sscal(n, b, R, 1);
+    //y: = a * x + y
     cblas_saxpy(n, a, X, 1, R, 1);
 }
 
-void addVectors(double* X, double a, double* Y, double b, double* R, double n)
+void addVectors(const double* X, const double a, const double* Y, double b, double* R, const double n)
 {
-    cblas_dscal(n, b, Y, 1);
+    //x = a * x
     cblas_dcopy(n, Y, 1, R, 1);
+    cblas_dscal(n, b, R, 1);
+    //y: = a * x + y
     cblas_daxpy(n, a, X, 1, R, 1);
 }
 
-void addVectors(float a, float* X, float* Y, float n)
+void addVectors(const float a, const float* X, float* Y, const float n)
 {
+    //y: = a * x + y
     cblas_saxpy(n, a, X, 1, Y, 1);
 }
 
-void addVectors(double a, double* X, double* Y, double n)
+void addVectors(const double a, const double* X, double* Y, const double n)
 {
+    //y: = a * x + y
     cblas_daxpy(n, a, X, 1, Y, 1);
 }
 
@@ -415,22 +421,23 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
 }
 
 // C = alpha A * B + beta * C
-void matmul(float* A, float* B, float* C, int m, int k, int n)
+void matmul(const float* A, const float* B, float* C, const int m, const int k, const int n)
 {
     cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
 }
 
-void matmul(double* A, double* B, double* C, int m, int k, int n)
+// C = alpha A * B + beta * C
+void matmul(const double* A, const double* B, double* C, const int m, const int k, const int n)
 {
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, k, B, n, 0, C, n);
 }
 
-void matmulTransA(float* A, float* B, float* C, int m, int k, int n)
+void matmulTransA(const float* A, const float* B, float* C, const int m, const int k, const int n)
 {
     cblas_sgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
 }
 
-void matmulTransA(double* A, double* B, double* C, int m, int k, int n)
+void matmulTransA(const double* A, const double* B, double* C, const int m, const int k, const int n)
 {
     cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
 }
@@ -790,7 +797,7 @@ public:
         // fm = Rayleigh damping parameter on mass
 
         // 
-        T dtim  = T(0.2);
+        T dtim  = T(1.0);
         T theta = T(0.5);
         T fm    = T(0.005);
         T fk    = T(0.272);
