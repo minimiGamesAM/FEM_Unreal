@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Containers/Array.h"
+#include <vector>
 #include "ProceduralMeshComponent.h"
 #include "ProceduralMesh.generated.h"
 
@@ -40,9 +41,11 @@ public:
 
 private:
 
-	float*						mVerticesBuffer;
+	std::vector<float>			mVerticesBuffer;
 	int*						mTetsBuffer;
 	int							mNbTets;
+
+	int*						nf;
 	TArray<int32>				mTetsIds;
 
 	///
@@ -54,6 +57,8 @@ private:
 	TArray<FProcMeshTangent>	mTangents;
 
 	UProceduralMeshComponent*	mMeshComponent;
+
+	int							mIdAlgoFEM = -1;
 
 	float t = 0.0f;
 };

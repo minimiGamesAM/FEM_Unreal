@@ -4,6 +4,9 @@
 #include "ProceduralMesh.h"
 #include "TetGenFunctionLibrary.h"
 #include "FemFunctions.h"
+#include <algorithm>
+#include <vector>
+#include <iterator>
 
 //https://nerivec.github.io/old-ue4-wiki/pages/procedural-mesh-component-in-cgetting-started.html
 // without the "Pluging part"
@@ -14,7 +17,6 @@
 
 // Sets default values
 AProceduralMesh::AProceduralMesh()
-	: mVerticesBuffer(nullptr)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -76,8 +78,8 @@ void AProceduralMesh::runTetragenio()
 	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
 	{
 		mTetsIds[4 * tetIdx] = UTetGenFunctionLibrary::getTet(4 * tetIdx);
-		mTetsIds[4 * tetIdx + 1] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 1);
-		mTetsIds[4 * tetIdx + 2] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 2);
+		mTetsIds[4 * tetIdx + 1] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 2);
+		mTetsIds[4 * tetIdx + 2] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 1);
 		mTetsIds[4 * tetIdx + 3] = UTetGenFunctionLibrary::getTet(4 * tetIdx + 3);
 	}
 
@@ -143,9 +145,9 @@ void AProceduralMesh::BeginPlay()
 		}
 
 		/////////////////////////////////
-		if (!mVerticesBuffer)
+		if (mVerticesBuffer.empty())
 		{
-			mVerticesBuffer = new float[mVertices.Num() * 3];
+			mVerticesBuffer.resize(mVertices.Num() * 3, 0.0f);
 		}
 		
 		for (int j = 0; j < mVertices.Num(); ++j)
@@ -153,6 +155,41 @@ void AProceduralMesh::BeginPlay()
 			mVerticesBuffer[j * 3] = mVertices[j][0];
 			mVerticesBuffer[j * 3 + 1] = mVertices[j][1];
 			mVerticesBuffer[j * 3 + 2] = mVertices[j][2];
+		}
+
+		if (mIdAlgoFEM < 0)
+		{
+			const int dim = 3;
+			//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+			const int nodof = 3;
+
+			//nn = total number of nodes in the problem
+			const int nn = 8;
+
+			nf = new int[nodof * nn];
+
+			int temp_nf[nodof * nn] = { 0, 1, 0, 1, 0, 1, 0, 1,
+										0, 0, 0, 0, 1, 1, 1, 1,
+										1, 1, 0, 0, 1, 1, 0, 0 };
+
+			std::copy(temp_nf, temp_nf + nodof * nn, nf);
+
+			/////////////////transpose////////////////////////////////////
+			std::vector<float> tempVertices(nodof * mVertices.Num(), 0);
+
+			for (int k = 0; k < mVertices.Num(); ++k)
+			{
+				for (int l = 0; l < nodof; ++l)
+				{
+					tempVertices[k + l * mVertices.Num()] = mVerticesBuffer[l + k * nodof];
+				}
+			}
+
+			//std::copy(std::begin(tempVertices), std::end(tempVertices), mVerticesBuffer);
+			//////////////////////////////////////////////////////////////
+						
+			mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsIds.Num() / 4);
+			UFemFunctions::init(mIdAlgoFEM, &tempVertices[0], &mTetsBuffer[0], nf, nn);
 		}
 	}
 }
@@ -192,14 +229,23 @@ void AProceduralMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	t = t + GetWorld()->GetDeltaSeconds();
-		
-	for (int i = 0; i < mVertices.Num(); ++i)
+	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
+
+	for (int j = 0; j < mVertices.Num(); ++j)
 	{
-		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
+		mVertices[j][0] = mVerticesBuffer[j * 3];
+		mVertices[j][1] = mVerticesBuffer[j * 3 + 1];
+		mVertices[j][2] = mVerticesBuffer[j * 3 + 2];
 	}
-
-	UFemFunctions::runFem(mVerticesBuffer, 3 * mVertices.Num(), mTetsBuffer, mTetsIds.Num());
-
+	 
+	//t = t + GetWorld()->GetDeltaSeconds();
+	//	
+	//for (int i = 0; i < mVertices.Num(); ++i)
+	//{
+	//	mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
+	//}
+	//
+	//UFemFunctions::runFem(mVerticesBuffer, 3 * mVertices.Num(), mTetsBuffer, mTetsIds.Num());
+	//
 	mMeshComponent->UpdateMeshSection(0, mVertices, mNormals, mUVs, mVertexColors, mTangents);
 }

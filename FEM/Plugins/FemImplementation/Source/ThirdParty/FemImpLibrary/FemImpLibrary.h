@@ -11,6 +11,8 @@
 #define FEMIMP_DLL_API __declspec(dllimport)
 #endif
 
+#include <vector>
+
 template<class T>
 class Fem_Algoritm;
 
@@ -19,12 +21,12 @@ class FEM_Factory
 {
 	
 public:
-	void create(int ndim, int nodof, int nels);
-	void init(T* g_coord, int* g_num, int* in_nf, int in_nn);
-	void update();
+	static int create(int ndim, int nodof, int nels);
+	static void init(int id, T* g_coord, int* g_num, int* in_nf, int in_nn);
+	static void update(int id, T dtim, T* verticesBuffer);
 
 private: 
-	Fem_Algoritm<T>* femAlg;
+	static std::vector<Fem_Algoritm<T>*> femAlg;
 };
 
 

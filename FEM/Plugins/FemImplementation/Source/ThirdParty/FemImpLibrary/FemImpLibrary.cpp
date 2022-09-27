@@ -569,7 +569,7 @@ namespace {
     template<class T>
     float load(T t)
     {
-        return std::cos(T(0.3) * t);
+        return 10000 * std::cos(T(1) * t);
     }
 }
 
@@ -596,7 +596,9 @@ private:
     const int nod = 4;
 
     //nf = nodal freedom array(nodof rows and nn colums)
-    int* nf;
+    std::vector<int> nf;
+
+    T time = T(0);
     
     T fun[4] = { T(0.25), T(0.25), T(0.25), T(0.25) };
 
@@ -622,6 +624,22 @@ private:
     //gravlo = global gravity loading vector 
     std::vector<T> gravlo;
 
+    std::vector<T> x0;
+    std::vector<T> d1x0;
+    std::vector<T> x1;
+    std::vector<T> d2x0;
+    std::vector<T> d1x1;
+    std::vector<T> d2x1;
+
+    T theta = T(0.5);
+    T fm = T(0.005);
+    T fk = T(0.012);
+
+    T* loads2;
+
+    int itt = 1;
+
+
 public:
     Fem_Algoritm(int ndim, int nodof, int nels)
         : ndim(ndim), nodof(nodof), nn(0), nels(nels), neq(0)
@@ -641,11 +659,11 @@ public:
         //np_types = number of diffent property types
         const int np_types = 1;
         
-        nf = new int[nodof * nn];
+        nf.resize(nodof * nn, 0);
         
-        std::copy(in_nf, in_nf + nodof * nn, nf);
+        std::copy(in_nf, in_nf + nodof * nn, std::begin(nf));
                
-        neq = formnf(nf, nodof, nn);
+        neq = formnf(&nf[0], nodof, nn);
                
         //ndof = number of degree of freedom per element
         int ndof = nod * nodof;
@@ -653,9 +671,9 @@ public:
         //prop = material property(e, v, gamma)
         std::vector<T> prop(nprops * np_types, 0.0f);
         
-        prop[0] = T(100.0);
+        prop[0] = T(20.0);
         prop[1] = T(0.3);
-        prop[2] = T(1.0);
+        prop[2] = T(0.2);
         
         std::vector<int> g_g(ndof * nels, 0);
                
@@ -669,7 +687,7 @@ public:
         {
             int* num = &g_num[4 * i];
         
-            num_to_g(num, nf, &g[0], nod, nodof, nn);
+            num_to_g(num, &nf[0], &g[0], nod, nodof, nn);
         
             for (int j = 0; j < ndof; ++j)
             {
@@ -698,8 +716,8 @@ public:
         
         //nst = number of stress / strain terms
         const int nst = 6;
-        const T e = T(100.0);
-        const T v = T(0.3);
+        const T e = prop[0];
+        const T v = prop[1];
         
         int* etype = new int[nels];
         std::fill(etype, etype + nels, 1);
@@ -780,10 +798,7 @@ public:
             fsparv(&kv[0], &km[0], &g[0], &kdiag[0], ndof);
             fsparv(&mv[0], &mm[0], &g[0], &kdiag[0], ndof);
         }
-    }
 
-    void update()
-    {
         //---------------------- - initial conditions and factorise equations--------
 
         // x0 = old displacements
@@ -796,19 +811,37 @@ public:
         // fk = Rayleigh damping parameter on stiffness
         // fm = Rayleigh damping parameter on mass
 
-        // 
-        T dtim  = T(1.0);
-        T theta = T(0.5);
-        T fm    = T(0.005);
-        T fk    = T(0.272);
+        //
+       
 
-        std::vector<T> x0   (neq + 1, T(0.0));
-        std::vector<T> d1x0 (neq + 1, T(0.0));
-        std::vector<T> x1   (neq + 1, T(0.0));
-        std::vector<T> d2x0 (neq + 1, T(0.0));
-        std::vector<T> d1x1 (neq + 1, T(0.0));
-        std::vector<T> d2x1 (neq + 1, T(0.0));
+        x0.resize(neq + 1, T(0.0));
+        d1x0.resize(neq + 1, T(0.0));
+        x1.resize(neq + 1, T(0.0));
+        d2x0.resize(neq + 1, T(0.0));
+        d1x1.resize(neq + 1, T(0.0));
+        d2x1.resize(neq + 1, T(0.0));
 
+               
+
+        //T c1 = (T(1.0) - theta) * dtim;
+        //T c2 = fk - c1;
+        //T c3 = fm + T(1.0) / (theta * dtim);
+        //T c4 = fk + theta * dtim;
+
+        //addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
+        //sparin(&f1[0], &kdiag[0], neq);
+
+        //!---------------------- - time stepping loop--------------------------------
+
+        //T nstep = T(20);
+
+        //std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        
+        loads2 = new T[neq + 1];
+    }
+
+    void update(T dtim, T* verticesBuffer)
+    {
         //number of loaded nodes
         const int loaded_nodes = 2;
         int node[loaded_nodes] = {};
@@ -829,6 +862,7 @@ public:
         int nres = 6;
         node[0] = nres;
         node[1] = 2;
+        int npri = 1;
         ////////////////////////
 
         T c1 = (T(1.0) - theta) * dtim;
@@ -839,89 +873,104 @@ public:
         addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
         sparin(&f1[0], &kdiag[0], neq);
 
-        //!---------------------- - time stepping loop--------------------------------
+        //for (int i = 1; i <= nstep; ++i)
+        //{
+        time = time + dtim;
+        std::fill(loads2, loads2 + neq + 1, T(0.0));
 
-        T time = T(0);
-        T nstep = T(20);
+        addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
 
-        std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-       
-        int npri = 1;
+        float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
 
-        T* loads2 = new T[neq + 1];
-
-        for (int i = 1; i <= nstep; ++i)
+        for (int j = 1; j <= loaded_nodes; ++j)
         {
-            time = time + dtim;
-            std::fill(loads2, loads2 + neq + 1, T(0.0));
-
-            addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
-
-            float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
-
-            for (int j = 1; j <= loaded_nodes; ++j)
+            for (int k = 0; k < ndim; ++k)
             {
-                for (int k = 0; k < ndim; ++k)
-                {
-                    loads2[nf[nn * k + node[j - 1] - 1]] =
-                        val[(j - 1) * loaded_nodes + k] * temporal;
-                }
-            }
-
-            linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
-
-            //d1x1=loads+d1x1
-            addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
-
-            copyVec(neq + 1, &x0[0], loads2);
-            scalVecProduct(neq + 1, c2, loads2);
-
-            linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
-
-            //x1=x1+d1x1
-            addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
-
-            spabac(&f1[0], &x1[0], &kdiag[0], neq);
-
-            T a = T(1.0) / (theta * dtim);
-            T b = (T(1.0) - theta) / theta;
-
-            //d1x1 = a * (x1 - x0) - b * d1x0;
-            addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
-            addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
-
-            //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
-            addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
-            addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
-
-            copyVec(neq + 1, &x1[0], &x0[0]);
-            copyVec(neq + 1, &d1x1[0], &d1x0[0]);
-            copyVec(neq + 1, &d2x1[0], &d2x0[0]);
-
-            if (i / npri * npri == i)
-            {
-                std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+                loads2[nf[nn * k + node[j - 1] - 1]] =
+                    val[(j - 1) * loaded_nodes + k] * temporal;
             }
         }
+
+        linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
+
+        //d1x1=loads+d1x1
+        addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
+
+        copyVec(neq + 1, &x0[0], loads2);
+        scalVecProduct(neq + 1, c2, loads2);
+
+        linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
+
+        //x1=x1+d1x1
+        addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
+
+        spabac(&f1[0], &x1[0], &kdiag[0], neq);
+
+        T a = T(1.0) / (theta * dtim);
+        T b = (T(1.0) - theta) / theta;
+
+        //d1x1 = a * (x1 - x0) - b * d1x0;
+        addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
+        addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
+
+        //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
+        addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
+        addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
+
+        copyVec(neq + 1, &x1[0], &x0[0]);
+        copyVec(neq + 1, &d1x1[0], &d1x0[0]);
+        copyVec(neq + 1, &d2x1[0], &d2x0[0]);
+
+        if (itt / npri * npri == itt)
+        {
+        //  std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        }
+        ++itt;
+
+        if (verticesBuffer)
+        {
+            for (int i = 0; i < nn; ++i)
+            {
+                verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
+                verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
+                verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
+
+                //if (i == 5)
+                //{
+                //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
+                //}
+            }
+        }
+        //}
     }
 };
 
 template<class T>
-void FEM_Factory<T>::create(int ndim, int nodof, int nels)
+std::vector<Fem_Algoritm<T>*> FEM_Factory<T>::femAlg;
+
+template<class T>
+int FEM_Factory<T>::create(int ndim, int nodof, int nels)
 {
-    femAlg = new Fem_Algoritm<T>(ndim, nodof, nels);
+    femAlg.push_back(new Fem_Algoritm<T>(ndim, nodof, nels));
+    return femAlg.size() - 1;
 }
 
 template<class T>
-void FEM_Factory<T>::init(T* g_coord, int* g_num, int* in_nf, int in_nn)
+void FEM_Factory<T>::init(int id, T* g_coord, int* g_num, int* in_nf, int in_nn)
 {
-    femAlg->init(g_coord, g_num, in_nf, in_nn);
+    if (id < femAlg.size())
+    {
+        femAlg[id]->init(g_coord, g_num, in_nf, in_nn);
+    }
 }
 
 template<class T>
-void FEM_Factory<T>::update()
+void FEM_Factory<T>::update(int id, T dtim, T* verticesBuffer)
 {
-    femAlg->update();
+    if (id < femAlg.size())
+    {
+        femAlg[id]->update(dtim, verticesBuffer);
+    }
 }
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)

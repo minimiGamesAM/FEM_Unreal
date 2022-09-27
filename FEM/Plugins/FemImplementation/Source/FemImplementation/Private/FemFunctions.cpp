@@ -7,6 +7,21 @@ THIRD_PARTY_INCLUDES_START
 #include "FemImpLibrary/FemImpLibrary.h"
 THIRD_PARTY_INCLUDES_END
 
+int UFemFunctions::create(int ndim, int nodof, int nels)
+{
+	return FEM_Factory<float>::create(ndim, nodof, nels);
+}
+
+void UFemFunctions::init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn)
+{
+	FEM_Factory<float>::init(id, g_coord, g_num, in_nf, in_nn);
+}
+
+void UFemFunctions::update(int id, float dt, float* verticesBuffer)
+{
+	FEM_Factory<float>::update(id, dt, verticesBuffer);
+}
+
 void UFemFunctions::runFem(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
 

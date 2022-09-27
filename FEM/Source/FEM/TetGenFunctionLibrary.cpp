@@ -32,7 +32,7 @@ void UTetGenFunctionLibrary::RunTetGen()
 			
 			char* result = TCHAR_TO_ANSI(*fileModel);
 						
-			runTetGenRef(result, "pqzVCYS0-f-nn");// 
+			runTetGenRef(result, "pqz-f-nn");// 
 		}
 	}
 }
