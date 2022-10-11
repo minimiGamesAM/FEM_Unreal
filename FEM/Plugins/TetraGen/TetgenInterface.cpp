@@ -33,33 +33,64 @@ namespace tetSpace
 	TetraedrosStruct tetraedrosInstancia;
 }
 
-void runTetGen(char* file, char* switches)
+void runTetGen2( float* points,
+				 int* faces,
+				 int facesSize,
+				 int pointsSizes,
+				 char* switches )
 {
 	tetgenio in, out;
-	tetgenio addin, bgmin;
+	tetgenio::facet* f;
+	tetgenio::polygon* p;
+	
+	in.firstnumber = 0;
+	in.numberofpoints = pointsSizes / 3;
+	
+	in.pointlist = new REAL[in.numberofpoints * 3];
 
-	in.load_ply(const_cast<char*>(std::string(file).c_str()));
-			
-	// Output the PLC to files 'barin.node' and 'barin.poly'.
-	//in.save_nodes("barin");
-	//in.save_poly("barin");
+	for (int i = 0; i < in.numberofpoints; ++i)
+	{
+		in.pointlist[i * 3 + 0] = points[i * 3 + 0];
+		in.pointlist[i * 3 + 1] = points[i * 3 + 1];
+		in.pointlist[i * 3 + 2] = points[i * 3 + 2];
+	}
 
-	// Tetrahedralize the PLC. Switches are chosen to read a PLC (p),
-	//   do quality mesh generation (q) with a specified quality bound
-	//   (1.414), and apply a maximum volume constraint (a0.1).
+	in.numberoffacets = facesSize / 3;
+	in.facetlist = new tetgenio::facet[in.numberoffacets];
+	in.facetmarkerlist = nullptr;
 
-	//char switches[] = "pq1.414a0.1";
+	for (int i = 0; i < in.numberoffacets; ++i)
+	{
+		f = &in.facetlist[i];
+		f->numberofpolygons = 1;
+		f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
+		f->numberofholes = 0;
+		f->holelist = NULL;
 
-	tetrahedralize(switches, &in, &out, &addin, &bgmin);
+		for (int j = 0; j < f->numberofpolygons; ++j)
+		{
+			//int face_index = faces[];
+
+			p = &f->polygonlist[j];
+			p->numberofvertices = 3;
+			p->vertexlist = new int[p->numberofvertices];
+
+			p->vertexlist[0] = faces[i * 3 + 0];
+			p->vertexlist[1] = faces[i * 3 + 1];
+			p->vertexlist[2] = faces[i * 3 + 2];
+		}
+	}
+
+	tetrahedralize(switches, &in, &out);
 
 	// Output mesh to files 'barout.node', 'barout.ele' and 'barout.face'.
 	//out.save_nodes("barout");
 	//out.save_elements("barout");
 	//out.save_faces("barout");
 
-	tetSpace::tetraedrosInstancia.m_numberOfPoints		= out.numberofpoints;
-	tetSpace::tetraedrosInstancia.m_numberoftrifaces	= out.numberoftrifaces;
-	tetSpace::tetraedrosInstancia.m_numberoftetrahedra	= out.numberoftetrahedra;
+	tetSpace::tetraedrosInstancia.m_numberOfPoints = out.numberofpoints;
+	tetSpace::tetraedrosInstancia.m_numberoftrifaces = out.numberoftrifaces;
+	tetSpace::tetraedrosInstancia.m_numberoftetrahedra = out.numberoftetrahedra;
 
 	////////////////////////////
 
@@ -68,20 +99,20 @@ void runTetGen(char* file, char* switches)
 	delete[] tetSpace::tetraedrosInstancia.m_tetrahedronlist;
 	delete[] tetSpace::tetraedrosInstancia.m_tet2facelist;
 
-	tetSpace::tetraedrosInstancia.m_pointlist		= new REAL[3 * out.numberofpoints];
-	tetSpace::tetraedrosInstancia.m_trifacelist		= new int[3 * out.numberoftrifaces];
+	tetSpace::tetraedrosInstancia.m_pointlist = new REAL[3 * out.numberofpoints];
+	tetSpace::tetraedrosInstancia.m_trifacelist = new int[3 * out.numberoftrifaces];
 	tetSpace::tetraedrosInstancia.m_tetrahedronlist = new int[4 * out.numberoftetrahedra];
-	tetSpace::tetraedrosInstancia.m_tet2facelist	= new int[4 * out.numberoftetrahedra];
-	
+	tetSpace::tetraedrosInstancia.m_tet2facelist = new int[4 * out.numberoftetrahedra];
+
 	std::memcpy(tetSpace::tetraedrosInstancia.m_pointlist,
-				out.pointlist, 3 * out.numberofpoints * sizeof(REAL));
-	
+		out.pointlist, 3 * out.numberofpoints * sizeof(REAL));
+
 	std::memcpy(tetSpace::tetraedrosInstancia.m_trifacelist,
-				out.trifacelist, 3 * out.numberoftrifaces * sizeof(int));
-	
+		out.trifacelist, 3 * out.numberoftrifaces * sizeof(int));
+
 	std::memcpy(tetSpace::tetraedrosInstancia.m_tetrahedronlist,
 		out.tetrahedronlist, 4 * out.numberoftetrahedra * sizeof(int));
-	
+
 	std::memcpy(tetSpace::tetraedrosInstancia.m_tet2facelist,
 		out.tet2facelist, 4 * out.numberoftetrahedra * sizeof(int));
 

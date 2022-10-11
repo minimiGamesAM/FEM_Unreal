@@ -8,6 +8,8 @@
 
 extern "C" TETRAGEN_API void runTetGen(char* file, char* s);
 
+extern "C" TETRAGEN_API void runTetGen2(float* points, int* faces, int facesSize, int pointsSizes, char* switches);
+
 extern "C" TETRAGEN_API int getNumberOfPoints();
 
 extern "C" TETRAGEN_API double getPoint(int idx);
