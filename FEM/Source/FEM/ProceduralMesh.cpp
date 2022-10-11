@@ -33,7 +33,7 @@ void AProceduralMesh::runTetragenio()
 	mTangents.Empty();
 	mTetsIds.Empty();
 		
-	UTetGenFunctionLibrary::RunTetGen();
+	//UTetGenFunctionLibrary::RunTetGen();
 	int nbPoints = UTetGenFunctionLibrary::getNumberOfPoints();
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("NB POINTS %i"), nbPoints));
@@ -49,9 +49,8 @@ void AProceduralMesh::runTetragenio()
 		mUVs.Add(FVector2D(1.0, 0.0));
 
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
-		//to be remove this scale, should do a proper blender model with the right scale
-		float scale = 1; 
-		mVertices.Add(p * scale);
+		//to be remove this scale, should do a proper blender model with the right scale 
+		mVertices.Add(p);
 	}
 
 	for (int tetIdx = 0; tetIdx < UTetGenFunctionLibrary::getNumberOfTets(); tetIdx++)
@@ -93,7 +92,7 @@ void AProceduralMesh::BeginPlay()
 {
 	Super::BeginPlay();
 
-	runTetragenio();
+	//runTetragenio();
 
 	//mVertices.Empty();
 	//mTriangles.Empty();

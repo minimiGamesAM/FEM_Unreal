@@ -118,29 +118,6 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 			points[vId.GetValue() * 3 + 2] = p.Z;
 		}
 		
-		//const FPolygonArray& Polygons = MeshDescription->Polygons();
-		//std::vector<std::vector<int>> facets;
-		//
-		//for (const FPolygonID PolygonID : Polygons.GetElementIDs())
-		//{
-		//	int32 PolygonGroupID = MeshDescription->GetPolygonPolygonGroup(PolygonID).GetValue();
-		//	const TArray<FTriangleID>& TriangleIDs = MeshDescription->GetPolygonTriangleIDs(PolygonID);
-		//	int NumTriangles = TriangleIDs.Num();
-		//	facets.emplace_back();// [PolygonID.GetValue()] .resize(facets.size() + NumTriangles);
-		//
-		//	for (int TriIdx = 0; TriIdx < NumTriangles; ++TriIdx)
-		//	{
-		//		auto InstanceTri = MeshDescription->GetTriangleVertices(TriangleIDs[TriIdx]);
-		//		facets.back().push_back(InstanceTri[0].GetValue());
-		//		facets.back().push_back(InstanceTri[1].GetValue());
-		//		facets.back().push_back(InstanceTri[2].GetValue());
-		//
-		//		GEngine->AddOnScreenDebugMessage(-1, 100.0f, FColor::Yellow, FString::Printf(TEXT("facet %i %i %i"), InstanceTri[0].GetValue(), InstanceTri[1].GetValue(), InstanceTri[2].GetValue()));
-		//	}
-		//
-		//	GEngine->AddOnScreenDebugMessage(-1, 100.0f, FColor::Yellow, FString::Printf(TEXT("***************")));
-		//}
-
 		FTriangleArray& triangles = MeshDescription->Triangles();
 		std::vector<int> faces(triangles.Num() * 3, 0);
 		
@@ -155,8 +132,6 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 
 		UTetGenFunctionLibrary::RunTetGen2(points, &faces[0], faces.size(), VertexIDs.Num() * 3, nullptr);
 	}
-
-
 }
 
 
