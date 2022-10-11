@@ -18,6 +18,26 @@ bool UTetGenFunctionLibrary::LoadDllHandle()
 
 //https://www.youtube.com/watch?v=dKlMEmVgbvg
 
+void UTetGenFunctionLibrary::RunTetGen2(float* points, int* faces, int facesSize, int pointsSizes, char* switches)
+{
+	if (DllHandle || LoadDllHandle()) //We have a valid dll handle
+	{
+		void* DllExport = FPlatformProcess::GetDllExport(DllHandle, *FString("runTetGen2"));
+		if (DllExport)
+		{
+			typedef void(*runTetGen)(float* points, int* faces, int facesSize, int pointsSizes, char* switches);
+			runTetGen runTetGenRef = (runTetGen)(DllExport);
+
+			FString fileModel = FPaths::ProjectDir() + "/Content/Models/verificacion";
+
+			char* result = TCHAR_TO_ANSI(*fileModel);
+
+			runTetGenRef(points, faces, facesSize, pointsSizes, "pqz-f-nn");// 
+		}
+	}
+}
+
+
 void UTetGenFunctionLibrary::RunTetGen()
 {
 	if (DllHandle || LoadDllHandle()) //We have a valid dll handle

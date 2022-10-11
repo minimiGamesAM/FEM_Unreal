@@ -8,9 +8,28 @@ public class FEM : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ProceduralMeshComponent", "FemImplementation" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+			{ 
+				"Core",
+				"CoreUObject", 
+				"Engine", 
+				"InputCore", 
+				"ProceduralMeshComponent", 
+				"FemImplementation",
+				"DynamicMesh",
+				"ModelingComponents"
+			});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "FemImplementation" });
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"CoreUObject",
+			"Engine",
+			"MeshDescription",
+			"FemImplementation",
+			"MeshDescription",
+			"StaticMeshDescription",
+			"MeshConversion"
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

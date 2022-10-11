@@ -50,7 +50,7 @@ void AProceduralMesh::runTetragenio()
 
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %f, %f, %f"), p.X, p.Y, p.Z));
 		//to be remove this scale, should do a proper blender model with the right scale
-		float scale = 100; 
+		float scale = 1; 
 		mVertices.Add(p * scale);
 	}
 
@@ -188,8 +188,8 @@ void AProceduralMesh::BeginPlay()
 			//std::copy(std::begin(tempVertices), std::end(tempVertices), mVerticesBuffer);
 			//////////////////////////////////////////////////////////////
 						
-			mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsIds.Num() / 4);
-			UFemFunctions::init(mIdAlgoFEM, &tempVertices[0], &mTetsBuffer[0], nf, nn);
+			//mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsIds.Num() / 4);
+			//UFemFunctions::init(mIdAlgoFEM, &tempVertices[0], &mTetsBuffer[0], nf, nn);
 		}
 	}
 }
@@ -229,7 +229,7 @@ void AProceduralMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
+	//UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
 
 	for (int j = 0; j < mVertices.Num(); ++j)
 	{

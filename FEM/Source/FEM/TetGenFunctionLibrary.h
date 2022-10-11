@@ -19,6 +19,9 @@ private:
 	static bool LoadDllHandle();
 
 public:
+	
+	static void RunTetGen2(float* points, int* faces, int facesSize, int pointsSizes, char* switches);
+
 	UFUNCTION(BlueprintCallable)
 	static void RunTetGen();
 
