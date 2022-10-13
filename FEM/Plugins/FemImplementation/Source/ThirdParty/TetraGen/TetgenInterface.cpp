@@ -33,11 +33,18 @@ namespace tetSpace
 	TetraedrosStruct tetraedrosInstancia;
 }
 
-void runTetGen2( float* points,
-				 int* faces,
-				 int facesSize,
-				 int pointsSizes,
-				 char* switches )
+void runTetGen2( const float* points,
+				 const int* faces,
+				 const int facesSize,
+				 const int pointsSizes,
+				 int&       numberOfPoints,
+				 double*&  pointlist,
+				 int&       numberoftrifaces,
+				 int*&     trifacelist,
+				 int&       numberoftetrahedra,
+				 int*&     tetrahedronlist,
+				 int*&     tet2facelist,
+				 char*	   switches )
 {
 	tetgenio in, out;
 	tetgenio::facet* f;
@@ -88,32 +95,26 @@ void runTetGen2( float* points,
 	//out.save_elements("barout");
 	//out.save_faces("barout");
 
-	tetSpace::tetraedrosInstancia.m_numberOfPoints = out.numberofpoints;
-	tetSpace::tetraedrosInstancia.m_numberoftrifaces = out.numberoftrifaces;
-	tetSpace::tetraedrosInstancia.m_numberoftetrahedra = out.numberoftetrahedra;
+	numberOfPoints = out.numberofpoints;
+	numberoftrifaces = out.numberoftrifaces;
+	numberoftetrahedra = out.numberoftetrahedra;
 
 	////////////////////////////
+	pointlist		= new double[3 * out.numberofpoints];
+	trifacelist	= new int[3 * out.numberoftrifaces];
+	tetrahedronlist = new int[4 * out.numberoftetrahedra];
+	tet2facelist	= new int[4 * out.numberoftetrahedra];
 
-	delete[] tetSpace::tetraedrosInstancia.m_pointlist;
-	delete[] tetSpace::tetraedrosInstancia.m_trifacelist;
-	delete[] tetSpace::tetraedrosInstancia.m_tetrahedronlist;
-	delete[] tetSpace::tetraedrosInstancia.m_tet2facelist;
-
-	tetSpace::tetraedrosInstancia.m_pointlist = new REAL[3 * out.numberofpoints];
-	tetSpace::tetraedrosInstancia.m_trifacelist = new int[3 * out.numberoftrifaces];
-	tetSpace::tetraedrosInstancia.m_tetrahedronlist = new int[4 * out.numberoftetrahedra];
-	tetSpace::tetraedrosInstancia.m_tet2facelist = new int[4 * out.numberoftetrahedra];
-
-	std::memcpy(tetSpace::tetraedrosInstancia.m_pointlist,
+	std::memcpy(pointlist,
 		out.pointlist, 3 * out.numberofpoints * sizeof(REAL));
 
-	std::memcpy(tetSpace::tetraedrosInstancia.m_trifacelist,
+	std::memcpy(trifacelist,
 		out.trifacelist, 3 * out.numberoftrifaces * sizeof(int));
 
-	std::memcpy(tetSpace::tetraedrosInstancia.m_tetrahedronlist,
+	std::memcpy(tetrahedronlist,
 		out.tetrahedronlist, 4 * out.numberoftetrahedra * sizeof(int));
 
-	std::memcpy(tetSpace::tetraedrosInstancia.m_tet2facelist,
+	std::memcpy(tet2facelist,
 		out.tet2facelist, 4 * out.numberoftetrahedra * sizeof(int));
 
 }

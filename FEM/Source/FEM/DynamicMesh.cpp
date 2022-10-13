@@ -2,9 +2,9 @@
 
 
 #include "DynamicMesh.h"
-#include "TetGenFunctionLibrary.h"
 #include "MeshDescriptionToDynamicMesh.h"
 #include "StaticMeshAttributes.h"
+#include "FemFunctions.h"
 #include <vector>
 
 namespace
@@ -130,7 +130,32 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 			faces[triId.GetValue() * 3 + 2] = tri[2].GetValue();
 		}
 
-		UTetGenFunctionLibrary::RunTetGen2(points, &faces[0], faces.size(), VertexIDs.Num() * 3, nullptr);
+		////////////////////////////////////////////////////////////////////////
+
+		int		numberOfPoints;
+		double* pointlist;
+		int		numberoftrifaces;
+		int* trifacelist;
+		int		numberoftetrahedra;
+		int* tetrahedronlist;
+		int* tet2facelist;
+
+		UFemFunctions::runTetGen(points,
+								 &faces[0],
+								 faces.size(),
+			                     VertexIDs.Num() * 3,
+								 numberOfPoints,
+								 pointlist,
+								 numberoftrifaces,
+								 trifacelist,
+								 numberoftetrahedra,
+								 tetrahedronlist,
+								 tet2facelist,
+								 "pqz-f-nn");
+
+		MeshOut.Clear();
+
+
 	}
 }
 

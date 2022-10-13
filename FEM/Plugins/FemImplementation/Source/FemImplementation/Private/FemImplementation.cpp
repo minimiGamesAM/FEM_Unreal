@@ -7,10 +7,10 @@
 
 #define LOCTEXT_NAMESPACE "FFemImplementationModule"
 
-void FFemImplementationModule::StartupModule()
+void FFemImplementationModule::loadFemLib()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	
+
 	FString BaseDir = IPluginManager::Get().FindPlugin("FemImplementation")->GetBaseDir();
 	FString LibraryPath;
 
@@ -22,7 +22,7 @@ void FFemImplementationModule::StartupModule()
 	ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
 	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/FemImpLibrary/Win64/mkl_sequential.2.dll"));
 	ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
-	
+
 	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/FemImpLibrary/Win64/FemImpLibrary.dll"));
 
 	ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
@@ -35,6 +35,33 @@ void FFemImplementationModule::StartupModule()
 		//FMessageDialog::Open(EAppMsgType::Ok, FText(message));
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
 	}
+}
+
+void FFemImplementationModule::loadTetGenLib()
+{
+	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+
+	FString BaseDir = IPluginManager::Get().FindPlugin("FemImplementation")->GetBaseDir();
+	FString LibraryPath;
+
+
+	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Binaries/ThirdParty/TetraGen/Win64/TetraGen.dll"));
+	ExampleLibraryHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
+		
+	if (ExampleLibraryHandle)
+	{
+		FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("TetGen", "OK"));
+		//float determinante = basicTest();
+		//auto message = FString("ThirdPartyLibraryError %f", determinante);// +FString(determinante);
+		//FMessageDialog::Open(EAppMsgType::Ok, FText(message));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
+	}
+}
+
+void FFemImplementationModule::StartupModule()
+{
+	loadFemLib();
+	loadTetGenLib();
 }
 
 void FFemImplementationModule::ShutdownModule()

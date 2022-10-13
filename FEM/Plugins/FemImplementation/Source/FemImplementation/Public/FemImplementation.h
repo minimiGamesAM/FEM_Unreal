@@ -14,5 +14,9 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
+
+	void loadFemLib();
+	void loadTetGenLib();
+
 	void* ExampleLibraryHandle;
 };
