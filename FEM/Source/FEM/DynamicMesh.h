@@ -65,4 +65,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	TArray<FVector>				mVertices;
+
+	float t = 0.0f;
+
 };

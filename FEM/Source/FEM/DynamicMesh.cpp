@@ -55,6 +55,28 @@ ADynamicMesh::ADynamicMesh()
 void ADynamicMesh::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<UActorComponent*> comps;
+
+	this->GetComponents(comps);
+
+	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
+	{
+		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
+		if (thisComp)
+		{
+			auto meshSection = thisComp->GetProcMeshSection(0);
+			
+			auto& data = meshSection->ProcVertexBuffer;
+				
+			mVertices.SetNum(data.Num());
+			
+			for (int j = 0; j < data.Num(); ++j)
+			{
+				mVertices[j] = data[j].Position;
+			}
+		}
+	}
 }
 
 void ADynamicMesh::PostInitializeComponents()
@@ -263,6 +285,21 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 void ADynamicMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	t = t + GetWorld()->GetDeltaSeconds();
+		
+	for (int i = 0; i < mVertices.Num(); ++i)
+	{
+		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
+	}
+
+	TArray<int32>				Triangles;
+	TArray<FVector>				Normals;
+	TArray<FVector2D>			UVs;
+	TArray<FColor>		        VertexColors;
+	TArray<FProcMeshTangent>	Tangents;
+
+	ProceduralMesh->UpdateMeshSection(0, mVertices, Normals, UVs, VertexColors, Tangents);
 
 }
 
