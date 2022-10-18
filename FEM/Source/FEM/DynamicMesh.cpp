@@ -69,11 +69,15 @@ void ADynamicMesh::BeginPlay()
 			
 			auto& data = meshSection->ProcVertexBuffer;
 				
-			mVertices.SetNum(data.Num());
-			
+			mVerticesBuffer.resize(data.Num() * 3);
+						
 			for (int j = 0; j < data.Num(); ++j)
 			{
-				mVertices[j] = data[j].Position;
+				FVector& pos = data[j].Position;
+				
+				mVerticesBuffer[j * 3] = pos[0];
+				mVerticesBuffer[j * 3 + 1] = pos[1];
+				mVerticesBuffer[j * 3 + 2] = pos[2];
 			}
 		}
 	}
@@ -288,9 +292,21 @@ void ADynamicMesh::Tick(float DeltaTime)
 
 	t = t + GetWorld()->GetDeltaSeconds();
 		
-	for (int i = 0; i < mVertices.Num(); ++i)
+	FVector defaultVec(0.0f, 0.0f, 0.0f);
+	TArray<FVector>	Vertices(&defaultVec, mVerticesBuffer.size() / 3);
+		
+	// update array with FEM
+	for (int i = 0; i < mVerticesBuffer.size(); ++i)
 	{
-		mVertices[i] = mVertices[i] + FVector(0.2, 0, 0) * t;
+		mVerticesBuffer[i] += 0.2 * t;
+	}
+	//
+
+	for (int i = 0; i < Vertices.Num(); ++i)
+	{
+		Vertices[i][0] = mVerticesBuffer[i * 3];
+		Vertices[i][1] = mVerticesBuffer[i * 3 + 1];
+		Vertices[i][2] = mVerticesBuffer[i * 3 + 2];
 	}
 
 	TArray<int32>				Triangles;
@@ -299,7 +315,7 @@ void ADynamicMesh::Tick(float DeltaTime)
 	TArray<FColor>		        VertexColors;
 	TArray<FProcMeshTangent>	Tangents;
 
-	ProceduralMesh->UpdateMeshSection(0, mVertices, Normals, UVs, VertexColors, Tangents);
+	ProceduralMesh->UpdateMeshSection(0, Vertices, Normals, UVs, VertexColors, Tangents);
 
 }
 

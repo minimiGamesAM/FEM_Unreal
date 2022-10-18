@@ -7,6 +7,7 @@
 #include "DynamicMesh3.h"
 #include "Components/StaticMeshComponent.h"
 #include "ProceduralMeshComponent.h"
+#include <vector>
 #include "DynamicMesh.generated.h"
 
 UCLASS()
@@ -66,8 +67,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	TArray<FVector>				mVertices;
-
+	
+	std::vector<float>			mVerticesBuffer;
 	float t = 0.0f;
 
 };
