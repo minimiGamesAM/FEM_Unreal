@@ -340,15 +340,13 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 void ADynamicMesh::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	t = t + GetWorld()->GetDeltaSeconds();
-		
+			
 	FVector defaultVec(0.0f, 0.0f, 0.0f);
 	TArray<FVector>	Vertices(&defaultVec, mVerticesBuffer.size() / 3);
 		
 	// update array with FEM
 
-	UFemFunctions::runFem(&mVerticesBuffer[0], mVerticesBuffer.size(), &mTetsBuffer[0], mTetsBuffer.size());
+	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
 
 	//for (int i = 0; i < mVerticesBuffer.size(); ++i)
 	//{

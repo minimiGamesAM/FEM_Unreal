@@ -72,7 +72,5 @@ private:
 	std::vector<int>			mTetsBuffer;
 
 	int							mIdAlgoFEM = -1;
-
-	float t = 0.0f;
-
+	
 };
