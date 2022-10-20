@@ -21,7 +21,7 @@ public:
 	static void init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn);
 	static void update(int id, float dt, float* verticesBuffer);
 
-	static void runTetGen(const float* points,
+	static void runTetGenio(const float* points,
 		const int*	faces,
 		const int	facesSize,
 		const int	pointsSizes,

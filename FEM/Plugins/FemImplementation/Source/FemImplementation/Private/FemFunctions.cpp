@@ -30,7 +30,7 @@ void UFemFunctions::runFem(float* verticesBuffer, int verticesBufferSize, int* t
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
 }
 
-void UFemFunctions::runTetGen(const float* points,
+void UFemFunctions::runTetGenio(const float* points,
 	const int* faces,
 	const int	facesSize,
 	const int	pointsSizes,
@@ -43,7 +43,7 @@ void UFemFunctions::runTetGen(const float* points,
 	int*& tet2facelist,
 	char* switches)
 {
-	runTetGen2(points,
+	runTetGen(points,
 		faces,
 		facesSize,
 		pointsSizes,

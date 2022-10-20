@@ -225,18 +225,18 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 		int* tetrahedronlist;
 		int* tet2facelist;
 		
-		UFemFunctions::runTetGen(points,
-								 &faces[0],
-								 faces.size(),
-			                     VertexIDs.Num() * 3,
-								 numberOfPoints,
-								 pointlist,
-								 numberoftrifaces,
-								 trifacelist,
-								 numberoftetrahedra,
-								 tetrahedronlist,
-								 tet2facelist,
-								 "pqz-f-nn");
+		UFemFunctions::runTetGenio(	points,
+									&faces[0],
+									faces.size(),
+									VertexIDs.Num() * 3,
+									numberOfPoints,
+									pointlist,
+									numberoftrifaces,
+									trifacelist,
+									numberoftetrahedra,
+									tetrahedronlist,
+									tet2facelist,
+									"pqz-f-nn");
 		
 		ProceduralMesh = Cast<UProceduralMeshComponent>(GetDefaultSubobjectByName(TEXT("ProcMesh")));
 

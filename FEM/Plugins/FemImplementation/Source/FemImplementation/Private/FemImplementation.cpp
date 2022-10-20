@@ -29,11 +29,7 @@ void FFemImplementationModule::loadFemLib()
 
 	if (ExampleLibraryHandle)
 	{
-		FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("FemImpLibrary", "OK"));
-		//float determinante = basicTest();
-		//auto message = FString("ThirdPartyLibraryError %f", determinante);// +FString(determinante);
-		//FMessageDialog::Open(EAppMsgType::Ok, FText(message));
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
+		//FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("FemImpLibrary", "OK"));
 	}
 }
 
@@ -50,11 +46,7 @@ void FFemImplementationModule::loadTetGenLib()
 		
 	if (ExampleLibraryHandle)
 	{
-		FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("TetGen", "OK"));
-		//float determinante = basicTest();
-		//auto message = FString("ThirdPartyLibraryError %f", determinante);// +FString(determinante);
-		//FMessageDialog::Open(EAppMsgType::Ok, FText(message));
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
+		//FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("TetGen", "OK"));
 	}
 }
 

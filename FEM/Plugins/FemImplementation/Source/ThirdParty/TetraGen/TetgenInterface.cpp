@@ -3,37 +3,8 @@
 #include "tetgen/tetgen.h"
 #include <string>
 
-namespace tetSpace
-{
-	struct TetraedrosStruct
-	{
-		int   m_numberOfPoints;
-		REAL *m_pointlist;
-		int   m_numberoftrifaces;
-		int  *m_trifacelist;
-		int   m_numberoftetrahedra;
-		int  *m_tetrahedronlist;
-		int  *m_tet2facelist;
 
-		TetraedrosStruct()
-			: m_numberOfPoints(0),
-			  m_pointlist(nullptr),
-			  m_numberoftrifaces(0),
-			  m_trifacelist(nullptr),
-			  m_numberoftetrahedra(0),
-			  m_tetrahedronlist(nullptr),
-			  m_tet2facelist(nullptr)
-		{
-			//m_pointlist = new REAL[m_numberOfPoints];
-			//trifacelist = new int[m_numberoftrifaces];
-			//tetrahedronlist = new int[m_numberoftetrahedra];
-		}
-	};
-
-	TetraedrosStruct tetraedrosInstancia;
-}
-
-void runTetGen2( const float* points,
+void runTetGen( const float* points,
 				 const int* faces,
 				 const int facesSize,
 				 const int pointsSizes,
@@ -117,39 +88,4 @@ void runTetGen2( const float* points,
 	std::memcpy(tet2facelist,
 		out.tet2facelist, 4 * out.numberoftetrahedra * sizeof(int));
 
-}
-
-int getNumberOfPoints()
-{
-	return tetSpace::tetraedrosInstancia.m_numberOfPoints;
-}
-
-double getPoint(int idx)
-{
-	return tetSpace::tetraedrosInstancia.m_pointlist[idx];
-}
-
-int getNumberOfTrifaces()
-{
-	return tetSpace::tetraedrosInstancia.m_numberoftrifaces;
-}
-
-int getTrifacet(int idx)
-{
-	return tetSpace::tetraedrosInstancia.m_trifacelist[idx];
-}
-
-int getNumberOfTets()
-{
-	return tetSpace::tetraedrosInstancia.m_numberoftetrahedra;
-}
-
-int getTet(int idx)
-{
-	return tetSpace::tetraedrosInstancia.m_tetrahedronlist[idx];
-}
-
-int getTet2facelist(int tetIdx, int idx)
-{
-	return tetSpace::tetraedrosInstancia.m_tet2facelist[tetIdx + idx];
 }
