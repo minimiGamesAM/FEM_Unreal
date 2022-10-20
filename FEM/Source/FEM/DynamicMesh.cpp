@@ -59,6 +59,8 @@ void ADynamicMesh::BeginPlay()
 	TArray<UActorComponent*> comps;
 
 	this->GetComponents(comps);
+	
+	TArray<FColor>	VertexColors;
 
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{
@@ -73,14 +75,52 @@ void ADynamicMesh::BeginPlay()
 						
 			for (int j = 0; j < data.Num(); ++j)
 			{
+				//position
 				FVector& pos = data[j].Position;
-				
+								
 				mVerticesBuffer[j * 3] = pos[0];
 				mVerticesBuffer[j * 3 + 1] = pos[1];
 				mVerticesBuffer[j * 3 + 2] = pos[2];
+
+				//color
+				FColor& color = data[j].Color;
+				VertexColors.Add(color);
 			}
 		}
 	}
+
+	// init FEM
+	const int dim = 3;
+	//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+	const int nodof = 3;
+	//nn = total number of nodes in the problem
+	int nn = mVerticesBuffer.size() / 3;
+
+	std::vector<int> nf(nodof * nn, 1);
+
+	for (int i = 0; i < VertexColors.Num(); ++i)
+	{
+		if (VertexColors[i] == FColor(255, 0, 0, 255))
+		{
+			nf[i] = 0;
+			nf[i + nn] = 0;
+			nf[i + 2 * nn] = 0;
+		}
+	}
+
+	std::vector<float> tempVerticesBuffer(nodof * nn, 0.0f);
+
+	for (int k = 0; k < nn; ++k)
+	{
+		for (int l = 0; l < nodof; ++l)
+		{
+			tempVerticesBuffer[k + l * nn] = mVerticesBuffer[l + k * nodof];
+		}
+	}
+
+	mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsBuffer.size() / 4);
+	UFemFunctions::init(mIdAlgoFEM, &tempVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+
 }
 
 void ADynamicMesh::PostInitializeComponents()
@@ -215,9 +255,7 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 			TArray<FVector2D>			UVs;
 			TArray<FColor>		        VertexColors(&defaultColor, numberOfPoints);
 			TArray<FProcMeshTangent>	Tangents;
-
-			//MeshOut.Clear();
-
+			
 			//vertex
 			for (int i = 0; i < numberOfPoints; i++)
 			{
@@ -271,6 +309,19 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 				}
 			}
 
+			///////////////////////////
+			mTetsBuffer.clear();
+			mTetsBuffer.resize(numberoftetrahedra * 4);
+
+			for (int tetIdx = 0; tetIdx < numberoftetrahedra; tetIdx++)
+			{
+				mTetsBuffer[4 * tetIdx] = tetrahedronlist[4 * tetIdx];
+				mTetsBuffer[4 * tetIdx + 1] = tetrahedronlist[4 * tetIdx + 2];
+				mTetsBuffer[4 * tetIdx + 2] = tetrahedronlist[4 * tetIdx + 1];
+				mTetsBuffer[4 * tetIdx + 3] = tetrahedronlist[4 * tetIdx + 3];
+			}
+			///////////////////////////
+
 			ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, false);
 		
 			UMaterialInterface* UseMaterial = UMaterial::GetDefaultMaterial(MD_Surface);
@@ -296,10 +347,13 @@ void ADynamicMesh::Tick(float DeltaTime)
 	TArray<FVector>	Vertices(&defaultVec, mVerticesBuffer.size() / 3);
 		
 	// update array with FEM
-	for (int i = 0; i < mVerticesBuffer.size(); ++i)
-	{
-		mVerticesBuffer[i] += 0.2 * t;
-	}
+
+	UFemFunctions::runFem(&mVerticesBuffer[0], mVerticesBuffer.size(), &mTetsBuffer[0], mTetsBuffer.size());
+
+	//for (int i = 0; i < mVerticesBuffer.size(); ++i)
+	//{
+	//	mVerticesBuffer[i] += 0.2 * t;
+	//}
 	//
 
 	for (int i = 0; i < Vertices.Num(); ++i)
