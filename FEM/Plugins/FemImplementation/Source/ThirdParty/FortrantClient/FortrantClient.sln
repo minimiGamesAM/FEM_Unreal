@@ -15,6 +15,11 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "p113", "p113\p113.vfproj", 
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "library", "library\library.vfproj", "{8E29E841-3E6D-403C-A2B9-70F36BE6DB6F}"
 EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "p117", "p117\p117.vfproj", "{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8E29E841-3E6D-403C-A2B9-70F36BE6DB6F} = {8E29E841-3E6D-403C-A2B9-70F36BE6DB6F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +52,14 @@ Global
 		{8E29E841-3E6D-403C-A2B9-70F36BE6DB6F}.Release|x64.Build.0 = Release|x64
 		{8E29E841-3E6D-403C-A2B9-70F36BE6DB6F}.Release|x86.ActiveCfg = Release|Win32
 		{8E29E841-3E6D-403C-A2B9-70F36BE6DB6F}.Release|x86.Build.0 = Release|Win32
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Debug|x64.ActiveCfg = Debug|x64
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Debug|x64.Build.0 = Debug|x64
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Debug|x86.ActiveCfg = Debug|Win32
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Debug|x86.Build.0 = Debug|Win32
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Release|x64.ActiveCfg = Release|x64
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Release|x64.Build.0 = Release|x64
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Release|x86.ActiveCfg = Release|Win32
+		{FFB00828-AD0A-40E0-A0A0-3B6EF3012C0F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
