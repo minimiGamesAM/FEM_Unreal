@@ -21,7 +21,7 @@ class FEM_Factory
 {
 	
 public:
-	static int create(int ndim, int nodof, int nels);
+	static int create(int ndim, int nodof, int nels, int nod, int nip, const char* element);
 	static void init(int id, T* g_coord, int* g_num, int* in_nf, int in_nn);
 	static void update(int id, T dtim, T* verticesBuffer);
 

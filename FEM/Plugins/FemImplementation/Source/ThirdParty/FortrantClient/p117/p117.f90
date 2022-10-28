@@ -62,6 +62,10 @@ PROGRAM p117
  END DO elements_1
  CALL sample(element,points,weights)
  diag_precon=zero
+ 
+ !--WRITE(11,'(I8)') nf(:,:)
+ !--WRITE(11,'(1E12.4)')x1(:)
+ 
  WRITE(11,'(A,I5,A)')" There are",neq," equations"
  c1=(one-theta)*dtim
  c2=fk-c1

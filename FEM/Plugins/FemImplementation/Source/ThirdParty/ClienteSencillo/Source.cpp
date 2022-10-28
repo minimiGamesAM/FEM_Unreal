@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <map>
 
-#include "TetGenInterface.h"
+//#include "TetGenInterface.h"
 
 void testInvert(float* jac, const int dim)
 {
@@ -103,7 +103,10 @@ void prueba()
 						   0, 0, 0, 0, 1, 1, 1, 1,
 						   1, 1, 0, 0, 1, 1, 0, 0 };
 
-	int id = FEM_Factory<T>::create(dim, nodof, nbTets);
+	// number of nodes per element
+	int nod = tetsSize / nbTets;
+
+	int id = FEM_Factory<T>::create(dim, nodof, nbTets, nod, 1, "tetrahedron");
 	FEM_Factory<T>::init(id, vertices, tets, nf, nn);
 
 	std::vector<T> verticesBuffer(nn * 3, T(0.0));
@@ -117,79 +120,123 @@ void prueba()
 	//std::cout << verticesBuffer[12] << " " << verticesBuffer[13] << " " << verticesBuffer[14] << std::endl;
 }
 
-void testWithTetMesh()
+template<class T>
+void prueba2D()
 {
-	const int dim = 3;
-	const int nodof = 3;
+	const int dim = 2;
+	//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+	const int nodof = 2;
+	//nn = total number of nodes in the problem
+	const int nn = 18;
 
-	char file[] = "verificacion.ply";
-	char switches[] = "pqz-f-nn";
+	// nels = nb elements
+	const int nels = 3;
 
-	runTetGen(file, switches);
+	const int nip = 9;
 
-	int nn = getNumberOfPoints();
+	
+	T vertices[] = {
+		T( 0.2667E+01),
+		T( 0.2667E+01),
+		T( 0.2667E+01),
+		T( 0.3333E+01),
+		T( 0.4000E+01),
+		T( 0.4000E+01),
+		T( 0.4000E+01),
+		T( 0.3333E+01),
+		T(-0.1000E+01),
+		T(-0.5000E+00),
+		T( 0.0000E+00),
+		T( 0.0000E+00),
+		T( 0.0000E+00),
+		T(-0.5000E+00),
+		T(-0.1000E+01),
+		T(-0.1000E+01)
+	};
 
-	std::vector<float> mVerticesBuffer(nn * nodof, 0.0f);
+	int g_num[] = {
+		 3,
+		 2,
+		 1,
+		 4,
+		 6,
+		 7,
+		 8,
+		 5,
+		 8,
+		 7,
+		 6,
+		 9,
+		11,
+		12,
+		13,
+		10,
+		13,
+		12,
+		11,
+		14,
+		16,
+		17,
+		18,
+		15
+	};
 
-	std::cout << "Vertices" << std::endl;
+	std::for_each(std::begin(g_num), std::end(g_num), [](int& i) { i = i - 1; });
 
-	for (int i = 0; i < nn; i++)
-	{
-		mVerticesBuffer[i * 3] = getPoint(i * 3);
-		mVerticesBuffer[i * 3 + 1] = getPoint(i * 3 + 1);
-		mVerticesBuffer[i * 3 + 2] = getPoint(i * 3 + 2);
+	// number of nodes per element
+	int nod = std::distance(std::begin(g_num), std::end(g_num)) / nels;
+	int id = FEM_Factory<T>::create(dim, nodof, nels, nod, nip, "quadrilateral");
 
-		std::cout << i << " " << mVerticesBuffer[i * 3] << " " << mVerticesBuffer[i * 3 + 1] << " " << mVerticesBuffer[i * 3 + 2] << std::endl;
-	}
-		
-	std::vector<int> mTetsBuffer(getNumberOfTets() * 4, 0);
-
-	std::cout << "Tets" << std::endl;
-
-	for (int tetIdx = 0; tetIdx < getNumberOfTets(); tetIdx++)
-	{
-		mTetsBuffer[4 * tetIdx] = getTet(4 * tetIdx);
-		mTetsBuffer[4 * tetIdx + 1] = getTet(4 * tetIdx + 2);
-		mTetsBuffer[4 * tetIdx + 2] = getTet(4 * tetIdx + 1);
-		mTetsBuffer[4 * tetIdx + 3] = getTet(4 * tetIdx + 3);
-
-		std::cout << tetIdx << " " << mTetsBuffer[4 * tetIdx] << " "
-									   << mTetsBuffer[4 * tetIdx + 1] << " " 
-										<< mTetsBuffer[4 * tetIdx + 2] << " "
-										<< mTetsBuffer[4 * tetIdx + 3]  << std::endl;
-	}
-
-	//mTetsBuffer[0] = 5;
-	//mTetsBuffer[1] = 0;
-	//mTetsBuffer[2] = 1;
-	//mTetsBuffer[3] = 7;
-	//////////
-
-	std::vector<int> nf( { 0, 1, 0, 1, 0, 1, 0, 1,
-						   0, 0, 0, 0, 1, 1, 1, 1,
-						   1, 1, 0, 0, 1, 1, 0, 0 });
-
-
-	/////////////////transpose////////////////////////////////////
-	std::vector<float> tempVertices(nodof * nn, 0);
-
+	int nf[] = {
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1,
+		1
+	};
+	
+	std::vector<int> tempnf(nodof * nn, 0);
+	
 	for (int k = 0; k < nn; ++k)
 	{
 		for (int l = 0; l < nodof; ++l)
 		{
-			tempVertices[k + l * nn] = mVerticesBuffer[l + k * nodof];
+			tempnf[k + l * nn] = nf[l + k * nodof];
 		}
 	}
 
-
-	int mIdAlgoFEM = FEM_Factory<float>::create(dim, nodof, getNumberOfTets());
-	FEM_Factory<float>::init(mIdAlgoFEM, &tempVertices[0], &mTetsBuffer[0], &nf[0], nn);
-
-	for (int i = 1; i <= 200; ++i)
-	{
-		FEM_Factory<float>::update(mIdAlgoFEM, float(0.25), &mVerticesBuffer[0]);
-	}
-
+	FEM_Factory<T>::init(id, vertices, g_num, &tempnf[0], nn);
 
 }
 
@@ -208,9 +255,10 @@ int main()
 	//bufferTets[1] = 3;
 
 	//float det = basicTest(buffer, 2, bufferTets, 2);
-
-	testWithTetMesh();
+		
 
 	//prueba<double>();
+
+	prueba2D<double>();
 
 }

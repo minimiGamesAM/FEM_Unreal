@@ -14,10 +14,175 @@
 #include <iterator>
 
 #include <vector>
+#include <string>
 //using namespace sycl;
 
 namespace
 {
+    template<class T>
+    void sample(std::string& element, std::vector<T>& s, std::vector<T>& wt, int dim)
+    {
+        int nip = s.size() / dim;
+
+        T root3 = T(1.0) / std::sqrt(T(3.0));
+        T r15 = T(0.2) * std::sqrt(15.0);
+
+        T w[3] = { T(5.0) / T(9.0), T(8.0) / T(9.0), T(5.0) / T(9.0) };
+        T v[9] = { T(5.0) / T(9.0) * w[0],
+                 T(5.0) / T(9.0) * w[1],
+                 T(5.0) / T(9.0) * w[2],
+
+                 T(8.0) / T(9.0) * w[0],
+                 T(8.0) / T(9.0) * w[1],
+                 T(8.0) / T(9.0) * w[2],
+
+                 T(5.0) / T(9.0) * w[0],
+                 T(5.0) / T(9.0) * w[1],
+                 T(5.0) / T(9.0) * w[2] };
+
+        if (element == "quadrilateral")
+        {
+            switch (nip)
+            {
+            case 9:
+            {
+                for (int i = 0; i < 7; i = i + 3)
+                {
+                    s[i] = -r15;
+                    s[i + 1] = 0.0;
+                    s[i + 2] = r15;
+                }
+
+                for (int i = 0; i < 3; i = i + 2)
+                {
+                    s[i + 2] = r15;
+                    s[i + 1 + 2] = 0.0;
+                    s[i + 2 + 2] = -r15;
+                }
+
+                std::copy(std::begin(v), std::end(v), wt.begin());
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+
+    template<class T>
+    void shape_der(std::vector<T>& der, const std::vector<T>& points, const int i, const int dim, const int nod)
+    {
+        T eta, xi, zeta, xi0, eta0, zeta0, etam, etap, xim, xip, c1, c2, c3;
+        T t1, t2, t3, t4, t5, t6, t7, t8, t9, x2p1, x2m1, e2p1, e2m1, zetam, zetap;
+
+        T   zero = 0.0, pt125 = 0.125, pt25 = 0.25, pt5 = 0.5,
+            pt75 = 0.75, one = 1.0, two = 2.0, d3 = 3.0, d4 = 4.0, d5 = 5.0,
+            d6 = 6.0, d8 = 8.0, d9 = 9.0, d10 = 10.0, d11 = 11.0,
+            d12 = 12.0, d16 = 16.0, d18 = 18.0, d27 = 27.0, d32 = 32.0,
+            d36 = 36.0, d54 = 54.0, d64 = 64.0, d128 = 128.0;
+
+        int xii(20), etai(20), zetai(20), l;
+
+        switch (dim)
+        {
+        case 2:
+        {
+            xi = points[i];
+            eta = points[i + nod];
+            c1 = xi;
+            c2 = eta;
+            c3 = one - c1 - c2;
+            etam = pt25 * (one - eta);
+            etap = pt25 * (one + eta);
+            xim = pt25 * (one - xi);
+            xip = pt25 * (one + xi);
+            x2p1 = two * xi + one;
+            x2m1 = two * xi - one;
+            e2p1 = two * eta + one;
+            e2m1 = two * eta - one;
+
+            switch (nod)
+            {
+            case 8:
+            {
+                der[(1 - 1) * nod] = etam * (two * xi + eta);
+                der[(2 - 1) * nod] = -d8 * etam * etap;
+                der[(3 - 1) * nod] = etap * (two * xi - eta);
+                der[(4 - 1) * nod] = -d4 * etap * xi;
+                der[(5 - 1) * nod] = etap * (two * xi + eta);
+                der[(6 - 1) * nod] = d8 * etap * etam;
+                der[(7 - 1) * nod] = etam * (two * xi - eta);
+                der[(8 - 1) * nod] = -d4 * etam * xi;
+                der[1 + (1 - 1) * nod] = xim * (xi + two * eta);
+                der[1 + (2 - 1) * nod] = -d4 * xim * eta;
+                der[1 + (3 - 1) * nod] = xim * (two * eta - xi);
+                der[1 + (4 - 1) * nod] = d8 * xim * xip;
+                der[1 + (5 - 1) * nod] = xip * (xi + two * eta);
+                der[1 + (6 - 1) * nod] = -d4 * xip * eta;
+                der[1 + (7 - 1) * nod] = xip * (two * eta - xi);
+                der[1 + (8 - 1) * nod] = -d8 * xim * xip;
+
+                break;
+            }
+
+            default:
+                break;
+
+            }
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    template<class T>
+    void shape_fun(std::vector<T>& fun, const std::vector<T>& points, const int i, const int dim, const int nod)
+    {
+        T eta, xi, etam, etap, xim, xip, zetam, zetap, c1, c2, c3;
+        T t1, t2, t3, t4, t5, t6, t7, t8, t9;
+        T zeta, xi0, eta0, zeta0;
+        int xii(20), etai(20), zetai(20), l, ndim;
+        T pt125 = 0.125, pt25 = 0.25, pt5 = 0.5, pt75 = 0.75,
+            one = 1.0, two = 2.0, d3 = 3.0, d4 = 4.0, d8 = 8.0, d9 = 9.0,
+            d16 = 16.0, d27 = 27.0, d32 = 32.0, d64 = 64.0, d128 = 128.0;
+        
+        switch (dim)
+        {
+        case 2:
+        {
+            c1 = points[i];
+            c2 = points[i + nod];
+            c3 = one - c1 - c2;
+            xi = points[i];
+            eta = points[i + nod];
+            etam = pt25 * (one - eta);
+            etap = pt25 * (one + eta);
+            xim = pt25 * (one - xi);
+            xip = pt25 * (one + xi);
+
+            switch (nod)
+            {
+            case 8:
+            {
+                T funTEm[] = { d4 * etam * xim * (-xi - eta - one), d32 * etam * xim * etap,
+                     d4 * etap * xim * (-xi + eta - one), d32 * xim * xip * etap,
+                     d4 * etap * xip * (xi + eta - one), d32 * etap * xip * etam,
+                     d4 * xip * etam * (xi - eta - one), d32 * xim * xip * etam };
+
+                std::copy(std::begin(funTEm), std::end(funTEm), fun.begin());
+            }
+            default:
+                break;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+
+    }
+
     int formnf(int* nf, const int nodof, const int nn)
     {
         int m = 0;
@@ -420,6 +585,18 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
     return res;
 }
 
+// y = alpha * A * x + beta * y
+void matmulVec(const float alpha, const float* A, const float* x, const float beta, float* y, const int m, const int n)
+{
+    cblas_sgemv(CblasRowMajor, CblasNoTrans, m, n, alpha, A, n, x, 1, beta, y, 1);
+}
+
+// y = alpha * A * x + beta * y
+void matmulVec(const double alpha, const double* A, const double* x, const double beta, double* y, const int m, const int n)
+{
+    cblas_dgemv(CblasRowMajor, CblasNoTrans, m, n, alpha, A, n, x, 1, beta, y, 1);
+}
+
 // C = alpha A * B + beta * C
 void matmul(const float* A, const float* B, float* C, const int m, const int k, const int n)
 {
@@ -593,30 +770,41 @@ private:
     int neq;
 
     //nod = number of node per element
-    const int nod = 4;
+    int nod;
+
+    //nip = number of intregation points per element
+    int nip;
 
     //nf = nodal freedom array(nodof rows and nn colums)
     std::vector<int> nf;
 
+    std::vector<T> points;
+    std::vector<T> weights;
+
     T time = T(0);
     
-    T fun[4] = { T(0.25), T(0.25), T(0.25), T(0.25) };
+    std::vector<T> fun;
 
-    T der[3 * 4] = 
-    { //[ndim * nod] = {
-            T(1.0), T(0.0), T(0.0), T(-1.0),
-            T(0.0), T(1.0), T(0.0), T(-1.0),
-            T(0.0), T(0.0), T(1.0), T(-1.0)
-    };
+    std::vector<T> der;
+
+    std::vector<T> diag_precon;
+
+    std::vector<T> storkm;
+    std::vector<T> stormm;
+
+    std::vector<T> u;
+    std::vector<T> p;
+    std::vector<T> xnew;
+
 
     // skyline profile
-    std::vector<int> kdiag;
+    //std::vector<int> kdiag;
 
     //kv = global stiffness matrix
-    std::vector<T> kv;
-   
+    //std::vector<T> kv;
+    std::vector<int> g_g;
     //global consisten mass
-    std::vector<T> mv;
+    //std::vector<T> mv;
 
     //left hand side matrix (stored as a skyline) 
     std::vector<T> f1;
@@ -639,20 +827,37 @@ private:
 
     int itt = 1;
 
+    std::string   element;
 
 public:
-    Fem_Algoritm(int ndim, int nodof, int nels)
-        : ndim(ndim), nodof(nodof), nn(0), nels(nels), neq(0)
+    Fem_Algoritm(int ndim, int nodof, int nels, int nod, int nip, const char* element)
+        : ndim(ndim), nodof(nodof), nod(nod), element(element), nip(nip), nn(0), nels(nels), neq(0)
     {
+        fun.resize(nod, T(0.25));
+
+        if ("tetrahedron" == element)
+        {
+            T derTemp[4 * 3] =
+            {
+                    T(1.0), T(0.0), T(0.0), T(-1.0),
+                    T(0.0), T(1.0), T(0.0), T(-1.0),
+                    T(0.0), T(0.0), T(1.0), T(-1.0)
+            };
+            der.insert(der.end(), std::begin(derTemp), std::end(derTemp));
+        }
+        else
+        {
+            der.resize(ndim * nod, T(0.0));
+        }
+
+        points.resize(nip * ndim, T(0.25));
+        weights.resize(nip, T(1.0) / T(6.0));
     }
 
     void init(T* g_coord, int* g_num, int* in_nf, int in_nn)
     {
         nn = in_nn;
-        
-        //nip = number of intregation points per element
-        const int nip = 1;
-        
+               
         //nprops = number of material properties
         const int nprops = 3;
         
@@ -675,17 +880,24 @@ public:
         prop[1] = T(0.3);
         prop[2] = T(0.2);
         
-        std::vector<int> g_g(ndof * nels, 0);
-               
-        kdiag.resize(neq, 0);
+        //std::vector<int> g_g(ndof * nels, 0);
+        g_g.resize(ndof * nels, 0);
+        //kdiag.resize(neq, 0);
                
         //---------------------- loop the elements to find global arrays sizes---- -
-        
+        ///////////////
+        T dtim = T(0.0);
+        T c1 = (T(1.0) - theta) * dtim;
+        T c2 = fk - c1;
+        T c3 = fm + T(1.0) / (theta * dtim);
+        T c4 = fk + theta * dtim;
+        ///////////////
+
         std::vector<int> g(ndof, 0);
         
         for (int i = 0; i < nels; ++i)
         {
-            int* num = &g_num[4 * i];
+            int* num = &g_num[nod * i];
         
             num_to_g(num, &nf[0], &g[0], nod, nodof, nn);
         
@@ -693,27 +905,15 @@ public:
             {
                 g_g[i + j * nels] = g[j];
             }
-        
-            fkdiag(&kdiag[0], &g[0], ndof);
         }
-        
-        for (int i = 1; i < neq; ++i)
-        {
-            kdiag[i] = kdiag[i] + kdiag[i - 1];
-        }
-        
-        kv.resize(kdiag[neq - 1], T(0.0));
-        mv.resize(kdiag[neq - 1], T(0.0));
-        f1.resize(kdiag[neq - 1], T(0.0));
-               
+      
+        sample(element, points, weights, ndim);
+
         gravlo.resize(neq, T(0.0));
-         
-        //----------------------- element stiffness integration and assembly--------
-        
-        //call sample, but for tet there is just one point
-        T points[] = { T(0.25), T(0.25), T(0.25) };
-        T weights = T(1.0) / T(6.0);
-        
+        diag_precon.resize(neq + 1, T(0.0));
+
+        //----element stiffnessand mass integration, storageand preconditioner-- -
+
         //nst = number of stress / strain terms
         const int nst = 6;
         const T e = prop[0];
@@ -760,45 +960,63 @@ public:
             
             std::vector<T> mm(ndof * ndof, T(0.0));
             ////// for each point of integration, we have just one for 3d tets
-            // calculate jac
-            matmul(der, &coord[0], &jac[0], ndim, nod, ndim);
-            T det = invert(&jac[0], ndim);
-        
-            // calculate the derivative in x, y, z
-            matmul(&jac[0], der, &deriv[0], ndim, ndim, nod);
-        
-            std::fill(std::begin(bee), std::end(bee), T(0.0));
-            beemat(&bee[0], nst, ndof, &deriv[0], nod);
-        
-            std::vector<T> temporal(nst * ndof, T(0.0));
-                    
-            matmulTransA(&bee[0], dee, &temporal[0], ndof, nst, nst);
-            matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
-        
-            std::for_each(std::begin(km), std::end(km), [&](T& v) { v *= det * weights; });
-        
+            
+            for (int j = 0; j < nip; ++j)
+            {
+                shape_der(der, points, j, ndim, nod);
+                shape_fun(fun, points, j, ndim, nod);
+
+                // calculate jac
+                matmul(&der[0], &coord[0], &jac[0], ndim, nod, ndim);
+                T det = invert(&jac[0], ndim);
+
+                // calculate the derivative in x, y, z
+                matmul(&jac[0], &der[0], &deriv[0], ndim, ndim, nod);
+
+                std::fill(std::begin(bee), std::end(bee), T(0.0));
+                beemat(&bee[0], nst, ndof, &deriv[0], nod);
+
+                std::vector<T> temporal(nst * ndof, T(0.0));
+
+                matmulTransA(&bee[0], dee, &temporal[0], ndof, nst, nst);
+                matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
+
+                std::for_each(std::begin(km), std::end(km), [&](T& v) { v *= det * weights[j]; });
+
+                std::vector<T> ecm(ndof * ndof, T(0.0));
+                std::vector<T> nt(ndof * nodof, T(0.0));
+                std::vector<T> tn(nodof * ndof, T(0.0));
+
+                ecmat(&ecm[0], &nt[0], &tn[0], &fun[0], ndof, nodof);
+
+                for (int k = 0; k < ndof * ndof; ++k)
+                {
+                    mm[k] = mm[k] + ecm[k] * det * weights[j] * prop[2];
+                }
+            }
+
             //for (int j = nodof; j <= ndof; j += nodof)
             //{
             //    eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
             //}
         
-            std::vector<T> ecm(ndof* ndof, T(0.0));
-            std::vector<T> nt (ndof * nodof, T(0.0));
-            std::vector<T> tn (nodof * ndof, T(0.0));
-                
-            ecmat(&ecm[0], &nt[0], &tn[0], fun, ndof, nodof);
-        
-            for (int j = 0; j < ndof * ndof; ++j)
+            
+            
+            
+            storkm.insert(storkm.end(), km.begin(), km.end());
+            stormm.insert(stormm.end(), mm.begin(), mm.end());
+
+            for (int k = 1; k < ndof; ++k)
             {
-                mm[j] = mm[j] + ecm[j] * det * weights * prop[2];
+                diag_precon[g[k - 1]] = diag_precon[g[k - 1]] + mm[k + (k - 1) * ndof - 1] * c3 + km[k + (k - 1) * ndof - 1] * c4;
             }
-        
-            ////// end for each integration point
-        
-            fsparv(&kv[0], &km[0], &g[0], &kdiag[0], ndof);
-            fsparv(&mv[0], &mm[0], &g[0], &kdiag[0], ndof);
         }
 
+        for (int k = 1; k < diag_precon.size(); ++k)
+        {
+            diag_precon[k] = T(1.0) / diag_precon[k];
+        }
+        diag_precon[0] = T(0.0);
         //---------------------- - initial conditions and factorise equations--------
 
         // x0 = old displacements
@@ -816,10 +1034,10 @@ public:
 
         x0.resize(neq + 1, T(0.0));
         d1x0.resize(neq + 1, T(0.0));
-        x1.resize(neq + 1, T(0.0));
+        //x1.resize(neq + 1, T(0.0));
         d2x0.resize(neq + 1, T(0.0));
-        d1x1.resize(neq + 1, T(0.0));
-        d2x1.resize(neq + 1, T(0.0));
+        //d1x1.resize(neq + 1, T(0.0));
+        //d2x1.resize(neq + 1, T(0.0));
 
                
 
@@ -837,111 +1055,145 @@ public:
 
         //std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
         
-        loads2 = new T[neq + 1];
+        //loads2 = new T[neq + 1];
+
+        u.resize(neq + 1, T(0.0));
     }
 
     void update(T dtim, T* verticesBuffer)
     {
-        //number of loaded nodes
-        const int loaded_nodes = 2;
-        int node[loaded_nodes] = {};
-
-        //val = applied nodal load weightings
-        std::vector<T> val(loaded_nodes * ndim, T(0.0));
-
-        for (int i = 0; i < loaded_nodes; ++i)
-        {
-            for (int j = 0; j < ndim; ++j)
-            {
-                val[i * loaded_nodes + j] = T(0.25);
-            }
-        }
-
-        // for debug purposes //
-        //nres = node number at witch time history is to be printed
-        int nres = 6;
-        node[0] = nres;
-        node[1] = 2;
-        int npri = 1;
-        ////////////////////////
+        ////number of loaded nodes
+        //const int loaded_nodes = 2;
+        //int node[loaded_nodes] = {};
+        //
+        ////val = applied nodal load weightings
+        //std::vector<T> val(loaded_nodes * ndim, T(0.0));
+        //
+        //for (int i = 0; i < loaded_nodes; ++i)
+        //{
+        //    for (int j = 0; j < ndim; ++j)
+        //    {
+        //        val[i * loaded_nodes + j] = T(0.25);
+        //    }
+        //}
+        //
+        //// for debug purposes //
+        ////nres = node number at witch time history is to be printed
+        //int nres = 6;
+        //node[0] = nres;
+        //node[1] = 2;
+        //int npri = 1;
+        //////////////////////////
+        //
+        int ndof = nod * nodof;
 
         T c1 = (T(1.0) - theta) * dtim;
         T c2 = fk - c1;
         T c3 = fm + T(1.0) / (theta * dtim);
         T c4 = fk + theta * dtim;
-
-        addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
-        sparin(&f1[0], &kdiag[0], neq);
-
-        //for (int i = 1; i <= nstep; ++i)
-        //{
+        //
+        //addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
+        //sparin(&f1[0], &kdiag[0], neq);
+        //
+        ////for (int i = 1; i <= nstep; ++i)
+        ////{
         time = time + dtim;
         std::fill(loads2, loads2 + neq + 1, T(0.0));
+        std::fill(u.begin(), u.end(), T(0.0));
 
-        addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
-
-        float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
-
-        for (int j = 1; j <= loaded_nodes; ++j)
+        for (int i = 0; i < nels; ++i)
         {
-            for (int k = 0; k < ndim; ++k)
+            std::vector<T> x0Temp(ndof, 0);
+            std::vector<T> d1x0Temp(ndof, 0);
+            std::vector<T> uTemp(ndof, 0);
+
+            for (int j = 0; j < ndof; ++j)
             {
-                loads2[nf[nn * k + node[j - 1] - 1]] =
-                    val[(j - 1) * loaded_nodes + k] * temporal;
+                int g_index = g_g[i + j * nels];
+
+                x0Temp[j] = x0[g_index];
+                d1x0Temp[j] = d1x0[g_index];
             }
+
+            T* km = &storkm[i * ndof * ndof];
+            T* mm = &stormm[i * ndof * ndof];
+
+            //u(g) = u(g) + MATMUL(km * c2 + mm * c3, x0(g)) + MATMUL(mm / theta, d1x0(g))
+
+            //MATMUL(km * c2, X0(g))
+            //MATMUL(mm * c3, x0(g))
+            //MATMUL(mm / theta, d1x0(g))
+
+            matmulVec(c2, km, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
+            matmulVec(c3, mm, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
+            matmulVec(T(1.0) / theta, mm, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
         }
 
-        linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
-
-        //d1x1=loads+d1x1
-        addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
-
-        copyVec(neq + 1, &x0[0], loads2);
-        scalVecProduct(neq + 1, c2, loads2);
-
-        linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
-
-        //x1=x1+d1x1
-        addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
-
-        spabac(&f1[0], &x1[0], &kdiag[0], neq);
-
-        T a = T(1.0) / (theta * dtim);
-        T b = (T(1.0) - theta) / theta;
-
-        //d1x1 = a * (x1 - x0) - b * d1x0;
-        addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
-        addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
-
-        //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
-        addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
-        addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
-
-        copyVec(neq + 1, &x1[0], &x0[0]);
-        copyVec(neq + 1, &d1x1[0], &d1x0[0]);
-        copyVec(neq + 1, &d2x1[0], &d2x0[0]);
-
-        if (itt / npri * npri == itt)
-        {
-        //  std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-        }
-        ++itt;
-
-        if (verticesBuffer)
-        {
-            for (int i = 0; i < nn; ++i)
-            {
-                verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
-                verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
-                verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
-
-                //if (i == 5)
-                //{
-                //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
-                //}
-            }
-        }
+        //
+        //addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
+        //
+        //float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
+        //
+        //for (int j = 1; j <= loaded_nodes; ++j)
+        //{
+        //    for (int k = 0; k < ndim; ++k)
+        //    {
+        //        loads2[nf[nn * k + node[j - 1] - 1]] =
+        //            val[(j - 1) * loaded_nodes + k] * temporal;
+        //    }
         //}
+        //
+        //linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
+        //
+        ////d1x1=loads+d1x1
+        //addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
+        //
+        //copyVec(neq + 1, &x0[0], loads2);
+        //scalVecProduct(neq + 1, c2, loads2);
+        //
+        //linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
+        //
+        ////x1=x1+d1x1
+        //addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
+        //
+        //spabac(&f1[0], &x1[0], &kdiag[0], neq);
+        //
+        //T a = T(1.0) / (theta * dtim);
+        //T b = (T(1.0) - theta) / theta;
+        //
+        ////d1x1 = a * (x1 - x0) - b * d1x0;
+        //addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
+        //addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
+        //
+        ////d2x1 = a * (d1x1 - d1x0) - b * d2x0;
+        //addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
+        //addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
+        //
+        //copyVec(neq + 1, &x1[0], &x0[0]);
+        //copyVec(neq + 1, &d1x1[0], &d1x0[0]);
+        //copyVec(neq + 1, &d2x1[0], &d2x0[0]);
+        //
+        //if (itt / npri * npri == itt)
+        //{
+        ////  std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        //}
+        //++itt;
+        //
+        //if (verticesBuffer)
+        //{
+        //    for (int i = 0; i < nn; ++i)
+        //    {
+        //        verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
+        //        verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
+        //        verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
+        //
+        //        //if (i == 5)
+        //        //{
+        //        //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
+        //        //}
+        //    }
+        //}
+        ////}
     }
 };
 
@@ -949,9 +1201,9 @@ template<class T>
 std::vector<Fem_Algoritm<T>*> FEM_Factory<T>::femAlg;
 
 template<class T>
-int FEM_Factory<T>::create(int ndim, int nodof, int nels)
+int FEM_Factory<T>::create(int ndim, int nodof, int nels, int nod, int nip, const char* element)
 {
-    femAlg.push_back(new Fem_Algoritm<T>(ndim, nodof, nels));
+    femAlg.push_back(new Fem_Algoritm<T>(ndim, nodof, nels, nod, nip, element));
     return femAlg.size() - 1;
 }
 
