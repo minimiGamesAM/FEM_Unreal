@@ -46,18 +46,38 @@ namespace
             {
             case 9:
             {
-                for (int i = 0; i < 7; i = i + 3)
+                int i = 0;
+                
+                for (int j = 0; j < 7; j = j + 3)
                 {
-                    s[i] = -r15;
-                    s[i + 1] = 0.0;
-                    s[i + 2] = r15;
+                    s[i + j * dim] = -r15;
                 }
 
-                for (int i = 0; i < 3; i = i + 2)
+                for (int j = 1; j < 8; j = j + 3)
                 {
-                    s[i + 2] = r15;
-                    s[i + 1 + 2] = 0.0;
-                    s[i + 2 + 2] = -r15;
+                    s[i + j * dim] = 0.0;
+                }
+
+                for (int j = 2; j < nip; j = j + 3)
+                {
+                    s[i + j * dim] = r15;
+                }
+                                
+                i = 1;
+
+                for (int j = 0; j < 3; ++j)
+                {
+                    s[i + j * dim] = r15;
+                }
+
+                for (int j = 3; j < 6; ++j)
+                {
+                    s[i + j * dim] = 0.0;
+                }
+
+                for (int j = 6; j < nip; ++j)
+                {
+                    s[i + j * dim] = -r15;
                 }
 
                 std::copy(std::begin(v), std::end(v), wt.begin());
