@@ -173,11 +173,11 @@ namespace
         {
         case 2:
         {
-            c1 = points[i];
-            c2 = points[i + nod];
+            c1 = points[i * dim];
+            c2 = points[1 + i * dim];
             c3 = one - c1 - c2;
-            xi = points[i];
-            eta = points[i + nod];
+            xi = points[i * dim];
+            eta = points[1 + i * dim];
             etam = pt25 * (one - eta);
             etap = pt25 * (one + eta);
             xim = pt25 * (one - xi);
