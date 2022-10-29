@@ -103,12 +103,14 @@ namespace
 
         int xii(20), etai(20), zetai(20), l;
 
+        int nip = points.size() / dim;
+
         switch (dim)
         {
         case 2:
         {
-            xi = points[i];
-            eta = points[i + nod];
+            xi = points[i * dim];
+            eta = points[1 + i * dim];
             c1 = xi;
             c2 = eta;
             c3 = one - c1 - c2;
@@ -125,22 +127,22 @@ namespace
             {
             case 8:
             {
-                der[(1 - 1) * nod] = etam * (two * xi + eta);
-                der[(2 - 1) * nod] = -d8 * etam * etap;
-                der[(3 - 1) * nod] = etap * (two * xi - eta);
-                der[(4 - 1) * nod] = -d4 * etap * xi;
-                der[(5 - 1) * nod] = etap * (two * xi + eta);
-                der[(6 - 1) * nod] = d8 * etap * etam;
-                der[(7 - 1) * nod] = etam * (two * xi - eta);
-                der[(8 - 1) * nod] = -d4 * etam * xi;
-                der[1 + (1 - 1) * nod] = xim * (xi + two * eta);
-                der[1 + (2 - 1) * nod] = -d4 * xim * eta;
-                der[1 + (3 - 1) * nod] = xim * (two * eta - xi);
-                der[1 + (4 - 1) * nod] = d8 * xim * xip;
-                der[1 + (5 - 1) * nod] = xip * (xi + two * eta);
-                der[1 + (6 - 1) * nod] = -d4 * xip * eta;
-                der[1 + (7 - 1) * nod] = xip * (two * eta - xi);
-                der[1 + (8 - 1) * nod] = -d8 * xim * xip;
+                der[(1 - 1)] = etam * (two * xi + eta);
+                der[(2 - 1)] = -d8 * etam * etap;
+                der[(3 - 1)] = etap * (two * xi - eta);
+                der[(4 - 1)] = -d4 * etap * xi;
+                der[(5 - 1)] = etap * (two * xi + eta);
+                der[(6 - 1)] = d8 * etap * etam;
+                der[(7 - 1)] = etam * (two * xi - eta);
+                der[(8 - 1)] = -d4 * etam * xi;
+                der[(1 - 1) + nod] = xim * (xi + two * eta);
+                der[(2 - 1) + nod] = -d4 * xim * eta;
+                der[(3 - 1) + nod] = xim * (two * eta - xi);
+                der[(4 - 1) + nod] = d8 * xim * xip;
+                der[(5 - 1) + nod] = xip * (xi + two * eta);
+                der[(6 - 1) + nod] = -d4 * xip * eta;
+                der[(7 - 1) + nod] = xip * (two * eta - xi);
+                der[(8 - 1) + nod] = -d8 * xim * xip;
 
                 break;
             }
