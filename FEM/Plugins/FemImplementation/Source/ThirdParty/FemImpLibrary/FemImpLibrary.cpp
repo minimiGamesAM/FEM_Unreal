@@ -87,6 +87,21 @@ namespace
                 break;
             }
         }
+        else if (element == "tetrahedron")
+        {
+            switch (nip)
+            {
+            case 1:
+            {
+                s[0] = 0.25; //s(1, 1) = 0.25_iwp
+                s[1] = 0.25; //s(1, 2) = 0.25_iwp
+                s[2] = 0.25; //s(1, 3) = 0.25_iwp
+                wt[0] = 1.0 / 6.0;
+            }
+            default:
+                break;
+            }
+        }
     }
 
     template<class T>
