@@ -263,35 +263,61 @@ namespace
     template<class T>
     void deemat(T* dee, int nbRowsDee, T e, T v)
     {
-        T ih = nbRowsDee;
-        T one(T(1.0)), two(T(2.0)), pt5 = T(0.5);
-        T v1 = one - v;
-        T c = e / ((one + v) * (one - two * v));
+        int ih = nbRowsDee;
 
-        T v2 = v / (one - v);
-        T vv = (one - two * v) / (one - v) * pt5;
-        
-        for (int i = 1; i <= 3; ++i)
+        T v1, v2, c, vv, zero = 0.0, pt5 = 0.5, one = 1.0, two = 2.0;
+      
+        v1 = one - v;
+        c = e / ((one + v) * (one - two * v));
+
+        switch (ih)
         {
-            dee[i - 1 + (i - 1) * nbRowsDee] = one;
+        case 3:
+        {
+            dee[0 + (0) *ih] = v1 * c;
+            dee[1 + (1) *ih] = v1 * c;
+            dee[2 + (2) *ih] = pt5 * c * (one - two * v);
+            
+            dee[1 + (0) * ih] = v * c;
+            dee[0 + (1) * ih] = v * c;
+
+            break;
         }
 
-        for (int i = 4; i <= 6; ++i)
+        case 6:
         {
-            dee[i - 1 + (i - 1) * nbRowsDee] = vv;
+            T v2 = v / (one - v);
+            T vv = (one - two * v) / (one - v) * pt5;
+
+            for (int i = 1; i <= 3; ++i)
+            {
+                dee[i - 1 + (i - 1) * nbRowsDee] = one;
+            }
+
+            for (int i = 4; i <= 6; ++i)
+            {
+                dee[i - 1 + (i - 1) * nbRowsDee] = vv;
+            }
+
+            //v2 *= factor;
+            dee[1 + 0 * nbRowsDee] = v2; //dee[1, 2] = v2
+            dee[0 + 1 * nbRowsDee] = v2; //dee[2, 1] = v2
+            dee[2 + 0 * nbRowsDee] = v2; //dee[1, 3] = v2
+            dee[0 + 2 * nbRowsDee] = v2; //dee[3, 1] = v2
+            dee[2 + 1 * nbRowsDee] = v2; //dee[2, 3] = v2
+            dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
+
+            for (int i = 0; i < nbRowsDee * nbRowsDee; ++i)
+            {
+                dee[i] *= e / (two * (one + v) * vv);
+            }
+
+            break;
         }
 
-        //v2 *= factor;
-        dee[1 + 0 * nbRowsDee] = v2; //dee[1, 2] = v2  
-        dee[0 + 1 * nbRowsDee] = v2; //dee[2, 1] = v2
-        dee[2 + 0 * nbRowsDee] = v2; //dee[1, 3] = v2
-        dee[0 + 2 * nbRowsDee] = v2; //dee[3, 1] = v2
-        dee[2 + 1 * nbRowsDee] = v2; //dee[2, 3] = v2
-        dee[1 + 2 * nbRowsDee] = v2; //dee[3, 2] = v2
+        default:
+            break;
 
-        for (int i = 0; i < nbRowsDee* nbRowsDee; ++i)
-        {
-            dee[i] *= e / (two * (one + v) * vv);
         }
     }
 
@@ -688,26 +714,54 @@ void beemat(T* bee, int nbRowsBee, int nbColumsBee, T* deriv, int nbColumsDerivs
     int k, l, n, ih(nbRowsBee), nod(nbColumsDerivs);
     T x, y, z;
 
-    for (int m = 1; m < nod + 1; ++m)
+    switch (ih)
     {
-        n = 3 * m;
-        k = n - 1;
-        l = k - 1;
+    case 3:
+    case 4:
+    {
+        for (int m = 1; m <= nod; ++m)
+        {
+            k = 2 * m;
+            l = k - 1;
+            x = deriv[m - 1 + 0 * nbColumsDerivs]; // deriv(1, m);
+            y = deriv[m - 1 + 1 * nbColumsDerivs];
+            bee[l - 1 + 0 * nbColumsBee] = x;
+            bee[k - 1 + 2 * nbColumsBee] = x;
+            bee[k - 1 + 1 * nbColumsBee] = y;
+            bee[l - 1 + 2 * nbColumsBee] = y;
+        }
 
-        x = deriv[m - 1 + 0 * nbColumsDerivs]; // (1, m);
-        y = deriv[m - 1 + 1 * nbColumsDerivs]; //(2, m);
-        z = deriv[m - 1 + 2 * nbColumsDerivs]; //(3, m);
-
-        bee[l - 1 + 0 * nbColumsBee] = x; //(1, l) = x
-        bee[k - 1 + 3 * nbColumsBee] = x; //(4, k) = x
-        bee[n - 1 + 5 * nbColumsBee] = x; //(6, n) = x
-        bee[k - 1 + 1 * nbColumsBee] = y; //(2, k) = y
-        bee[l - 1 + 3 * nbColumsBee] = y; //(4, l) = y
-        bee[n - 1 + 4 * nbColumsBee] = y; //(5, n) = y
-        bee[n - 1 + 2 * nbColumsBee] = z; //(3, n) = z
-        bee[k - 1 + 4 * nbColumsBee] = z; //(5, k) = z
-        bee[l - 1 + 5 * nbColumsBee] = z; //(6, l) = z
+        break;
     }
+    case 6:
+    {
+        for (int m = 1; m < nod + 1; ++m)
+        {
+            n = 3 * m;
+            k = n - 1;
+            l = k - 1;
+
+            x = deriv[m - 1 + 0 * nbColumsDerivs]; // (1, m);
+            y = deriv[m - 1 + 1 * nbColumsDerivs]; //(2, m);
+            z = deriv[m - 1 + 2 * nbColumsDerivs]; //(3, m);
+
+            bee[l - 1 + 0 * nbColumsBee] = x; //(1, l) = x
+            bee[k - 1 + 3 * nbColumsBee] = x; //(4, k) = x
+            bee[n - 1 + 5 * nbColumsBee] = x; //(6, n) = x
+            bee[k - 1 + 1 * nbColumsBee] = y; //(2, k) = y
+            bee[l - 1 + 3 * nbColumsBee] = y; //(4, l) = y
+            bee[n - 1 + 4 * nbColumsBee] = y; //(5, n) = y
+            bee[n - 1 + 2 * nbColumsBee] = z; //(3, n) = z
+            bee[k - 1 + 4 * nbColumsBee] = z; //(5, k) = z
+            bee[l - 1 + 5 * nbColumsBee] = z; //(6, l) = z
+        }
+
+        break;
+    }
+    default:
+        break;
+    }
+    
 }
 
 namespace {
@@ -797,6 +851,9 @@ private:
     //nip = number of intregation points per element
     int nip;
 
+    //nst = number of stress / strain terms
+    int nst;
+
     //nf = nodal freedom array(nodof rows and nn colums)
     std::vector<int> nf;
 
@@ -857,7 +914,7 @@ public:
     {
         fun.resize(nod, T(0.25));
 
-        if ("tetrahedron" == element)
+        if (std::string("tetrahedron") == std::string(element))
         {
             T derTemp[4 * 3] =
             {
@@ -866,10 +923,17 @@ public:
                     T(0.0), T(0.0), T(1.0), T(-1.0)
             };
             der.insert(der.end(), std::begin(derTemp), std::end(derTemp));
+
+            nst = 6;
         }
         else
         {
             der.resize(ndim * nod, T(0.0));
+        }
+
+        if (std::string("quadrilateral") == std::string(element))
+        {
+            nst = 3;
         }
 
         points.resize(nip * ndim, T(0.25));
@@ -898,9 +962,9 @@ public:
         //prop = material property(e, v, gamma)
         std::vector<T> prop(nprops * np_types, 0.0f);
         
-        prop[0] = T(20.0);
+        prop[0] = T(1.0);
         prop[1] = T(0.3);
-        prop[2] = T(0.2);
+        prop[2] = T(1.0);
         
         //std::vector<int> g_g(ndof * nels, 0);
         g_g.resize(ndof * nels, 0);
@@ -936,8 +1000,6 @@ public:
 
         //----element stiffnessand mass integration, storageand preconditioner-- -
 
-        //nst = number of stress / strain terms
-        const int nst = 6;
         const T e = prop[0];
         const T v = prop[1];
         
@@ -956,11 +1018,11 @@ public:
         {
             std::fill(std::begin(mm), std::end(mm), T(0.0));
         
-            T dee[nst * nst] = {};
-            std::fill(std::begin(dee), std::end(dee), T(0.0));
-            deemat(dee, nst, e, v);
+            std::vector<T> dee(nst * nst, T(0.0));
+            //std::fill(std::begin(dee), std::end(dee), T(0.0));
+            deemat(&dee[0], nst, e, v);
         
-            int* num = &g_num[4 * i];
+            int* num = &g_num[nels * i];
         
             std::vector<T> coord(nod * ndim, T(0.0));
         
@@ -1000,7 +1062,7 @@ public:
 
                 std::vector<T> temporal(nst * ndof, T(0.0));
 
-                matmulTransA(&bee[0], dee, &temporal[0], ndof, nst, nst);
+                matmulTransA(&bee[0], &dee[0], &temporal[0], ndof, nst, nst);
                 matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
 
                 std::for_each(std::begin(km), std::end(km), [&](T& v) { v *= det * weights[j]; });

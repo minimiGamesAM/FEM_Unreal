@@ -63,7 +63,7 @@ PROGRAM p117
  CALL sample(element,points,weights)
  diag_precon=zero
  
- !--WRITE(11,'(I8)') nf(:,:)
+ !--WRITE(11,'(I8)') TRANSPOSE(nf)
  !--WRITE(11,'(1E12.4)')x1(:)
  
  WRITE(11,'(A,I5,A)')" There are",neq," equations"
@@ -73,6 +73,9 @@ PROGRAM p117
  c4=fk+theta*dtim
  CALL sample(element,points,weights)
  diag_precon=zero
+ 
+ !--WRITE(11,'(1E12.4)')TRANSPOSE(g_coord(:,:))
+ 
 !----element stiffness and mass integration, storage and preconditioner---
  elements_2: DO iel=1,nels
    CALL deemat(dee,prop(1,etype(iel)),prop(2,etype(iel)))
@@ -91,6 +94,7 @@ PROGRAM p117
      deriv=MATMUL(jac,der)
      CALL beemat(bee,deriv)
      km=km+MATMUL(MATMUL(TRANSPOSE(bee),dee),bee)*det*weights(i)
+     !-WRITE(11,'(1E12.4)')TRANSPOSE(km)
      area=area+det*weights(i)
      IF(consistent)THEN
        CALL ecmat(ecm,fun,ndof,nodof)
