@@ -633,6 +633,16 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
     return res;
 }
 
+void matricesAdd(const float* A, const float* B, float* C, const int m, const int n)
+{
+    mkl_somatadd('r', 'n', 'n', m, n, 1.0f, A, n, 1.0f, B, n, C, n);
+}
+
+void matricesAdd(const double* A, const double* B, double* C, const int m, const int n)
+{
+    mkl_domatadd('r', 'n', 'n', m, n, 1.0, A, n, 1.0, B, n, C, n);
+}
+
 // y = alpha * A * x + beta * y
 void matmulVec(const float alpha, const float* A, const float* x, const float beta, float* y, const int m, const int n)
 {
@@ -1061,11 +1071,14 @@ public:
                 beemat(&bee[0], nst, ndof, &deriv[0], nod);
 
                 std::vector<T> temporal(nst * ndof, T(0.0));
+                std::vector<T> kmTemp(ndof * ndof, T(0.0));
 
                 matmulTransA(&bee[0], &dee[0], &temporal[0], ndof, nst, nst);
-                matmul(&temporal[0], &bee[0], &km[0], ndof, nst, ndof);
+                matmul(&temporal[0], &bee[0], &kmTemp[0], ndof, nst, ndof);
 
-                std::for_each(std::begin(km), std::end(km), [&](T& v) { v *= det * weights[j]; });
+                std::for_each(std::begin(kmTemp), std::end(kmTemp), [&](T& v) { v *= det * weights[j]; });
+
+                matricesAdd(&km[0], &kmTemp[0], &km[0], ndof, ndof);
 
                 std::vector<T> ecm(ndof * ndof, T(0.0));
                 std::vector<T> nt(ndof * nodof, T(0.0));
