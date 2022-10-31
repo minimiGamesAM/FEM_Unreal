@@ -925,7 +925,7 @@ private:
 
     T theta = T(0.5);
     T fm = T(0.005);
-    T fk = T(0.012);
+    T fk = T(0.27);
 
     T* loads2;
 
@@ -997,17 +997,16 @@ public:
                
         //---------------------- loop the elements to find global arrays sizes---- -
         ///////////////
-        T dtim = T(0.0);
+        T dtim = T(1.0);
         T c1 = (T(1.0) - theta) * dtim;
         T c2 = fk - c1;
         T c3 = fm + T(1.0) / (theta * dtim);
         T c4 = fk + theta * dtim;
         ///////////////
-
-        std::vector<int> g(ndof, 0);
-        
+                
         for (int i = 0; i < nels; ++i)
         {
+            std::vector<int> g(ndof, 0);
             int* num = &g_num[nod * i];
         
             num_to_g(num, &nf[0], &g[0], nod, nodof, nn);
@@ -1030,12 +1029,7 @@ public:
         
         int* etype = new int[nels];
         std::fill(etype, etype + nels, 1);
-        
-        //km = element stiffness matrix
-        std::vector<T> km(ndof * ndof, T(0.0));
-        std::vector<T> jac  (ndim * ndim, T(0.0));
-        std::vector<T> deriv(ndim * nod, T(0.0));
-        std::vector<T> bee  (nst * ndof, T(0.0));
+              
         //mm = element mass matrix;
         //std::vector<T> mm(ndof * ndof, 0.0f);
         
@@ -1047,7 +1041,7 @@ public:
             //std::fill(std::begin(dee), std::end(dee), T(0.0));
             deemat(&dee[0], nst, e, v);
         
-            int* num = &g_num[nels * i];
+            int* num = &g_num[nod * i];
         
             std::vector<T> coord(nod * ndim, T(0.0));
         
@@ -1065,13 +1059,16 @@ public:
                 g[j] = g_g[i + j * nels];
             }
         
-            std::fill(std::begin(km), std::end(km), T(0.0));
-            
+            std::vector<T> km(ndof * ndof, T(0.0));
             std::vector<T> mm(ndof * ndof, T(0.0));
             ////// for each point of integration, we have just one for 3d tets
             
             for (int j = 0; j < nip; ++j)
             {
+                std::vector<T> jac(ndim * ndim, T(0.0));
+                std::vector<T> deriv(ndim * nod, T(0.0));
+                std::vector<T> bee(nst * ndof, T(0.0));
+
                 shape_der(der, points, j, ndim, nod);
                 shape_fun(fun, points, j, ndim, nod);
 
@@ -1104,21 +1101,14 @@ public:
                 T bEcm = det * weights[j];
                 matricesAdd(&mm[0], T(1.0), &ecm[0], bEcm, &mm[0], ndof, ndof);
             }
-
-            //for (int j = nodof; j <= ndof; j += nodof)
-            //{
-            //    eld[j - 1] = fun[int(j / nodof) - 1] * det * weights;
-            //}
-        
-            
-            
             
             storkm.insert(storkm.end(), km.begin(), km.end());
             stormm.insert(stormm.end(), mm.begin(), mm.end());
 
-            for (int k = 1; k < ndof; ++k)
+            for (int k = 0; k < ndof; ++k)
             {
-                diag_precon[g[k - 1]] = diag_precon[g[k - 1]] + mm[k + (k - 1) * ndof - 1] * c3 + km[k + (k - 1) * ndof - 1] * c4;
+                T val = mm[k + k * ndof] * c3 + km[k + k * ndof] * c4;
+                diag_precon[g[k]] = diag_precon[g[k]] + val;
             }
         }
 
