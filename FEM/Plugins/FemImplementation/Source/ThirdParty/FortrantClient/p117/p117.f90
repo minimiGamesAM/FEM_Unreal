@@ -16,7 +16,7 @@ PROGRAM p117
    nstep,nxe,nye
  REAL(iwp)::alpha,area,beta,cg_tol,c1,c2,c3,c4,det,dtim,fk,fm,one=1.0_iwp,&
    theta,time,up,zero=0.0_iwp
- LOGICAL::consistent=.FALSE.,cg_converged
+ LOGICAL::consistent=.TRUE.,cg_converged
  CHARACTER(LEN=15)::argv,element='quadrilateral'
 !-----------------------dynamic arrays------------------------------------
  INTEGER,ALLOCATABLE::etype(:),g(:),g_g(:,:),g_num(:,:),nf(:,:),node(:),  &
