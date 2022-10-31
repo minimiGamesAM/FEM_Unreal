@@ -648,14 +648,14 @@ float vectorOperation(float* verticesBuffer, int verticesBufferSize)
     return res;
 }
 
-void matricesAdd(const float* A, const float* B, float* C, const int m, const int n)
+void matricesAdd(const float* A, const float a, const float* B, const float b, float* C, const int m, const int n)
 {
-    mkl_somatadd('r', 'n', 'n', m, n, 1.0f, A, n, 1.0f, B, n, C, n);
+    mkl_somatadd('r', 'n', 'n', m, n, a, A, n, b, B, n, C, n);
 }
 
-void matricesAdd(const double* A, const double* B, double* C, const int m, const int n)
+void matricesAdd(const double* A, const double a, const double* B, const double b, double* C, const int m, const int n)
 {
-    mkl_domatadd('r', 'n', 'n', m, n, 1.0, A, n, 1.0, B, n, C, n);
+    mkl_domatadd('r', 'n', 'n', m, n, a, A, n, b, B, n, C, n);
 }
 
 // y = alpha * A * x + beta * y
@@ -1037,11 +1037,11 @@ public:
         std::vector<T> deriv(ndim * nod, T(0.0));
         std::vector<T> bee  (nst * ndof, T(0.0));
         //mm = element mass matrix;
-        std::vector<T> mm(ndof * ndof, 0.0f);
+        //std::vector<T> mm(ndof * ndof, 0.0f);
         
         for (int i = 0; i < nels; ++i)
         {
-            std::fill(std::begin(mm), std::end(mm), T(0.0));
+            //std::fill(std::begin(mm), std::end(mm), T(0.0));
         
             std::vector<T> dee(nst * nst, T(0.0));
             //std::fill(std::begin(dee), std::end(dee), T(0.0));
@@ -1093,7 +1093,7 @@ public:
 
                 std::for_each(std::begin(kmTemp), std::end(kmTemp), [&](T& v) { v *= det * weights[j]; });
 
-                matricesAdd(&km[0], &kmTemp[0], &km[0], ndof, ndof);
+                matricesAdd(&km[0], T(1.0), &kmTemp[0], T(1.0), &km[0], ndof, ndof);
 
                 std::vector<T> ecm(ndof * ndof, T(0.0));
                 std::vector<T> nt(ndof * nodof, T(0.0));
@@ -1101,10 +1101,8 @@ public:
 
                 ecmat(&ecm[0], &nt[0], &tn[0], &fun[0], ndof, nodof);
 
-                for (int k = 0; k < ndof * ndof; ++k)
-                {
-                    mm[k] = mm[k] + ecm[k] * det * weights[j] * prop[2];
-                }
+                T bEcm = det * weights[j];
+                matricesAdd(&mm[0], T(1.0), &ecm[0], bEcm, &mm[0], ndof, ndof);
             }
 
             //for (int j = nodof; j <= ndof; j += nodof)
