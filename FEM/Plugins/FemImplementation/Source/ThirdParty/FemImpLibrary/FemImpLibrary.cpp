@@ -847,7 +847,7 @@ namespace {
     template<class T>
     float load(T t)
     {
-        return 10000 * std::cos(T(1) * t);
+        return std::cos(T(0.3) * t);
     }
 }
 
@@ -927,7 +927,7 @@ private:
     T fm = T(0.005);
     T fk = T(0.27);
 
-    T* loads2;
+    std::vector<T> loads;
 
     int itt = 1;
 
@@ -1158,6 +1158,7 @@ public:
         //loads2 = new T[neq + 1];
 
         u.resize(neq + 1, T(0.0));
+        loads.resize(neq + 1, T(0.0));
     }
 
     void update(T dtim, T* verticesBuffer)
@@ -1198,7 +1199,7 @@ public:
         ////for (int i = 1; i <= nstep; ++i)
         ////{
         time = time + dtim;
-        std::fill(loads2, loads2 + neq + 1, T(0.0));
+        std::fill(std::begin(loads), std::end(loads), T(0.0));
         std::fill(u.begin(), u.end(), T(0.0));
 
         for (int i = 0; i < nels; ++i)
@@ -1227,7 +1228,33 @@ public:
             matmulVec(c2, km, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
             matmulVec(c3, mm, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
             matmulVec(T(1.0) / theta, mm, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
+
+            matricesAdd(&u[0], T(1.0), &uTemp[0], T(1.0), &km[0], ndof, ndof);
+
+            addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
         }
+
+        u[0] = T(0.0);
+
+        //Toca mirar los indices de los nodos loades
+        int loaded_nodes = 1;
+        std::vector<int> node(loaded_nodes, 0);
+        node[0] = 18;
+        std::vector<T> val(loaded_nodes * ndim, T(0.0));
+        val[0] = 0.0;
+        val[1] = 1.0;
+             
+        T temporal = theta * dtim * load(time) + c1 * load(time - dtim);
+        for (int j = 1; j <= loaded_nodes; ++j)
+        {
+            for (int k = 0; k < ndim; ++k)
+            {
+                loads[nf[nn * k + node[j - 1] - 1]] =
+                    val[(j - 1) * loaded_nodes + k] * temporal;
+            }
+        }
+
+        addVectors(T(1.0), &loads[0], &u[0], u.size());
 
         //
         //addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);

@@ -258,6 +258,10 @@ void prueba2D()
 
 	FEM_Factory<T>::init(id, vertices, g_num, &tempnf[0], nn);
 
+	for (int i = 1; i <= 20; ++i)
+	{
+		FEM_Factory<T>::update(id, T(1.0), nullptr);
+	}
 }
 
 int main()
