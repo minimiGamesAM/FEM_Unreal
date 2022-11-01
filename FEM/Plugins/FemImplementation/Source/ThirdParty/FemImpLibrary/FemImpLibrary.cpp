@@ -845,6 +845,25 @@ namespace {
     }
 
     template<class T>
+    void checon(const std::vector<T>& loads, std::vector<T>& oldIds, const T tol, bool& converged)
+    {
+        converged = true;
+
+        T maxDiff = T(0.0);
+        T maxLoads = T(0.0);
+
+        for (int i = 0; i < loads.size(); ++i)
+        {
+            maxDiff = std::max(maxDiff, std::abs(loads[i] - oldIds[i]));
+            maxLoads = std::max(maxLoads, std::abs(loads[i]));
+        }
+
+        converged = ((maxDiff / maxLoads) <= tol);
+
+        std::copy(std::begin(loads), std::end(loads), oldIds.begin());
+    }
+
+    template<class T>
     float load(T t)
     {
         return std::cos(T(0.3) * t);
@@ -896,9 +915,9 @@ private:
     std::vector<T> storkm;
     std::vector<T> stormm;
 
-    std::vector<T> u;
-    std::vector<T> p;
-    std::vector<T> xnew;
+    //std::vector<T> u;
+    //std::vector<T> p;
+    //std::vector<T> xnew;
 
 
     // skyline profile
@@ -1157,8 +1176,9 @@ public:
         
         //loads2 = new T[neq + 1];
 
-        u.resize(neq + 1, T(0.0));
+        //u.resize(neq + 1, T(0.0));
         loads.resize(neq + 1, T(0.0));
+        x1.resize(neq + 1);
     }
 
     void update(T dtim, T* verticesBuffer)
@@ -1200,7 +1220,7 @@ public:
         ////{
         time = time + dtim;
         std::fill(std::begin(loads), std::end(loads), T(0.0));
-        std::fill(u.begin(), u.end(), T(0.0));
+        std::vector<T> u(neq + 1, T(0.0));
 
         for (int i = 0; i < nels; ++i)
         {
@@ -1216,8 +1236,8 @@ public:
                 d1x0Temp[j] = d1x0[g_index];
             }
 
-            T* km = &storkm[i * ndof * ndof];
-            T* mm = &stormm[i * ndof * ndof];
+            const T* km = &storkm[i * ndof * ndof];
+            const T* mm = &stormm[i * ndof * ndof];
 
             //u(g) = u(g) + MATMUL(km * c2 + mm * c3, x0(g)) + MATMUL(mm / theta, d1x0(g))
 
@@ -1228,10 +1248,15 @@ public:
             matmulVec(c2, km, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
             matmulVec(c3, mm, &x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
             matmulVec(T(1.0) / theta, mm, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
+            
+            for (int j = 0; j < ndof; ++j)
+            {
+                int g_index = g_g[i + j * nels];
 
-            matricesAdd(&u[0], T(1.0), &uTemp[0], T(1.0), &km[0], ndof, ndof);
+                u[g_index] += uTemp[j];
+            }
 
-            addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
+            //addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
         }
 
         u[0] = T(0.0);
@@ -1256,6 +1281,103 @@ public:
 
         addVectors(T(1.0), &loads[0], &u[0], u.size());
 
+        std::vector<T> d(neq + 1, T(0.0));
+
+        for (int i = 0; i < neq + 1; ++i)
+        {
+            d[i] = diag_precon[i] * loads[i];
+        }
+
+        std::vector<T> p(d);
+
+        std::vector<T> x(neq + 1, T(0.0));
+
+        int cg_iters = 0;
+        int cg_limit = 50;
+        T cg_tol = T(0.00001);
+
+        std::vector<T> xnew(neq + 1, T(0.0));
+
+        //---------------------- - pcg equation solution---------------------------- -
+        bool cg_converged(false);
+        do
+        {
+            cg_iters = cg_iters + 1;
+            std::fill(std::begin(u), std::end(u), T(0.0));
+
+            for (int i = 0; i < nels; ++i)
+            {
+                std::vector<T> uTemp(ndof, 0);
+                std::vector<T> pTemp(ndof, 0);
+
+                std::vector<int> g(ndof, 0);
+                for (int j = 0; j < ndof; ++j)
+                {
+                    int g_index = g_g[i + j * nels];
+
+                    pTemp[j] = p[g_index];
+                    g[j] = g_index;
+                }
+
+                const T* km = &storkm[i * ndof * ndof];
+                const T* mm = &stormm[i * ndof * ndof];
+
+                matmulVec(c3, mm, &pTemp[0], T(1.0), &uTemp[0], ndof, ndof);
+                matmulVec(c4, km, &pTemp[0], T(1.0), &uTemp[0], ndof, ndof);
+
+                for (int j = 0; j < ndof; ++j)
+                {
+                    int g_index = g_g[i + j * nels];
+
+                    u[g_index] += uTemp[j];
+                }
+
+                //addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
+            }
+
+            u[0] = T(0.0);
+
+            T up = dotProduct(neq + 1, &loads[0], &d[0]);
+            T alpha = up / dotProduct(neq + 1, &p[0], &u[0]);
+            
+            addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq + 1);
+            addVectors(-alpha, &u[0], &loads[0], neq + 1);
+
+            for (int i = 0; i < neq + 1; ++i)
+            {
+                d[i] = diag_precon[i] * loads[i];
+            }
+
+            T beta = dotProduct(neq + 1, &loads[0], &d[0]) / up;
+            addVectors(1 /beta, &d[0], &p[0], neq + 1);
+            scalVecProduct(neq + 1, beta, &p[0]);
+
+            checon(xnew, x, cg_tol, cg_converged);
+
+            if (cg_converged)
+            {
+                break;
+            }
+        } while (cg_iters < cg_limit);
+
+        copyVec(neq + 1, &xnew[0], &x1[0]);
+
+        T a = T(1.0) / (theta * dtim);
+        T b = (T(1.0) - theta) / theta;
+
+        //d1x1 = a * (x1 - x0) - b * d1x0;
+        addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
+        addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
+
+        //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
+        addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
+        addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
+        
+        copyVec(neq + 1, &x1[0], &x0[0]);
+        copyVec(neq + 1, &d1x1[0], &d1x0[0]);
+        copyVec(neq + 1, &d2x1[0], &d2x0[0]);
+
+            
         //
         //addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
         //
