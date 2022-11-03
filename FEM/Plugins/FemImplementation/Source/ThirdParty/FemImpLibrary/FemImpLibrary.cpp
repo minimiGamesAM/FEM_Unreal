@@ -1153,10 +1153,10 @@ public:
 
         x0.resize(neq + 1, T(0.0));
         d1x0.resize(neq + 1, T(0.0));
-        //x1.resize(neq + 1, T(0.0));
+        x1.resize(neq + 1, T(0.0));
         d2x0.resize(neq + 1, T(0.0));
-        //d1x1.resize(neq + 1, T(0.0));
-        //d2x1.resize(neq + 1, T(0.0));
+        d1x1.resize(neq + 1, T(0.0));
+        d2x1.resize(neq + 1, T(0.0));
 
                
 
@@ -1199,11 +1199,10 @@ public:
         //}
         //
         //// for debug purposes //
-        ////nres = node number at witch time history is to be printed
-        //int nres = 6;
-        //node[0] = nres;
-        //node[1] = 2;
-        //int npri = 1;
+        time = time + dtim;
+        //nres = node number at witch time history is to be printed
+        int nres = 18;
+        int npri = 1;
         //////////////////////////
         //
         int ndof = nod * nodof;
@@ -1218,7 +1217,7 @@ public:
         //
         ////for (int i = 1; i <= nstep; ++i)
         ////{
-        time = time + dtim;
+        
         std::fill(std::begin(loads), std::end(loads), T(0.0));
         std::vector<T> u(neq + 1, T(0.0));
 
@@ -1264,7 +1263,7 @@ public:
         //Toca mirar los indices de los nodos loades
         int loaded_nodes = 1;
         std::vector<int> node(loaded_nodes, 0);
-        node[0] = 18;
+        node[0] = nres;
         std::vector<T> val(loaded_nodes * ndim, T(0.0));
         val[0] = 0.0;
         val[1] = 1.0;
@@ -1279,7 +1278,7 @@ public:
             }
         }
 
-        addVectors(T(1.0), &loads[0], &u[0], u.size());
+        addVectors(T(1.0), &u[0], &loads[0], u.size());
 
         std::vector<T> d(neq + 1, T(0.0));
 
@@ -1373,11 +1372,23 @@ public:
         addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
         addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
         
+        
+
+        ///////////////////
+        static itt = 1;
+        
+        if (itt / npri * npri == itt)
+        {
+            std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x1[nf[nres - 1]] << "     y  obj " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        }    
+
+        itt = itt + 1;
+        ////////////////////
+
         copyVec(neq + 1, &x1[0], &x0[0]);
         copyVec(neq + 1, &d1x1[0], &d1x0[0]);
         copyVec(neq + 1, &d2x1[0], &d2x0[0]);
 
-            
         //
         //addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
         //
