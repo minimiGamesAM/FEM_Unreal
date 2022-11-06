@@ -918,6 +918,9 @@ private:
     //std::vector<T> u;
     //std::vector<T> p;
     //std::vector<T> xnew;
+    
+    std::vector<int> node;
+    std::vector<T> val;
 
 
     // skyline profile
@@ -1181,6 +1184,14 @@ public:
         x1.resize(neq + 1);
     }
 
+    void loadedNodes(int* nodes, int loaded_nodes, T* vals)
+    {
+        node.resize(loaded_nodes);
+        val.resize(loaded_nodes * ndim);
+        std::copy(nodes, nodes + loaded_nodes, node.begin());
+        std::copy(vals, vals + loaded_nodes * ndim, val.begin());
+    }
+
     void update(T dtim, T* verticesBuffer)
     {
         ////number of loaded nodes
@@ -1201,8 +1212,8 @@ public:
         //// for debug purposes //
         time = time + dtim;
         //nres = node number at witch time history is to be printed
-        int nres = 18;
-        int npri = 1;
+        //int nres = 18;
+        
         //////////////////////////
         //
         int ndof = nod * nodof;
@@ -1261,12 +1272,12 @@ public:
         u[0] = T(0.0);
 
         //Toca mirar los indices de los nodos loades
-        int loaded_nodes = 1;
-        std::vector<int> node(loaded_nodes, 0);
-        node[0] = nres;
-        std::vector<T> val(loaded_nodes * ndim, T(0.0));
-        val[0] = 0.0;
-        val[1] = 1.0;
+        int loaded_nodes = node.size();
+        //std::vector<int> node(loaded_nodes, 0);
+        //node[0] = nres;
+        //std::vector<T> val(loaded_nodes * ndim, T(0.0));
+        //val[0] = 0.0;
+        //val[1] = 1.0;
              
         T temporal = theta * dtim * load(time) + c1 * load(time - dtim);
         for (int j = 1; j <= loaded_nodes; ++j)
@@ -1375,11 +1386,13 @@ public:
         
 
         ///////////////////
+        int npri = 1;
         static itt = 1;
+        int nres = node[0];
         
         if (itt / npri * npri == itt)
         {
-            std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x1[nf[nres - 1]] << "     y  obj " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+            std::cout << "time " << time << "      load  " << load(time) << "     x " << x1[nf[nres - 1]] << "     y " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
         }    
 
         itt = itt + 1;
@@ -1473,6 +1486,15 @@ void FEM_Factory<T>::init(int id, T* g_coord, int* g_num, int* in_nf, int in_nn)
     if (id < femAlg.size())
     {
         femAlg[id]->init(g_coord, g_num, in_nf, in_nn);
+    }
+}
+
+template<class T>
+void FEM_Factory<T>::loadedNodes(int id, int* nodes, int loaded_nodes, T* vals)
+{
+    if (id < femAlg.size())
+    {
+        femAlg[id]->loadedNodes(nodes, loaded_nodes, vals);
     }
 }
 

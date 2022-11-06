@@ -258,6 +258,17 @@ void prueba2D()
 
 	FEM_Factory<T>::init(id, vertices, g_num, &tempnf[0], nn);
 
+	///
+	std::vector<int> nodesLoaded;
+	nodesLoaded.push_back(18);
+
+	std::vector<T> val;
+	val.push_back(T(0.0));
+	val.push_back(T(1.0));
+
+	FEM_Factory<T>::loadedNodes(id, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+
+	/////
 	for (int i = 1; i <= 20; ++i)
 	{
 		FEM_Factory<T>::update(id, T(1.0), nullptr);
