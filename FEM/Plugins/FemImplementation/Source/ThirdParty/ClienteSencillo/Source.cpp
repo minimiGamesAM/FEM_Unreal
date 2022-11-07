@@ -111,6 +111,18 @@ void prueba()
 
 	std::vector<T> verticesBuffer(nn * 3, T(0.0));
 
+	///////////
+	std::vector<int> nodesLoaded;
+	nodesLoaded.push_back(6);
+
+	std::vector<T> val;
+	val.push_back(T(0.33));
+	val.push_back(T(0.33));
+	val.push_back(T(0.33));
+
+	FEM_Factory<T>::loadedNodes(id, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+	///////////
+
 	for (int i = 1; i <= 20; ++i)
 	{
 		FEM_Factory<T>::update(id, T(1.0), &verticesBuffer[0]);
@@ -275,6 +287,139 @@ void prueba2D()
 	}
 }
 
+
+void pruebaWithDataTetGen()
+{
+	std::vector<float>			mVerticesBuffer;
+	std::vector<int>			mTetsBuffer;
+	int							mIdAlgoFEM = -1;
+
+	mTetsBuffer.push_back(7);
+	mTetsBuffer.push_back(6);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(3);
+	mTetsBuffer.push_back(4);
+	mTetsBuffer.push_back(6);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(5);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(6);
+	mTetsBuffer.push_back(0);
+	mTetsBuffer.push_back(2);
+	mTetsBuffer.push_back(7);
+	mTetsBuffer.push_back(5);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(6);
+	mTetsBuffer.push_back(3);
+	mTetsBuffer.push_back(6);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(2);
+	mTetsBuffer.push_back(4);
+	mTetsBuffer.push_back(0);
+	mTetsBuffer.push_back(1);
+	mTetsBuffer.push_back(6);
+
+	mVerticesBuffer.push_back(-100.000015);
+	mVerticesBuffer.push_back(99.9999771);
+	mVerticesBuffer.push_back(-8.74227771e-06);
+	mVerticesBuffer.push_back(-100.000015);
+	mVerticesBuffer.push_back(99.9999924);
+	mVerticesBuffer.push_back(199.999985);
+	mVerticesBuffer.push_back(-99.9999847);
+	mVerticesBuffer.push_back(-100.000023);
+	mVerticesBuffer.push_back(8.74227862e-06);
+	mVerticesBuffer.push_back(-99.9999847);
+	mVerticesBuffer.push_back(-100.000008);
+	mVerticesBuffer.push_back(200.000015);
+	mVerticesBuffer.push_back(99.9999847);
+	mVerticesBuffer.push_back(100.000008);
+	mVerticesBuffer.push_back(-8.74227771e-06);
+	mVerticesBuffer.push_back(99.9999847);
+	mVerticesBuffer.push_back(100.000023);
+	mVerticesBuffer.push_back(199.999985);
+	mVerticesBuffer.push_back(100.000015);
+	mVerticesBuffer.push_back(-99.9999924);
+	mVerticesBuffer.push_back(8.74227862e-06);
+	mVerticesBuffer.push_back(100.000015);
+	mVerticesBuffer.push_back(-99.9999771);
+	mVerticesBuffer.push_back(200.000015);
+	
+	//std::for_each(mVerticesBuffer.begin(), mVerticesBuffer.end(), [&](float& v) { v /= 100.0; });
+
+	// init FEM
+	const int dim = 3;
+	//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
+	const int nodof = 3;
+	//nn = total number of nodes in the problem
+	int nn = mVerticesBuffer.size() / 3;
+
+	int nod = 4;
+
+	std::vector<int> nf;
+	
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	nf.push_back(0);
+	nf.push_back(1);
+	
+	//////////////////////////////////
+	std::vector<float> tempVerticesBuffer(nodof* nn, 0.0f);
+
+	for (int k = 0; k < nn; ++k)
+	{
+		for (int l = 0; l < nodof; ++l)
+		{
+			tempVerticesBuffer[k + l * nn] = mVerticesBuffer[l + k * nodof];
+		}
+	}
+
+	/////////////////////////////////
+
+	mIdAlgoFEM = FEM_Factory<float>::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
+	FEM_Factory<float>::init(mIdAlgoFEM, &tempVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+
+	///////////
+	std::vector<int> nodesLoaded;
+	nodesLoaded.push_back(4);
+
+	std::vector<float> val;
+	val.push_back(float(0.33));
+	val.push_back(float(0.33));
+	val.push_back(float(0.33));
+
+	FEM_Factory<float>::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+	///////////
+
+	//////////////////////////////////////
+	for (int i = 0; i < 20; ++i)
+	{
+		FEM_Factory<float>::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
+	}
+	
+	//////////////////////////////////////
+
+}
+
 int main()
 {
 	//unitTest();
@@ -294,6 +439,8 @@ int main()
 
 	//prueba<double>();
 
-	prueba2D<double>();
+	//prueba2D<double>();
+
+	pruebaWithDataTetGen();
 
 }

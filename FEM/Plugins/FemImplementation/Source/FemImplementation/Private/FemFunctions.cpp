@@ -8,9 +8,14 @@ THIRD_PARTY_INCLUDES_START
 #include "TetraGen/TetGenInterface.h"
 THIRD_PARTY_INCLUDES_END
 
-int UFemFunctions::create(int ndim, int nodof, int nels)
+int UFemFunctions::create(int ndim, int nodof, int nels, int nod, int nip, const char* element)
 {
-	return FEM_Factory<float>::create(ndim, nodof, nels);
+	return FEM_Factory<float>::create(ndim, nodof, nels, nod, nip, element);
+}
+
+void UFemFunctions::loadedNodes(int id, int* nodes, int loaded_nodes, float* vals)
+{
+	FEM_Factory<float>::loadedNodes(id, nodes, loaded_nodes, vals);
 }
 
 void UFemFunctions::init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn)
@@ -25,7 +30,6 @@ void UFemFunctions::update(int id, float dt, float* verticesBuffer)
 
 void UFemFunctions::runFem(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
-
 	float determinante = basicTest(verticesBuffer, verticesBufferSize, tetsBuffer, tetsBufferSize);
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Determinante %f"), determinante));
 }

@@ -1194,21 +1194,7 @@ public:
 
     void update(T dtim, T* verticesBuffer)
     {
-        ////number of loaded nodes
-        //const int loaded_nodes = 2;
-        //int node[loaded_nodes] = {};
-        //
-        ////val = applied nodal load weightings
-        //std::vector<T> val(loaded_nodes * ndim, T(0.0));
-        //
-        //for (int i = 0; i < loaded_nodes; ++i)
-        //{
-        //    for (int j = 0; j < ndim; ++j)
-        //    {
-        //        val[i * loaded_nodes + j] = T(0.25);
-        //    }
-        //}
-        //
+        
         //// for debug purposes //
         time = time + dtim;
         //nres = node number at witch time history is to be printed
@@ -1265,20 +1251,12 @@ public:
 
                 u[g_index] += uTemp[j];
             }
-
-            //addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
         }
 
         u[0] = T(0.0);
 
-        //Toca mirar los indices de los nodos loades
         int loaded_nodes = node.size();
-        //std::vector<int> node(loaded_nodes, 0);
-        //node[0] = nres;
-        //std::vector<T> val(loaded_nodes * ndim, T(0.0));
-        //val[0] = 0.0;
-        //val[1] = 1.0;
-             
+                    
         T temporal = theta * dtim * load(time) + c1 * load(time - dtim);
         for (int j = 1; j <= loaded_nodes; ++j)
         {
@@ -1341,8 +1319,6 @@ public:
 
                     u[g_index] += uTemp[j];
                 }
-
-                //addVectors(T(1.0), &uTemp[0], &u[0], uTemp.size());
             }
 
             u[0] = T(0.0);
@@ -1382,91 +1358,42 @@ public:
         //d2x1 = a * (d1x1 - d1x0) - b * d2x0;
         addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
         addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
-        
-        
+                
 
         ///////////////////
-        int npri = 1;
-        static itt = 1;
-        int nres = node[0];
-        
-        if (itt / npri * npri == itt)
-        {
-            std::cout << "time " << time << "      load  " << load(time) << "     x " << x1[nf[nres - 1]] << "     y " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-        }    
-
-        itt = itt + 1;
+        //int npri = 1;
+        //static itt = 1;
+        //int nres = node[0];
+        //
+        //if (itt / npri * npri == itt)
+        //{
+        //    std::cout << "time " << time << "      load  " << load(time) << "     x " << x1[nf[nres - 1]] << "     y " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        //}    
+        //
+        //itt = itt + 1;
         ////////////////////
 
         copyVec(neq + 1, &x1[0], &x0[0]);
         copyVec(neq + 1, &d1x1[0], &d1x0[0]);
         copyVec(neq + 1, &d2x1[0], &d2x0[0]);
 
-        //
-        //addVectors(&x0[0], c3, &d1x0[0], 1.0f / theta, &x1[0], neq + 1);
-        //
-        //float temporal = theta * dtim * load(time) + c1 * load(time - dtim);
-        //
-        //for (int j = 1; j <= loaded_nodes; ++j)
-        //{
-        //    for (int k = 0; k < ndim; ++k)
-        //    {
-        //        loads2[nf[nn * k + node[j - 1] - 1]] =
-        //            val[(j - 1) * loaded_nodes + k] * temporal;
-        //    }
-        //}
-        //
-        //linmul_sky(&mv[0], &x1[0], &d1x1[0], &kdiag[0], neq);
-        //
-        ////d1x1=loads+d1x1
-        //addVectors(T(1.0), loads2, &d1x1[0], neq + 1);
-        //
-        //copyVec(neq + 1, &x0[0], loads2);
-        //scalVecProduct(neq + 1, c2, loads2);
-        //
-        //linmul_sky(&kv[0], loads2, &x1[0], &kdiag[0], neq);
-        //
-        ////x1=x1+d1x1
-        //addVectors(T(1.0), &d1x1[0], &x1[0], neq + 1);
-        //
-        //spabac(&f1[0], &x1[0], &kdiag[0], neq);
-        //
-        //T a = T(1.0) / (theta * dtim);
-        //T b = (T(1.0) - theta) / theta;
-        //
-        ////d1x1 = a * (x1 - x0) - b * d1x0;
-        //addVectors(&x1[0], a, &x0[0], -a, &d1x1[0], neq + 1);
-        //addVectors(-b, &d1x0[0], &d1x1[0], neq + 1);
-        //
-        ////d2x1 = a * (d1x1 - d1x0) - b * d2x0;
-        //addVectors(&d1x1[0], a, &d1x0[0], -a, &d2x1[0], neq + 1);
-        //addVectors(-b, &d2x0[0], &d2x1[0], neq + 1);
-        //
-        //copyVec(neq + 1, &x1[0], &x0[0]);
-        //copyVec(neq + 1, &d1x1[0], &d1x0[0]);
-        //copyVec(neq + 1, &d2x1[0], &d2x0[0]);
-        //
-        //if (itt / npri * npri == itt)
-        //{
-        ////  std::cout << "time obj2 " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-        //}
-        //++itt;
-        //
-        //if (verticesBuffer)
-        //{
-        //    for (int i = 0; i < nn; ++i)
-        //    {
-        //        verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
-        //        verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
-        //        verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
-        //
-        //        //if (i == 5)
-        //        //{
-        //        //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
-        //        //}
-        //    }
-        //}
-        ////}
+        if (verticesBuffer)
+        {
+            if (ndim == 3)
+            {
+                for (int i = 0; i < nn; ++i)
+                {
+                    verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
+                    verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
+                    verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
+
+                    //if (i == 5)
+                    //{
+                    //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
+                    //}
+                }
+            }
+        }
     }
 };
 

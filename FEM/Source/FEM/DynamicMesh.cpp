@@ -118,8 +118,28 @@ void ADynamicMesh::BeginPlay()
 		}
 	}
 
-	mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsBuffer.size() / 4);
+	// number of nodes per element
+	int nod = 4;
+
+	mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
 	UFemFunctions::init(mIdAlgoFEM, &tempVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+
+	///////////
+	std::vector<int> nodesLoaded;
+	nodesLoaded.push_back(4);
+
+	std::vector<float> val;
+	val.push_back(float(0.33));
+	val.push_back(float(0.33));
+	val.push_back(float(0.33));
+
+	UFemFunctions::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+	///////////
+
+	for (int i = 0; i < 20; ++i)
+	{
+		UFemFunctions::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
+	}
 
 }
 
@@ -346,7 +366,7 @@ void ADynamicMesh::Tick(float DeltaTime)
 		
 	// update array with FEM
 
-	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
+	UFemFunctions::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
 
 	//for (int i = 0; i < mVerticesBuffer.size(); ++i)
 	//{
