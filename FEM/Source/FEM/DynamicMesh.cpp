@@ -366,7 +366,7 @@ void ADynamicMesh::Tick(float DeltaTime)
 		
 	// update array with FEM
 
-	UFemFunctions::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
+	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
 
 	//for (int i = 0; i < mVerticesBuffer.size(); ++i)
 	//{
