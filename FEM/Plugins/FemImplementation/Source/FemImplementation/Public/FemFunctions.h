@@ -19,6 +19,8 @@ private:
 public:
 	static int create(int ndim, int nodof, int nels, int nod, int nip, const char* element);
 	static void loadedNodes(int id, int* nodes, int loaded_nodes, float* vals);
+	static void setDamping(int id, const float fk, const float fm);
+	static void setMaterialParams(int id, const float e, const float v, const float gamma);
 	static void init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn);
 	static void update(int id, float dt, float* verticesBuffer);
 

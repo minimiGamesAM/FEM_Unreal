@@ -123,6 +123,9 @@ void prueba()
 	FEM_Factory<T>::loadedNodes(id, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
 	///////////
 
+
+	///////////
+
 	for (int i = 1; i <= 20; ++i)
 	{
 		FEM_Factory<T>::update(id, T(1.0), &verticesBuffer[0]);
@@ -408,20 +411,31 @@ void pruebaWithDataTetGen()
 	val.push_back(float(0.33));
 
 	FEM_Factory<float>::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+
+	FEM_Factory<float>::setDamping(mIdAlgoFEM, float(0.0), float(0.0));
+	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(10), float(0.3), float(200));
+
 	///////////
 
 	//////////////////////////////////////
 	for (int i = 0; i < 20; ++i)
 	{
-		FEM_Factory<float>::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
+		FEM_Factory<float>::update(mIdAlgoFEM, 1.03, &mVerticesBuffer[0]);
 	}
 	
 	//////////////////////////////////////
 
 }
 
+void cg()
+{
+
+}
+
+
 int main()
 {
+	cg();
 	//unitTest();
 	
 	//float* buffer = new float[2];

@@ -18,6 +18,16 @@ void UFemFunctions::loadedNodes(int id, int* nodes, int loaded_nodes, float* val
 	FEM_Factory<float>::loadedNodes(id, nodes, loaded_nodes, vals);
 }
 
+void UFemFunctions::setDamping(int id, const float fk, const float fm)
+{
+	FEM_Factory<float>::setDamping(id, fk, fm);
+}
+
+void UFemFunctions::setMaterialParams(int id, const float e, const float v, const float gamma)
+{
+	FEM_Factory<float>::setMaterialParams(id, e, v, gamma);
+}
+
 void UFemFunctions::init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn)
 {
 	FEM_Factory<float>::init(id, g_coord, g_num, in_nf, in_nn);

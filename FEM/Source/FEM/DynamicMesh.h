@@ -31,6 +31,21 @@ public:
 	UPROPERTY(Transient)
 	UStaticMesh* StaticMesh = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
+	float e = 10000.0f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
+	float v = 0.3f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
+	float gamma = 100.0f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
+	float fk = 0.01f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
+	float fm = 0.0f;
+
 	/**
 	 * This delegate is broadcast whenever the internal SourceMesh is updated
 	 */
