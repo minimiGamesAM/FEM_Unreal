@@ -940,7 +940,7 @@ private:
 
     std::vector<T> x0;
     std::vector<T> d1x0;
-    //std::vector<T> x1;
+    std::vector<T> x1;
     std::vector<T> d2x0;
     std::vector<T> d1x1;
     std::vector<T> d2x1;
@@ -1044,7 +1044,19 @@ public:
         //std::vector<int> g_g(ndof * nels, 0);
         g_g.resize(ndof * nels, 0);
         //kdiag.resize(neq, 0);
-               
+        
+        /////////////////
+        std::vector<float> g_coord_T(nodof * nn, 0.0f);
+
+        for (int k = 0; k < nn; ++k)
+        {
+            for (int l = 0; l < nodof; ++l)
+            {
+                g_coord_T[k + l * nn] = g_coord[l + k * nodof];
+            }
+        }
+        /////////////////
+ 
         //---------------------- loop the elements to find global arrays sizes---- -
                 
         for (int i = 0; i < nels; ++i)
@@ -1090,7 +1102,7 @@ public:
             {
                 for (int k = 0; k < ndim; ++k)
                 {
-                    coord[k + j * ndim] = g_coord[num[j] + k * nn];
+                    coord[k + j * ndim] = g_coord_T[num[j] + k * nn];
                 }
             }
         
@@ -1162,67 +1174,20 @@ public:
             //}
         }
 
-        //for (int k = 1; k < diag_precon.size(); ++k)
-        //{
-        //    diag_precon[k] = T(1.0) / diag_precon[k];
-        //}
-        //diag_precon[0] = T(0.0);
         //---------------------- - initial conditions and factorise equations--------
-
-        // x0 = old displacements
-        // x1 = new displacements
-        // d1x0 = old velocity
-        // d1x1 = new velocity
-        // d2x0 = old acceleration
-        // d2x1 = new acceleration
-        // theta = time integration weighting parameter
-        // fk = Rayleigh damping parameter on stiffness
-        // fm = Rayleigh damping parameter on mass
-
-        //
-       
-
         x0.resize(neq + 1, T(0.0));
-        
-        std::vector<float> tempVerticesBuffer(nodof * nn, 0.0f);
+        x1.resize(neq + 1, T(0.0));
 
-        for (int k = 0; k < nn; ++k)
+        for (int i = 0; i < nn; ++i)
         {
-            for (int l = 0; l < nodof; ++l)
-            {
-                tempVerticesBuffer[k + l * nn] = g_coord[l + k * nodof];
-            }
+            x0[nf[i]] = (nf[i] > 0) ? g_coord[i * 3] : T(0.0);
+            x0[nf[i + nn]] = (nf[i + nn] > 0) ? g_coord[i * 3 + 1] : T(0.0);
+            x0[nf[i + 2 * nn]] = (nf[i + 2 * nn] > 0) ? g_coord[i * 3 + 2] : T(0.0);
         }
 
-        //for (int i = 0; i < nn; ++i)
-        //{
-        //
-        //    x0[nf[i]] = (nf[i] > 0) ? tempVerticesBuffer[i * 3] : T(0.0);
-        //    x0[nf[i + nn]] = (nf[i + nn] > 0) ? tempVerticesBuffer[i * 3 + 1] : T(0.0);
-        //    x0[nf[i + 2 * nn]] = (nf[i + 2 * nn] > 0) ? tempVerticesBuffer[i * 3 + 2] : T(0.0);
-        //
-        //    //if (i == 5)
-        //    //{
-        //    //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
-        //    //}
-        //}
+        std::copy(x0.begin(), x0.end(), x1.begin());
+               
 
-
-        //for (int i = 0; i < nels; ++i)
-        //{
-        //    for (int j = 0; j < ndof; ++j)
-        //    {
-        //        int g_index = g_g[i + j * nels];
-        //        std::cout << g_index << " " << g_coord[j] << std::endl;
-        //        x0[g_index] = g_coord[j];
-        //    }
-        //}
-        
-        //x0[0] = 0;
-        //x1.resize(neq + 1);
-        //std::copy(x0.begin(), x0.end(), x1.begin());
-
-        x0.resize(neq + 1, T(0.0));
         d1x0.resize(neq + 1, T(0.0));
         d2x0.resize(neq + 1, T(0.0));
         d1x1.resize(neq + 1, T(0.0));
@@ -1262,7 +1227,7 @@ public:
         //int* etype = new int[nels];
         //std::fill(etype, etype + nels, 1);
 
-        gravlo.resize(neq + 1, T(0.0));
+        std::fill(gravlo.begin(), gravlo.end(), T(0.0));
 
         for (int i = 0; i < nels; ++i)
         {
@@ -1323,14 +1288,13 @@ public:
         {
             std::vector<T> dxTemp(ndof, 0);
             std::vector<T> d1x0Temp(ndof, 0);
-            std::vector<T> uTemp(ndof, 0);
-
+            
             for (int j = 0; j < ndof; ++j)
             {
                 int g_index = g_g[i + j * nels];
 
-                //dxTemp[j] = x1[g_index] - x0[g_index];
-                dxTemp[j] = x0[g_index];
+                dxTemp[j] = x1[g_index] - x0[g_index];
+                //dxTemp[j] = x0[g_index];
                 d1x0Temp[j] = d1x0[g_index];
             }
 
@@ -1340,10 +1304,11 @@ public:
             //u(g) = u(g) + MATMUL(km * c2 + mm * c3, x0(g)) + MATMUL(mm, d1x0(g))
             //u(g) = u(g) + MATMUL(km, dxTemp(g)) + MATMUL(km * c4 + mm * c1, d1x0(g)) // solving by acceleration
 
-            //MATMUL(km * c2, X0(g))
-            //MATMUL(mm * c3, x0(g))
-            //MATMUL(mm, d1x0(g))
+            //MATMUL(km * c2, dxTemp(g))
+            //MATMUL(km * c4, d1x0(g))
+            //MATMUL(mm * c1, d1x0(g))
 
+            std::vector<T> uTemp(ndof, 0);
             matmulVec(c4, km, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
             matmulVec(c1, mm, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
 
@@ -1353,7 +1318,7 @@ public:
             {
                 int g_index = g_g[i + j * nels];
 
-                u[g_index] -= uTemp[j];
+                u[g_index] += (T(-1.0) * uTemp[j]);
             }
         }
 
@@ -1453,29 +1418,29 @@ public:
         //d1x1 = d1x0 + xnew * dtim;
         addVectors(&d1x0[0], T(1.0), &xnew[0], dtim, &d1x1[0], neq + 1);
                         
-        //x1 = x0 + d1x1 * dtim;
-        //addVectors(dtim, &d1x1[0], &x0[0], neq + 1);
+        //x1 = x1 + d1x1 * dtim;
+        addVectors(dtim, &d1x1[0], &x1[0], neq + 1);
       
-        addVectors(&d1x1[0], T(0.0), &d1x1[0], dtim, &x0[0], neq + 1);
+        //addVectors(&x1[0], T(1.0), &d1x1[0], dtim, &x1[0], neq + 1);
         
         copyVec(neq + 1, &d1x1[0], &d1x0[0]);
      
 
 
         ///////////////////
-        if (!node.empty())
-        {
-            int npri = 1;
-            static itt = 1;
-            int nres = node[0];
-
-            if (itt / npri * npri == itt)
-            {
-                std::cout << "time " << time << "      load  " << load(time) << " node " << nres << "     x " << x0[nf[nres - 1]] << "     y " << x0[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-            }
-
-            itt = itt + 1;
-        }
+        //if (!node.empty())
+        //{
+        //    int npri = 1;
+        //    static itt = 1;
+        //    int nres = node[0];
+        //
+        //    if (itt / npri * npri == itt)
+        //    {
+        //        std::cout << "time " << time << "      load  " << load(time) << " node " << nres << "     x " << x1[nf[nres - 1]] << "     y " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
+        //    }
+        //
+        //    itt = itt + 1;
+        //}
         ////////////////////
 
         if (verticesBuffer)
@@ -1484,9 +1449,9 @@ public:
             {
                 for (int i = 0; i < nn; ++i)
                 {
-                    verticesBuffer[i * 3] += (nf[i] > 0) ? x0[nf[i]] : T(0.0);
-                    verticesBuffer[i * 3 + 1] += (nf[i + nn] > 0) ? x0[nf[i + nn]] : T(0.0);
-                    verticesBuffer[i * 3 + 2] += (nf[i + 2 * nn] > 0) ? x0[nf[i + 2 * nn]] : T(0.0);
+                    verticesBuffer[i * 3] = (nf[i] > 0) ? x1[nf[i]]                       : verticesBuffer[i * 3];
+                    verticesBuffer[i * 3 + 1] = (nf[i + nn] > 0) ? x1[nf[i + nn]]         : verticesBuffer[i * 3 + 1];
+                    verticesBuffer[i * 3 + 2] = (nf[i + 2 * nn] > 0) ? x1[nf[i + 2 * nn]] : verticesBuffer[i * 3 + 2];
 
                     //if (i == 5)
                     //{
