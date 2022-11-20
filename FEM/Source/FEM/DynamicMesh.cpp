@@ -108,15 +108,15 @@ void ADynamicMesh::BeginPlay()
 		}
 	}
 
-	std::vector<float> tempVerticesBuffer(nodof * nn, 0.0f);
-
-	for (int k = 0; k < nn; ++k)
-	{
-		for (int l = 0; l < nodof; ++l)
-		{
-			tempVerticesBuffer[k + l * nn] = mVerticesBuffer[l + k * nodof];
-		}
-	}
+	//std::vector<float> tempVerticesBuffer(nodof * nn, 0.0f);
+	//
+	//for (int k = 0; k < nn; ++k)
+	//{
+	//	for (int l = 0; l < nodof; ++l)
+	//	{
+	//		tempVerticesBuffer[k + l * nn] = mVerticesBuffer[l + k * nodof];
+	//	}
+	//}
 
 	// number of nodes per element
 	int nod = 4;
@@ -126,7 +126,7 @@ void ADynamicMesh::BeginPlay()
 	UFemFunctions::setMaterialParams(mIdAlgoFEM, e, v, gamma);
 	UFemFunctions::setDamping(mIdAlgoFEM, fk, fm);
 	
-	UFemFunctions::init(mIdAlgoFEM, &tempVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+	UFemFunctions::init(mIdAlgoFEM, &mVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
 
 
 
@@ -139,14 +139,9 @@ void ADynamicMesh::BeginPlay()
 	val.push_back(float(0.33));
 	val.push_back(float(0.33));
 
-	UFemFunctions::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+	//UFemFunctions::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
 	///////////
-
-	for (int i = 0; i < 20; ++i)
-	{
-		UFemFunctions::update(mIdAlgoFEM, 1.0, &mVerticesBuffer[0]);
-	}
-
+	
 }
 
 void ADynamicMesh::PostInitializeComponents()
