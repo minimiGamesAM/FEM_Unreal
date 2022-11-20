@@ -347,7 +347,7 @@ void pruebaWithDataTetGen()
 	mVerticesBuffer.push_back(-99.9999771);
 	mVerticesBuffer.push_back(200.000015);
 	
-	//std::for_each(mVerticesBuffer.begin(), mVerticesBuffer.end(), [&](float& v) { v /= 100.0; });
+	std::for_each(mVerticesBuffer.begin(), mVerticesBuffer.end(), [&](float& v) { v /= 4.0; });
 
 	// init FEM
 	const int dim = 3;
@@ -384,26 +384,13 @@ void pruebaWithDataTetGen()
 	nf.push_back(1);
 	nf.push_back(0);
 	nf.push_back(1);
-	
-	//////////////////////////////////
-	std::vector<float> tempVerticesBuffer(nodof* nn, 0.0f);
-
-	for (int k = 0; k < nn; ++k)
-	{
-		for (int l = 0; l < nodof; ++l)
-		{
-			tempVerticesBuffer[k + l * nn] = mVerticesBuffer[l + k * nodof];
-		}
-	}
-
-	/////////////////////////////////
-
+		
 	mIdAlgoFEM = FEM_Factory<float>::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
-	FEM_Factory<float>::init(mIdAlgoFEM, &tempVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+	FEM_Factory<float>::init(mIdAlgoFEM, &mVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
 
 	///////////
 	std::vector<int> nodesLoaded;
-	nodesLoaded.push_back(4);
+	nodesLoaded.push_back(8);
 
 	std::vector<float> val;
 	val.push_back(float(0.33));
@@ -412,15 +399,22 @@ void pruebaWithDataTetGen()
 
 	FEM_Factory<float>::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
 
-	FEM_Factory<float>::setDamping(mIdAlgoFEM, float(0.0), float(0.0));
-	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(10), float(0.3), float(200));
+	FEM_Factory<float>::setDamping(mIdAlgoFEM, float(0.5), float(0.1));
+	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(1000.0), float(0.3), float(1000000.0));
 
 	///////////
 
 	//////////////////////////////////////
-	for (int i = 0; i < 20; ++i)
+	for (int i = 0; i < 2000; ++i)
 	{
-		FEM_Factory<float>::update(mIdAlgoFEM, 1.03, &mVerticesBuffer[0]);
+		FEM_Factory<float>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
+
+		//if (i >= 1273)
+		//{
+		//	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(1000.0), float(0.3), float(0.0));
+		//}
+
+		std::cout << i << "   " << mVerticesBuffer[3] << " " << mVerticesBuffer[4] << " " << mVerticesBuffer[5] << std::endl;
 	}
 	
 	//////////////////////////////////////
