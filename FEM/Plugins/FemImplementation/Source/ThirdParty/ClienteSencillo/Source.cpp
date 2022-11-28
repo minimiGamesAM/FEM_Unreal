@@ -405,7 +405,7 @@ void pruebaWithDataTetGen()
 	///////////
 
 	//////////////////////////////////////
-	for (int i = 0; i < 2000; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		FEM_Factory<float>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
 
