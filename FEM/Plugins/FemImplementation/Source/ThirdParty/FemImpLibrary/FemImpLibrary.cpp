@@ -1044,11 +1044,9 @@ public:
                
         //ndof = number of degree of freedom per element
         int ndof = nod * nodof;
-                
-        //std::vector<int> g_g(ndof * nels, 0);
+                 
         g_g.resize(ndof * nels, 0);
-        //kdiag.resize(neq, 0);
-        
+                
         /////////////////
         std::vector<float> g_coord_T(nodof * nn, 0.0f);
 
@@ -1086,16 +1084,10 @@ public:
         const T v = prop[1];
                         
         eld.resize(ndof, 0.0);
-
-        //mm = element mass matrix;
-        //std::vector<T> mm(ndof * ndof, 0.0f);
-        
+                
         for (int i = 0; i < nels; ++i)
         {
-            //std::fill(std::begin(mm), std::end(mm), T(0.0));
-        
             std::vector<T> dee(nst * nst, T(0.0));
-            //std::fill(std::begin(dee), std::end(dee), T(0.0));
             deemat(&dee[0], nst, e, v);
         
             int* num = &g_num[nod * i];
@@ -1168,14 +1160,6 @@ public:
             
             storkm.insert(storkm.end(), km.begin(), km.end());
             stormm.insert(stormm.end(), mm.begin(), mm.end());
-
-            //for (int k = 0; k < ndof; ++k)
-            //{
-            //    //T val_prec = mm[k + k * ndof] * c3 + km[k + k * ndof] * c4;
-            //    //diag_precon[g[k]] = diag_precon[g[k]] + val_prec;
-            //
-            //    gravlo[g[k]] = gravlo[g[k]] - eld[k] * prop[2 * etype[i]];
-            //}
         }
 
         A.resize(storkm.size(), T(0.0));
@@ -1199,39 +1183,27 @@ public:
         d1x1.resize(neq + 1, T(0.0));
         d2x1.resize(neq + 1, T(0.0));
 
-
-        //T c1 = (T(1.0) - theta) * dtim;
-        //T c2 = fk - c1;
-        //T c3 = fm + T(1.0) / (theta * dtim);
-        //T c4 = fk + theta * dtim;
-
-        //addVectors(&mv[0], c3, &kv[0], c4, &f1[0], kdiag[neq - 1]);
-        //sparin(&f1[0], &kdiag[0], neq);
-
-        //!---------------------- - time stepping loop--------------------------------
-
-        //T nstep = T(20);
-
-        //std::cout << "time obj " << time << "      load  obj  " << load(time) << "     x   obj " << x0[nf[nres - 1]] << "     y  obj " << x0[nf[nres + nn - 1]] << "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-        
-        //loads2 = new T[neq + 1];
-
-        //u.resize(neq + 1, T(0.0));
         loads.resize(neq + 1, T(0.0));
     }
     
-    void cg(std::vector<T>& xnew, std::vector<T>& d)
+    void cg(std::vector<T>& xnew)
     {
         int ndof = nod * nodof;
-
-        std::vector<T> p(d);
-        std::vector<T> x(neq + 1, T(0.0));
-        std::vector<T> u(loads);
-
         int cg_iters = 0;
         int cg_limit = 50;
         T cg_tol = T(0.00001);
 
+        std::vector<T> d(neq + 1, T(0.0));
+
+        for (int i = 0; i < neq + 1; ++i)
+        {
+            d[i] = diag_precon[i] * loads[i];
+        }
+
+        std::vector<T> p(d);
+        std::vector<T> x(neq + 1, T(0.0));
+        std::vector<T> u(loads);
+        
         bool cg_converged(false);
         do
         {
@@ -1295,12 +1267,8 @@ public:
         //// for debug purposes //
         time = time + dtim;
         //nres = node number at witch time history is to be printed
-        //int nres = 18;
         int ndof = nod * nodof;
         int etype = 1;
-
-        //int* etype = new int[nels];
-        //std::fill(etype, etype + nels, 1);
 
         std::fill(gravlo.begin(), gravlo.end(), T(0.0));
         std::fill(A.begin(), A.end(), T(0.0));
@@ -1330,7 +1298,7 @@ public:
         //////////////////////////////////////////////////////////////
 
         //build system A and u
-        std::vector<T> u(neq + 1, T(0.0));
+        std::fill(std::begin(loads), std::end(loads), T(0.0));
 
         for (int i = 0; i < nels; ++i)
         {
@@ -1342,7 +1310,6 @@ public:
                 int g_index = g_g[i + j * nels];
 
                 dxTemp[j] = x1[g_index] - x0[g_index];
-                //dxTemp[j] = x0[g_index];
                 d1x0Temp[j] = d1x0[g_index];
             }
 
@@ -1364,11 +1331,11 @@ public:
             for (int k = 0; k < ndof; ++k)
             {
                 int g_index = g_g[i + k * nels];
-                u[g_index] += (T(-1.0) * uTemp[k]);
+                loads[g_index] += (T(-1.0) * uTemp[k]);
             }
         }
         
-        u[0] = T(0.0);
+        loads[0] = T(0.0);
 
         //////////////////////////////////////////////////////////////
 
@@ -1394,8 +1361,7 @@ public:
         diag_precon[0] = T(0.0);
 
         //////////////////////////////////////////////////////////////
-        
-        std::fill(std::begin(loads), std::end(loads), T(0.0));
+                
         addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
         
         int loaded_nodes = node.size();
@@ -1405,24 +1371,15 @@ public:
         {
             for (int k = 0; k < ndim; ++k)
             {
-                loads[nf[nn * k + node[j - 1] - 1]] =
+                loads[nf[nn * k + node[j - 1] - 1]] +=
                     val[(j - 1) * loaded_nodes + k] * temporal;
             }
-        }
-
-        addVectors(T(1.0), &u[0], &loads[0], u.size());
-
-        std::vector<T> d(neq + 1, T(0.0));
-
-        for (int i = 0; i < neq + 1; ++i)
-        {
-            d[i] = diag_precon[i] * loads[i];
         }
         
         std::vector<T> xnew(neq + 1, T(0.0));
 
         //---------------------- - pcg equation solution----------------------------
-        cg(xnew, d);
+        cg(xnew);
         //--------------------------------------------------------------------------
         
         //d1x1 = d1x0 + xnew * dtim;
