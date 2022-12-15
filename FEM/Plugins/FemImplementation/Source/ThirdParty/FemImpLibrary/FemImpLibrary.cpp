@@ -941,6 +941,8 @@ private:
 
     //gravlo = global gravity loading vector 
     std::vector<T> gravlo;
+    T gravity = T(980);
+    std::vector<T> gravityDir;
 
     std::vector<T> x0;
     std::vector<T> d1x0;
@@ -954,6 +956,7 @@ private:
     T fm = T(0.0001);
     T fk = T(0.0);
     ///////////////////////////////////
+    // eld = element displacement
     std::vector<T> eld;
     std::vector<T> loads;
 
@@ -962,6 +965,18 @@ private:
     std::string   element;
 
 public:
+    
+    void setGravityAcceleration(T gravAcc)
+    {
+        gravity = gravAcc;
+    }
+
+    void setGravityDirection(T* gravDir)
+    {
+        gravityDir[0] = gravDir[0];
+        gravityDir[1] = gravDir[1];
+        gravityDir[2] = gravDir[2];
+    }
 
     void setDamping(const T fk, const T fm)
     {
@@ -1030,6 +1045,10 @@ public:
         prop[0] = T(100000000.0);
         prop[1] = T(0.3);
         prop[2] = T(333);
+
+        //
+        gravityDir.resize(ndim, 0.0);
+        gravityDir[ndim - 1] = T(1.0);
     }
 
     void init(T* g_coord, int* g_num, int* in_nf, int in_nn)
@@ -1147,13 +1166,17 @@ public:
 
                 ecmat(&ecm[0], &nt[0], &tn[0], &fun[0], ndof, nodof);
 
-                T bEcm = det * weights[j];
+                int etype = 1;
+                T bEcm = det * weights[j] * prop[2 * etype];
                 matricesAdd(&mm[0], T(1.0), &ecm[0], bEcm, &mm[0], ndof, ndof);
 
                 int kk = 0;
-                for (int k = nodof; k <= ndof; k = k + nodof)
+                for (int k = nodof; k <= ndof; k = k + nodof) // TODO: generalize to a general displacement.
                 {
                     eld[k - 1] = eld[k - 1] + fun[kk] * det * weights[j];
+                    eld[k - 1 + 1] = eld[k - 1 + 1] + fun[kk] * det * weights[j];
+                    eld[k - 1 + 2] = eld[k - 1 + 2] + fun[kk] * det * weights[j];
+
                     kk++;
                 }
             }
@@ -1266,7 +1289,7 @@ public:
         
         //// for debug purposes //
         time = time + dtim;
-        //nres = node number at witch time history is to be printed
+
         int ndof = nod * nodof;
         int etype = 1;
 
@@ -1283,7 +1306,7 @@ public:
 
             for (int k = 0; k < ndof; ++k)
             {
-                gravlo[g[k]] = gravlo[g[k]] - eld[k] * prop[2 * etype];
+                gravlo[g[k]] = gravlo[g[k]] + prop[2 * etype] * gravityDir[k % ndim] * gravity;  //eld[k] *
             }
         }
         
@@ -1455,6 +1478,24 @@ void FEM_Factory<T>::loadedNodes(int id, int* nodes, int loaded_nodes, T* vals)
     if (id < femAlg.size())
     {
         femAlg[id]->loadedNodes(nodes, loaded_nodes, vals);
+    }
+}
+
+template<class T>
+void FEM_Factory<T>::setGravityAcceleration(int id, T gravAcc)
+{
+    if (id < femAlg.size())
+    {
+        femAlg[id]->setGravityAcceleration(gravAcc);
+    }
+}
+
+template<class T>
+void FEM_Factory<T>::setGravityDirection(int id, T* gravDir)
+{
+    if (id < femAlg.size())
+    {
+        femAlg[id]->setGravityDirection(gravDir);
     }
 }
 

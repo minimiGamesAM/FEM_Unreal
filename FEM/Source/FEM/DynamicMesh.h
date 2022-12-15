@@ -38,13 +38,19 @@ public:
 	float v = 0.3f;
 
 	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
-	float gamma = 100.0f;
+	float gamma = 1.0f;
 
 	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
 	float fk = 0.01f;
 
 	UPROPERTY(EditAnywhere, Category = FEM_MaterialParams)
 	float fm = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_WorldParams)
+	float gravity = 980.0f;
+
+	UPROPERTY(EditAnywhere, Category = FEM_WorldParams)
+	FVector gravityDir;
 
 	/**
 	 * This delegate is broadcast whenever the internal SourceMesh is updated

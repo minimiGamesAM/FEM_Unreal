@@ -369,6 +369,14 @@ void ADynamicMesh::Tick(float DeltaTime)
 
 	UFemFunctions::setMaterialParams(mIdAlgoFEM, e, v, gamma);
 	UFemFunctions::setDamping(mIdAlgoFEM, fk, fm);
+		
+	UFemFunctions::setGravityAcceleration(mIdAlgoFEM, gravity);
+	float gravDir[3] = {};
+	gravDir[0] = gravityDir[0];
+	gravDir[1] = gravityDir[1];
+	gravDir[2] = gravityDir[2];
+	 
+	UFemFunctions::setGravityDirection(mIdAlgoFEM, gravDir);
 
 	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
 

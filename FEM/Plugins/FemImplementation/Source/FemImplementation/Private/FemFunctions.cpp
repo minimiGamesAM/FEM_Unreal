@@ -18,6 +18,16 @@ void UFemFunctions::loadedNodes(int id, int* nodes, int loaded_nodes, float* val
 	FEM_Factory<float>::loadedNodes(id, nodes, loaded_nodes, vals);
 }
 
+void UFemFunctions::setGravityAcceleration(int id, float gravAcc)
+{
+	FEM_Factory<float>::setGravityAcceleration(id, gravAcc);
+}
+
+void UFemFunctions::setGravityDirection(int id, float* gravDir)
+{
+	FEM_Factory<float>::setGravityDirection(id, gravDir);
+}
+
 void UFemFunctions::setDamping(int id, const float fk, const float fm)
 {
 	FEM_Factory<float>::setDamping(id, fk, fm);
