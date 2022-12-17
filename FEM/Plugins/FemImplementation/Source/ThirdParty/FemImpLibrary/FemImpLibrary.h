@@ -40,6 +40,7 @@ template class FEMIMP_DLL_API FEM_Factory<double>;
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int bufferSize, int* tetsBuffer, int tetsBufferSize);
 
+FEMIMP_DLL_API void testSparse();
 
 //Funtions to unit test
 

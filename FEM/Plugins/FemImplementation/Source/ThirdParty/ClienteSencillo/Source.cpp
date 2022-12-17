@@ -347,7 +347,7 @@ void pruebaWithDataTetGen()
 	mVerticesBuffer.push_back(-99.9999771);
 	mVerticesBuffer.push_back(200.000015);
 	
-	std::for_each(mVerticesBuffer.begin(), mVerticesBuffer.end(), [&](float& v) { v /= 4.0; });
+	//std::for_each(mVerticesBuffer.begin(), mVerticesBuffer.end(), [&](float& v) { v /= 4.0; });
 
 	// init FEM
 	const int dim = 3;
@@ -421,15 +421,9 @@ void pruebaWithDataTetGen()
 
 }
 
-void cg()
-{
-
-}
-
-
 int main()
 {
-	cg();
+	testSparse();
 	//unitTest();
 	
 	//float* buffer = new float[2];

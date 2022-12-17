@@ -9,6 +9,7 @@
 
 #include "mkl.h"
 #include "mkl_pblas.h"
+#include "mkl_spblas.h"
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -1121,11 +1122,11 @@ public:
                 }
             }
         
-            std::vector<int> g(ndof, 0);
-            for (int j = 0; j < ndof; ++j)
-            {
-                g[j] = g_g[i + j * nels];
-            }
+           // std::vector<int> g(ndof, 0);
+            //for (int j = 0; j < ndof; ++j)
+            //{
+                //g[j] = g_g[i + j * nels];
+            //}
         
             std::vector<T> km(ndof * ndof, T(0.0));
             std::vector<T> mm(ndof * ndof, T(0.0));
@@ -1170,15 +1171,15 @@ public:
                 T bEcm = det * weights[j] * prop[2 * etype];
                 matricesAdd(&mm[0], T(1.0), &ecm[0], bEcm, &mm[0], ndof, ndof);
 
-                int kk = 0;
-                for (int k = nodof; k <= ndof; k = k + nodof) // TODO: generalize to a general displacement.
-                {
-                    eld[k - 1] = eld[k - 1] + fun[kk] * det * weights[j];
-                    eld[k - 1 + 1] = eld[k - 1 + 1] + fun[kk] * det * weights[j];
-                    eld[k - 1 + 2] = eld[k - 1 + 2] + fun[kk] * det * weights[j];
-
-                    kk++;
-                }
+                //int kk = 0;
+                //for (int k = nodof; k <= ndof; k = k + nodof) // TODO: generalize to a general displacement.
+                //{
+                //    eld[k - 1] = eld[k - 1] + fun[kk] * det * weights[j];
+                //    eld[k - 1 + 1] = eld[k - 1 + 1] + fun[kk] * det * weights[j];
+                //    eld[k - 1 + 2] = eld[k - 1 + 2] + fun[kk] * det * weights[j];
+                //
+                //    kk++;
+                //}
             }
             
             storkm.insert(storkm.end(), km.begin(), km.end());
@@ -1362,6 +1363,21 @@ public:
 
         //////////////////////////////////////////////////////////////
 
+        //int loaded_nodes = node.size();
+        //            
+        //T temporal = dtim * load(time);
+        //for (int j = 1; j <= loaded_nodes; ++j)
+        //{
+        //    for (int k = 0; k < ndim; ++k)
+        //    {
+        //        loads[nf[nn * k + node[j - 1] - 1]] +=
+        //            val[(j - 1) * loaded_nodes + k] * temporal;
+        //    }
+        //}
+        // 
+        
+        //////////////////////////////////////////////////////////////
+
         // build precondition
         for (int i = 0; i < nels; ++i)
         {
@@ -1386,19 +1402,7 @@ public:
         //////////////////////////////////////////////////////////////
                 
         addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
-        
-        int loaded_nodes = node.size();
-                    
-        T temporal = dtim * load(time);
-        for (int j = 1; j <= loaded_nodes; ++j)
-        {
-            for (int k = 0; k < ndim; ++k)
-            {
-                loads[nf[nn * k + node[j - 1] - 1]] +=
-                    val[(j - 1) * loaded_nodes + k] * temporal;
-            }
-        }
-        
+                
         std::vector<T> xnew(neq + 1, T(0.0));
 
         //---------------------- - pcg equation solution----------------------------
@@ -1537,6 +1541,86 @@ FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, in
     std::cout << "GIRANDO TEST BASICO" << std::endl;
     //MessageBox(NULL, TEXT("BASIC DLL CARGADO INTEL."), TEXT("Third Party Plugin"), MB_OK);
     return dotResult;
+}
+
+FEMIMP_DLL_API void testSparse()
+{
+    const int m = 4;
+
+    float matrix[m * m] = {
+         1,     -1.5,   0.0,  -3.5,
+        -1.5,      2,   0.0,  -3,
+         0.0,    0.0,   4.0,  -2.1,
+        -3.5,     -3,  -2.1,  -3.8
+    };
+
+    float vec[] = { 2.2, -3.3, 1, 4.5 };
+    float result[] = { 0, 0, 0, 0 };
+    matmulVec(1.0, matrix, vec, 0.0, result, 4, 4);
+    
+    // Symetric Matrix CSR from m x m matrix
+    // value[N]: upper triangle or lower triangle, storage from left to right
+    // columns[N]: index column of the non-zero values, from left to right
+    // rowIndex[m + 1]: First non-zero value (index value table) from left to right 
+    //                 (the last value) is the number of the non-zero values.
+
+    std::vector<float> value;
+    std::vector<long long> columns;
+    std::vector<long long> rowIndex;
+
+    for (int i = 0; i < m; ++i)
+    {
+        for(int j = i; j < m; ++j)
+        {
+            int index = j + i * m;
+
+            float v = matrix[index];
+
+            if (i == j)
+            {
+                value.push_back(matrix[index]);
+                columns.push_back(j);
+                rowIndex.push_back(value.size() - 1);
+            }
+            else if (std::abs(v) > 0.000001)
+            {
+                value.push_back(matrix[index]);
+                columns.push_back(j);
+            }
+        }
+    }
+
+    rowIndex.push_back(value.size());
+
+    ////////////////
+    sparse_matrix_t csrA;
+    sparse_status_t status;
+
+    status = mkl_sparse_s_create_csr(&csrA,
+        SPARSE_INDEX_BASE_ZERO,
+        m,  // number of rows
+        m,  // number of cols
+        &rowIndex[0],
+        &rowIndex[0] + 1,
+        &columns[0],
+        &value[0]);
+
+    matrix_descr descrA;
+
+    descrA.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
+    descrA.mode = SPARSE_FILL_MODE_UPPER;
+    descrA.diag = SPARSE_DIAG_NON_UNIT;
+
+    status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, 1);
+
+    float result2[] = { 0, 0, 0, 0 };
+    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA,
+        descrA, vec, 0.0, result2);
+
+    for (int i = 0; i < m; ++i)
+    {
+        std::cout << " result with sgemv " << result[i] << " result with sparse_s_mv " << result2[i] << std::endl;
+    }
 }
 
 
