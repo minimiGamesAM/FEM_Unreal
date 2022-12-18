@@ -1612,15 +1612,44 @@ FEMIMP_DLL_API void testSparse()
     descrA.diag = SPARSE_DIAG_NON_UNIT;
 
     status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, 1);
+    mkl_sparse_optimize(csrA);
 
     float result2[] = { 0, 0, 0, 0 };
-    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA,
-        descrA, vec, 0.0, result2);
+    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, vec, 0.0, result2);
 
     for (int i = 0; i < m; ++i)
     {
         std::cout << " result with sgemv " << result[i] << " result with sparse_s_mv " << result2[i] << std::endl;
     }
+
+    ////////
+    // export
+    sparse_index_base_t    indexing;
+    struct matrix_descr    descr_type_gen;
+    MKL_INT  rows, cols;
+    MKL_INT* pointerB_C = NULL, * pointerE_C = NULL;
+    MKL_INT *columns_C = NULL;
+    float* values_C;
+
+    status = mkl_sparse_s_export_csr( csrA,
+                                      &indexing,
+                                      &rows,
+                                      &cols,
+                                      &pointerB_C,
+                                      &pointerE_C,
+                                      &columns_C,
+                                      &values_C);
+
+
+    for (int i = 0; i < pointerB_C[rows]; ++i)
+    {
+        std::cout << " export " << values_C[i] << std::endl;
+    }
+    
+
+
+
+
 }
 
 
