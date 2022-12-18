@@ -1545,18 +1545,20 @@ FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, in
 
 FEMIMP_DLL_API void testSparse()
 {
-    const int m = 4;
+    const int m = 6;
 
     float matrix[m * m] = {
-         1,     -1.5,   0.0,  -3.5,
-        -1.5,      2,   0.0,  -3,
-         0.0,    0.0,   4.0,  -2.1,
-        -3.5,     -3,  -2.1,  -3.8
+         100,   -1.5,   0.0,  -3.5, -1.0,  0.8,
+        -1.5,      2,   0.0,  -3.0,  5.2,  0.0, 
+         0.0,    0.0,   4.0,  -2.1,  0.0,  6.1,
+        -3.5,   -3.0,  -2.1,  -3.8,  55.0, 0.0, 
+        -1.0,    5.2,   0.0,   55.0, 7.0,  0.0,
+         0.8,    0.0,   6.1,   0.0,  0.0,  -1.0
     };
 
-    float vec[] = { 2.2, -3.3, 1, 4.5 };
-    float result[] = { 0, 0, 0, 0 };
-    matmulVec(1.0, matrix, vec, 0.0, result, 4, 4);
+    float vec[] = { 2.2, -3.3, 1, 4.5, 0.1, -0.8 };
+    std::vector<float> result(m, 0.0f);
+    matmulVec(1.0, matrix, vec, 0.0, &result[0], m, m);
     
     // Symetric Matrix CSR from m x m matrix
     // value[N]: upper triangle or lower triangle, storage from left to right
@@ -1614,8 +1616,8 @@ FEMIMP_DLL_API void testSparse()
     status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, 1);
     mkl_sparse_optimize(csrA);
 
-    float result2[] = { 0, 0, 0, 0 };
-    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, vec, 0.0, result2);
+    std::vector<float> result2(m, 0.0f);
+    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, vec, 0.0, &result2[0]);
 
     for (int i = 0; i < m; ++i)
     {
@@ -1641,12 +1643,27 @@ FEMIMP_DLL_API void testSparse()
                                       &values_C);
 
 
-    for (int i = 0; i < pointerB_C[rows]; ++i)
-    {
-        std::cout << " export " << values_C[i] << std::endl;
-    }
-    
+    //
+    int r = 3;
+    int c = 4;
 
+    //1.
+    int accumulate = 0;
+
+    for (int i = 0; i < r; ++i)
+    {
+        accumulate += pointerE_C[i] - pointerB_C[i];
+    }
+
+    //2.
+    int first = accumulate;
+    int second = accumulate + pointerE_C[r] - pointerB_C[r];
+    auto itt = std::find(&columns_C[first], &columns_C[second], c);
+
+    //3.
+    auto pos = std::distance(&columns_C[0], itt);
+    std::cout << "Find val row  " << r << " colum " << c << " value " << values_C[pos] << std::endl;
+    //
 
 
 
