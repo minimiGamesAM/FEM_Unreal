@@ -1543,6 +1543,27 @@ FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, in
     return dotResult;
 }
 
+float getValueFromExportSparse(int r, int c, MKL_INT* pointerB_C, MKL_INT* pointerE_C, MKL_INT* columns_C, float* values_C)
+{
+    //1.
+    int accumulate = 0;
+
+    for (int i = 0; i < r; ++i)
+    {
+        accumulate += pointerE_C[i] - pointerB_C[i];
+    }
+
+    //2.
+    int first = accumulate;
+    int second = accumulate + pointerE_C[r] - pointerB_C[r];
+    auto itt = std::find(&columns_C[first], &columns_C[second], c);
+
+    //3.
+    auto pos = std::distance(&columns_C[0], itt);
+
+    return values_C[pos];
+}
+
 FEMIMP_DLL_API void testSparse()
 {
     const int m = 6;
@@ -1553,7 +1574,7 @@ FEMIMP_DLL_API void testSparse()
          0.0,    0.0,   4.0,  -2.1,  0.0,  6.1,
         -3.5,   -3.0,  -2.1,  -3.8,  55.0, 0.0, 
         -1.0,    5.2,   0.0,   55.0, 7.0,  0.0,
-         0.8,    0.0,   6.1,   0.0,  0.0,  -1.0
+         0.8,    0.0,   6.1,   0.0,  0.0,  -1.4
     };
 
     float vec[] = { 2.2, -3.3, 1, 4.5, 0.1, -0.8 };
@@ -1606,17 +1627,13 @@ FEMIMP_DLL_API void testSparse()
         &rowIndex[0] + 1,
         &columns[0],
         &value[0]);
+            
+    std::vector<float> result2(m, 0.0f);
 
     matrix_descr descrA;
-
     descrA.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
     descrA.mode = SPARSE_FILL_MODE_UPPER;
     descrA.diag = SPARSE_DIAG_NON_UNIT;
-
-    status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, 1);
-    mkl_sparse_optimize(csrA);
-
-    std::vector<float> result2(m, 0.0f);
     status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, vec, 0.0, &result2[0]);
 
     for (int i = 0; i < m; ++i)
@@ -1647,24 +1664,49 @@ FEMIMP_DLL_API void testSparse()
     int r = 3;
     int c = 4;
 
-    //1.
-    int accumulate = 0;
-
-    for (int i = 0; i < r; ++i)
-    {
-        accumulate += pointerE_C[i] - pointerB_C[i];
-    }
-
-    //2.
-    int first = accumulate;
-    int second = accumulate + pointerE_C[r] - pointerB_C[r];
-    auto itt = std::find(&columns_C[first], &columns_C[second], c);
-
-    //3.
-    auto pos = std::distance(&columns_C[0], itt);
-    std::cout << "Find val row  " << r << " colum " << c << " value " << values_C[pos] << std::endl;
+    float valueResq = getValueFromExportSparse(r, c, pointerB_C, pointerE_C, columns_C, values_C);
+    std::cout << "Find val. Row  " << r << " Colum " << c << " value " << valueResq << std::endl;
     //
 
+    ////////
+    // set value
+    float valToSet = 25.0f;
+    status = mkl_sparse_s_set_value(csrA, r, c, valToSet);
+    
+    // verification//////////////
+    /////////////////////////////
+
+    status = mkl_sparse_s_export_csr(csrA,
+        &indexing,
+        &rows,
+        &cols,
+        &pointerB_C,
+        &pointerE_C,
+        &columns_C,
+        &values_C);
+
+    //
+    valueResq = getValueFromExportSparse(r, c, pointerB_C, pointerE_C, columns_C, values_C);
+    std::cout << "Find val row after set. Row " << r << " Colum " << c << " value " << valueResq << std::endl;
+    //
+
+    ///////////////////////////////////////////////////
+    // Note: Should not be called before a set of the values (using mkl_sparse_s_set_value) in the sparse matrix
+    status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, 1);
+    mkl_sparse_optimize(csrA);
+    ///////////////////////////////////////////////////
+
+    status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, vec, 0.0, &result2[0]);
+    
+    matrix[c + r * m] = valToSet;
+    matrix[r + c * m] = valToSet;
+
+    matmulVec(1.0, matrix, vec, 0.0, &result[0], m, m);
+
+    for (int i = 0; i < m; ++i)
+    {
+        std::cout << " result after set with sgemv " << result[i] << " result after set with sparse_s_mv " << result2[i] << std::endl;
+    }
 
 
 }
