@@ -694,6 +694,77 @@ void matmulTransA(const double* A, const double* B, double* C, const int m, cons
     cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, m, n, k, 1, A, m, B, n, 0, C, n);
 }
 
+
+sparse_status_t create_csr_mat(sparse_matrix_t* A,
+    const MKL_INT rows,
+    const MKL_INT cols,
+    MKL_INT* rows_start,
+    MKL_INT* rows_end,
+    MKL_INT* col_indx,
+    float* values)
+{
+    return mkl_sparse_s_create_csr(A,             
+        SPARSE_INDEX_BASE_ZERO,
+        rows,
+        cols,
+        rows_start,
+        rows_end,
+        col_indx,
+        values);
+}
+
+sparse_status_t create_csr_mat(sparse_matrix_t* A,
+    const MKL_INT rows,
+    const MKL_INT cols,
+    MKL_INT* rows_start,
+    MKL_INT* rows_end,
+    MKL_INT* col_indx,
+    double* values)
+{
+    return mkl_sparse_d_create_csr(A,
+        SPARSE_INDEX_BASE_ZERO,
+        rows,
+        cols,
+        rows_start,
+        rows_end,
+        col_indx,
+        values);
+}
+
+sparse_status_t sparse_mv(const sparse_operation_t  operation,
+    const float               alpha,
+    const sparse_matrix_t     A,
+    const struct matrix_descr descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+    const float* x,
+    const float               beta,
+    float* y)
+{
+    return mkl_sparse_s_mv(  operation,
+                       alpha,
+             A,
+         descr,   
+        x,
+                     beta,
+        y);
+}
+
+sparse_status_t sparse_mv(const sparse_operation_t  operation,
+    const double               alpha,
+    const sparse_matrix_t     A,
+    const struct matrix_descr descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+    const double* x,
+    const double               beta,
+    double* y)
+{
+    return mkl_sparse_d_mv(operation,
+        alpha,
+        A,
+        descr,
+        x,
+        beta,
+        y);
+}
+
 // mkl_?getrfnp could be an alternative withouh using pivot
 float invert(float* A, int m)
 {
@@ -989,9 +1060,7 @@ private:
     std::vector<T> fun;
 
     std::vector<T> der;
-
-    std::vector<T> diag_precon;
-
+    
     /////////////////////////
     std::vector<T> Km;
     std::vector<T> Mm;
@@ -1036,14 +1105,7 @@ private:
     std::vector<T> d2x0;
     std::vector<T> d1x1;
     std::vector<T> d2x1;
-
-
-    std::vector<float> x02;
-    std::vector<float> d1x02;
-    std::vector<float> x12;
-    std::vector<float> d2x02;
-    std::vector<float> d1x12;
-    std::vector<float> d2x12;
+    
 
     ///////////////////////////////////
     std::vector<T> prop;
@@ -1188,9 +1250,8 @@ public:
         }
       
         sample(element, points, weights, ndim);
-        gravlo.resize(neq + 1, T(0.0));
-        diag_precon.resize(neq + 1, T(0.0));
-
+        gravlo.resize(neq, T(0.0));
+       
         //----element stiffnessand mass integration, storage and preconditioner-- -
 
         const T e = prop[0];
@@ -1286,72 +1347,50 @@ public:
         A.resize(storkm.size(), T(0.0));
 
         //---------------------- - initial conditions and factorise equations--------
-        x0.resize(neq + 1, T(0.0));
-        x1.resize(neq + 1, T(0.0));
-
-        for (int i = 0; i < nn; ++i)
-        {
-            x0[nf[i]] = (nf[i] > 0) ? g_coord[i * 3] : T(0.0);
-            x0[nf[i + nn]] = (nf[i + nn] > 0) ? g_coord[i * 3 + 1] : T(0.0);
-            x0[nf[i + 2 * nn]] = (nf[i + 2 * nn] > 0) ? g_coord[i * 3 + 2] : T(0.0);
-        }
-
-        std::copy(x0.begin(), x0.end(), x1.begin());
+        x0.resize(neq, T(0.0));
+        x1.resize(neq, T(0.0));
                
 
-        d1x0.resize(neq + 1, T(0.0));
-        d2x0.resize(neq + 1, T(0.0));
-        d1x1.resize(neq + 1, T(0.0));
-        d2x1.resize(neq + 1, T(0.0));
-
-        ////////////////////////////////////////////////////////////
-
-        x02.resize(neq, T(0.0));
-        x12.resize(neq, T(0.0));
-
+        d1x0.resize(neq, T(0.0));
+        d2x0.resize(neq, T(0.0));
+        d1x1.resize(neq, T(0.0));
+        d2x1.resize(neq, T(0.0));
         for (int i = 0; i < nn; ++i)
         {
             if (nf[i] > 0)
-                x02[nf[i] - 1] = g_coord[i * 3];
+                x0[nf[i] - 1] = g_coord[i * 3];
 
             
             if (nf[i + nn] > 0)
-                x02[nf[i + nn] - 1] = g_coord[i * 3 + 1];
+                x0[nf[i + nn] - 1] = g_coord[i * 3 + 1];
 
             if (nf[i + 2 * nn] > 0)
-                x02[nf[i + 2 * nn] - 1] = g_coord[i * 3 + 2];
+                x0[nf[i + 2 * nn] - 1] = g_coord[i * 3 + 2];
         }
 
-        std::copy(x02.begin(), x02.end(), x12.begin());
+        std::copy(x0.begin(), x0.end(), x1.begin());
 
-
-        d1x02.resize(neq, T(0.0));
-        d2x02.resize(neq, T(0.0));
-        d1x12.resize(neq, T(0.0));
-        d2x12.resize(neq, T(0.0));
-
-        ////////////////////////////////////////////////////////////
-
-
-        loads.resize(neq + 1, T(0.0));
+      
+        
+        loads.resize(neq, T(0.0));
     }
     
-    void cg(std::vector<T>& xnew)
+    void cg(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& xnew, std::vector<T>& diag_precon)
     {
         int ndof = nod * nodof;
         int cg_iters = 0;
         int cg_limit = 50;
         T cg_tol = T(0.00001);
 
-        std::vector<T> d(neq + 1, T(0.0));
+        std::vector<T> d(neq, T(0.0));
 
-        for (int i = 0; i < neq + 1; ++i)
+        for (int i = 0; i < neq; ++i)
         {
             d[i] = diag_precon[i] * loads[i];
         }
 
         std::vector<T> p(d);
-        std::vector<T> x(neq + 1, T(0.0));
+        std::vector<T> x(neq, T(0.0));
         std::vector<T> u(loads);
         
         bool cg_converged(false);
@@ -1359,48 +1398,23 @@ public:
         {
             cg_iters = cg_iters + 1;
             std::fill(std::begin(u), std::end(u), T(0.0));
+                        
+            sparse_status_t status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 1.0f, &u[0]);
+            
+            T up = dotProduct(neq, &loads[0], &d[0]);
+            T alpha = up / dotProduct(neq, &p[0], &u[0]);
 
-            for (int i = 0; i < nels; ++i)
-            {
-                std::vector<T> uTemp(ndof, 0);
-                std::vector<T> pTemp(ndof, 0);
+            addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq); // xnew = x + alpha * p
+            addVectors(-alpha, &u[0], &loads[0], neq); // loads = loads - alpha * u
 
-                std::vector<int> g(ndof, 0);
-                for (int j = 0; j < ndof; ++j)
-                {
-                    int g_index = g_g[i + j * nels];
-
-                    pTemp[j] = p[g_index];
-                    g[j] = g_index;
-                }
-
-                const T* aij = &A[i * ndof * ndof];
-                matmulVec(T(1.0), aij, &pTemp[0], T(1.0), &uTemp[0], ndof, ndof);
-
-                for (int j = 0; j < ndof; ++j)
-                {
-                    int g_index = g_g[i + j * nels];
-
-                    u[g_index] += uTemp[j];
-                }
-            }
-
-            u[0] = T(0.0);
-
-            T up = dotProduct(neq + 1, &loads[0], &d[0]);
-            T alpha = up / dotProduct(neq + 1, &p[0], &u[0]);
-
-            addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq + 1); // xnew = x + alpha * p
-            addVectors(-alpha, &u[0], &loads[0], neq + 1); // loads = loads - alpha * u
-
-            for (int i = 0; i < neq + 1; ++i)
+            for (int i = 0; i < neq; ++i)
             {
                 d[i] = diag_precon[i] * loads[i];
             }
 
-            T beta = dotProduct(neq + 1, &loads[0], &d[0]) / up;
-            addVectors(1 / beta, &d[0], &p[0], neq + 1);
-            scalVecProduct(neq + 1, beta, &p[0]);
+            T beta = dotProduct(neq, &loads[0], &d[0]) / up;
+            addVectors(1 / beta, &d[0], &p[0], neq);
+            scalVecProduct(neq, beta, &p[0]);
 
             checon(xnew, x, cg_tol, cg_converged);
 
@@ -1411,269 +1425,15 @@ public:
         } while (cg_iters < cg_limit);
     }
 
-    void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<float>& xnew, std::vector<float>&  diag_precon2, std::vector<float>& loads2)
-    {
-        int ndof = nod * nodof;
-        int cg_iters = 0;
-        int cg_limit = 50;
-        float cg_tol = float(0.00001);
-
-        std::vector<float> d(neq, float(0.0));
-
-        for (int i = 0; i < neq; ++i)
-        {
-            d[i] = diag_precon2[i] * loads2[i];
-        }
-
-        std::vector<float> p(d);
-        std::vector<float> x(neq, float(0.0));
-        std::vector<float> u(loads2);
-
-        bool cg_converged(false);
-        do
-        {
-            cg_iters = cg_iters + 1;
-            std::fill(std::begin(u), std::end(u), float(0.0));
-
-            //matmulVec(T(1.0), aij, &pTemp[0], T(1.0), &uTemp[0], ndof, ndof);
-            
-            sparse_status_t status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 1.0f, &u[0]);
-
-            //for (int i = 0; i < nels; ++i)
-            //{
-            //    std::vector<T> uTemp(ndof, 0);
-            //    std::vector<T> pTemp(ndof, 0);
-            //
-            //    std::vector<int> g(ndof, 0);
-            //    for (int j = 0; j < ndof; ++j)
-            //    {
-            //        int g_index = g_g[i + j * nels];
-            //
-            //        pTemp[j] = p[g_index];
-            //        g[j] = g_index;
-            //    }
-            //
-            //    const T* aij = &A[i * ndof * ndof];
-            //    matmulVec(T(1.0), aij, &pTemp[0], T(1.0), &uTemp[0], ndof, ndof);
-            //
-            //    for (int j = 0; j < ndof; ++j)
-            //    {
-            //        int g_index = g_g[i + j * nels];
-            //
-            //        u[g_index] += uTemp[j];
-            //    }
-            //}
-
-            //u[0] = T(0.0);
-
-            float up = dotProduct(neq, &loads2[0], &d[0]);
-            float alpha = up / dotProduct(neq, &p[0], &u[0]);
-
-            addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq); // xnew = x + alpha * p
-            addVectors(-alpha, &u[0], &loads2[0], neq); // loads = loads - alpha * u
-
-            for (int i = 0; i < neq; ++i)
-            {
-                d[i] = diag_precon2[i] * loads2[i];
-            }
-
-            float beta = dotProduct(neq, &loads2[0], &d[0]) / up;
-            addVectors(1 / beta, &d[0], &p[0], neq);
-            scalVecProduct(neq, beta, &p[0]);
-
-            checon<float>(xnew, x, cg_tol, cg_converged);
-
-            if (cg_converged)
-            {
-                break;
-            }
-        } while (cg_iters < cg_limit);
-    }
-
     void update(T dtim, T* verticesBuffer)
     {
-        //std::cout << "update 1" << std::endl;
         //// for debug purposes //
         time = time + dtim;
 
         int ndof = nod * nodof;
         int etype = 1;
-
+                       
         std::fill(gravlo.begin(), gravlo.end(), T(0.0));
-        std::fill(A.begin(), A.end(), T(0.0));
-
-        for (int i = 0; i < nels; ++i)
-        {
-            std::vector<int> g(ndof, 0);
-            for (int j = 0; j < ndof; ++j)
-            {
-                g[j] = g_g[i + j * nels];
-            }
-
-            for (int k = 0; k < ndof; ++k)
-            {
-                gravlo[g[k]] = gravlo[g[k]] + prop[2 * etype] * gravityDir[k % ndim] * gravity;  //eld[k] *
-            }
-        }
-        
-        
-        //////////////////////////
-        //
-        T c1 = fm;
-        T c2 = fk;
-        T c3 = T(1.0) + fm * dtim;
-        T c4 = dtim + fk;
-        
-        //////////////////////////////////////////////////////////////
-
-        //build system A and u
-        std::fill(std::begin(loads), std::end(loads), T(0.0));
-
-        for (int i = 0; i < nels; ++i)
-        {
-            std::vector<T> dxTemp(ndof, 0);
-            std::vector<T> d1x0Temp(ndof, 0);
-
-            for (int j = 0; j < ndof; ++j)
-            {
-                int g_index = g_g[i + j * nels];
-
-                dxTemp[j] = x1[g_index] - x0[g_index];
-                d1x0Temp[j] = d1x0[g_index];
-            }
-
-            const T* km = &storkm[i * ndof * ndof];
-            const T* mm = &stormm[i * ndof * ndof];
-            T* aij = &A[i * ndof * ndof];
-                        
-            matricesAdd(km, c4 * dtim, mm, c1, aij, ndof, ndof);
-
-            /////////
-            //u(g) = u(g) + MATMUL(km, dxTemp(g)) + MATMUL(km * c4 + mm * c1, d1x0(g)) // solving by acceleration
-            std::vector<T> uTemp(ndof, 0);
-            matmulVec(c4, km, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
-            matmulVec(c1, mm, &d1x0Temp[0], T(1.0), &uTemp[0], ndof, ndof);
-
-            matmulVec(T(1.0), km, &dxTemp[0], T(1.0), &uTemp[0], ndof, ndof);
-            /////////
-  
-            for (int k = 0; k < ndof; ++k)
-            {
-                int g_index = g_g[i + k * nels];
-                loads[g_index] += (T(-1.0) * uTemp[k]);
-            }
-        }
-        
-        loads[0] = T(0.0);
-
-        //////////////////////////////////////////////////////////////
-
-        //int loaded_nodes = node.size();
-        //            
-        //T temporal = dtim * load(time);
-        //for (int j = 1; j <= loaded_nodes; ++j)
-        //{
-        //    for (int k = 0; k < ndim; ++k)
-        //    {
-        //        loads[nf[nn * k + node[j - 1] - 1]] +=
-        //            val[(j - 1) * loaded_nodes + k] * temporal;
-        //    }
-        //}
-        // 
-        
-        //////////////////////////////////////////////////////////////
-
-        // build precondition
-        for (int i = 0; i < nels; ++i)
-        {
-            std::vector<int> g(ndof, 0);
-            for (int j = 0; j < ndof; ++j)
-            {
-                g[j] = g_g[i + j * nels];
-            }
-
-            for (int k = 0; k < ndof; ++k)
-            {
-                diag_precon[g[k]] = A[k + k * ndof];
-            }
-        }
-
-        for (int k = 1; k < diag_precon.size(); ++k)
-        {
-            diag_precon[k] = T(1.0) / diag_precon[k];
-        }
-        diag_precon[0] = T(0.0);
-
-        //////////////////////////////////////////////////////////////
-                
-        addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
-                
-        std::vector<T> xnew(neq + 1, T(0.0));
-
-        //---------------------- - pcg equation solution----------------------------
-        cg(xnew);
-        //--------------------------------------------------------------------------
-        
-        //d1x1 = d1x0 + xnew * dtim;
-        addVectors(&d1x0[0], T(1.0), &xnew[0], dtim, &d1x1[0], neq + 1);
-                        
-        //x1 = x1 + d1x1 * dtim;
-        addVectors(dtim, &d1x1[0], &x1[0], neq + 1);
-      
-        //addVectors(&x1[0], T(1.0), &d1x1[0], dtim, &x1[0], neq + 1);
-        
-        copyVec(neq + 1, &d1x1[0], &d1x0[0]);
-     
-
-
-        ///////////////////
-        //if (!node.empty())
-        //{
-        //    int npri = 1;
-        //    static itt = 1;
-        //    int nres = node[0];
-        //
-        //    if (itt / npri * npri == itt)
-        //    {
-        //        std::cout << "time " << time << "      load  " << load(time) << " node " << nres << "     x " << x1[nf[nres - 1]] << "     y " << x1[nf[nres + nn - 1]] << " cg it " << cg_iters << std::endl;// "     z obj   " << x0[nf[nres + 2 * nn - 1]] << std::endl;
-        //    }
-        //
-        //    itt = itt + 1;
-        //}
-        ////////////////////
-
-        if (verticesBuffer)
-        {
-            if (ndim == 3)
-            {
-                for (int i = 0; i < nn; ++i)
-                {
-                    verticesBuffer[i * 3] = (nf[i] > 0) ? x1[nf[i]]                       : verticesBuffer[i * 3];
-                    verticesBuffer[i * 3 + 1] = (nf[i + nn] > 0) ? x1[nf[i + nn]]         : verticesBuffer[i * 3 + 1];
-                    verticesBuffer[i * 3 + 2] = (nf[i + 2 * nn] > 0) ? x1[nf[i + 2 * nn]] : verticesBuffer[i * 3 + 2];
-
-                    //if (i == 5)
-                    //{
-                    //    std::cout << x0[nf[i]] << " " << x0[nf[i + nn]] << " " << x0[nf[i + 2 * nn]] << std::endl;
-                    //}
-                }
-            }
-        }
-    }
-
-    void update2(T dtim, T* verticesBuffer)
-    {
-        //std::cout << "update 2" << std::endl;
-        //// for debug purposes //
-        time = time + dtim;
-
-        int ndof = nod * nodof;
-        int etype = 1;
-
-        std::vector<float> gravlo2(neq, float(0.0));
-        //std::fill(gravlo2.begin(), gravlo2.end(), T(0.0));
-        
-        
         for (int i = 0; i < nels; ++i)
         {
             std::vector<int> g(ndof, 0);
@@ -1685,7 +1445,7 @@ public:
             for (int k = 0; k < ndof; ++k)
             {
                 if (g[k] > 0)
-                    gravlo2[g[k] - 1] = gravlo2[g[k] - 1] + prop[2 * etype] * gravityDir[k % ndim] * gravity;  //eld[k] *
+                    gravlo[g[k] - 1] = gravlo[g[k] - 1] + prop[2 * etype] * gravityDir[k % ndim] * gravity;  //eld[k] *
             }
         }
 
@@ -1701,15 +1461,17 @@ public:
 
         //build system A and u
        /////////////////////////////////////////////////////////////
-
+        std::fill(std::begin(loads), std::end(loads), T(0.0));
 
         std::vector<int> tempnf(nodof * nn, 0);
         
-        std::vector<float> SPvalue_dt; //(neq, T(0.0));
-        std::vector<float> SPvalue_Km; //(neq, T(0.0));
-        std::vector<float> SPvalue; //(neq, T(0.0));
+        std::vector<T> SPvalue_dt; //(neq, T(0.0));
+        std::vector<T> SPvalue_Km; //(neq, T(0.0));
+        std::vector<T> SPvalue; //(neq, T(0.0));
         std::vector<long long> SPcolumns;
         std::vector<long long> SProwIndex;// (neq + 1, 0);
+
+        std::vector<T> diag_precon;
 
         for (int k = 0; k < nn; ++k)
         {
@@ -1718,59 +1480,22 @@ public:
                 tempnf[l + k * nodof] = nf[k + l * nn];
             }
         }
-
-        //std::cout << "********************************" << std::endl;
-        //std::cout << "********************************" << std::endl;
-        //std::cout << "********************************" << std::endl;
-
-        //for (int i = 0; i < nn * nodof; ++i)
-        //{
-        //    for (int j = 0; j < nn * nodof; ++j)
-        //    {
-        //        int id = j + i * nn * nodof;
-        //
-        //        float aij = Km[id] * c4 * dtim + Mm[id] * c1;
-        //        //float aij = Km[id];
-        //        //float aij = Mm[id];
-        //
-        //
-        //        if (i <= j)
-        //        {
-        //            if (tempnf[j] > 0 && (tempnf[i] > 0))//std::abs(aij) > 0.0001)
-        //            {
-        //                std::cout << std::fixed;
-        //                std::cout << std::setprecision(2);
-        //                std::cout << "(" << aij << ")" << "  ";
-        //            }
-        //            else
-        //            {
-        //                std::cout << std::fixed;
-        //                std::cout << std::setprecision(2);
-        //                std::cout << aij << "  ";
-        //            }
-        //        }
-        //    }
-        //
-        //    std::cout << std::endl;
-        //    std::cout << std::endl;
-        //}
-                
-        std::vector<float> dxTemp(neq, float(0.0));
-        std::vector<float> d1x0Temp(neq, float(0.0));
-        std::vector<float> diag_precon2;
+       
+        std::vector<T> dxTemp(neq, T(0.0));
+        std::vector<T> d1x0Temp(neq, T(0.0));
 
         for (int i = 0; i < nn * nodof; ++i)
         {
             for (int j = 0; j < nn * nodof; ++j)
             {
                 int id = j + i * nn * nodof;
-                float aij_dt = Km[id] * c4 * dtim + Mm[id] * c1;
-                float aij = Km[id] * c4 + Mm[id] * c1;
+                T aij_dt = Km[id] * c4 * dtim + Mm[id] * c1;
+                T aij = Km[id] * c4 + Mm[id] * c1;
 
                 if (tempnf[j] > 0 && (tempnf[i] > 0))
                 {
-                    dxTemp[tempnf[i] - 1] = x12[tempnf[i] - 1] - x02[tempnf[i] - 1];
-                    d1x0Temp[tempnf[i] - 1] = d1x02[tempnf[i] - 1];
+                    dxTemp[tempnf[i] - 1] = x1[tempnf[i] - 1] - x0[tempnf[i] - 1];
+                    d1x0Temp[tempnf[i] - 1] = d1x0[tempnf[i] - 1];
 
                     if (tempnf[i] <= tempnf[j])
                     {
@@ -1781,7 +1506,7 @@ public:
                             SPvalue_Km.push_back(Km[id]);
                             SPcolumns.push_back(tempnf[j] - 1);
                             SProwIndex.push_back(SPvalue.size() - 1);
-                            diag_precon2.push_back(aij);
+                            diag_precon.push_back(aij);
                         }
                         else if (std::abs(aij_dt) > 0.00001)
                         {
@@ -1802,29 +1527,26 @@ public:
         sparse_matrix_t csrA_Km;
 
         sparse_status_t status;
-
-        status = mkl_sparse_s_create_csr(&csrA,
-            SPARSE_INDEX_BASE_ZERO,
-            neq,  // number of rows
-            neq,  // number of cols
+                
+        status = create_csr_mat(&csrA,
+            neq,
+            neq,
             &SProwIndex[0],
             &SProwIndex[0] + 1,
             &SPcolumns[0],
             &SPvalue[0]);
 
-        status = mkl_sparse_s_create_csr(&csrA_dt,
-            SPARSE_INDEX_BASE_ZERO,
-            neq,  // number of rows
-            neq,  // number of cols
+        status = create_csr_mat(&csrA_dt,
+            neq,
+            neq,
             &SProwIndex[0],
             &SProwIndex[0] + 1,
             &SPcolumns[0],
             &SPvalue_dt[0]);
 
-        status = mkl_sparse_s_create_csr(&csrA_Km,
-            SPARSE_INDEX_BASE_ZERO,
-            neq,  // number of rows
-            neq,  // number of cols
+        status = create_csr_mat(&csrA_Km,
+            neq,
+            neq,
             &SProwIndex[0],
             &SProwIndex[0] + 1,
             &SPcolumns[0],
@@ -1834,47 +1556,44 @@ public:
 
         //u(g) = u(g) + MATMUL(km, dxTemp(g)) + MATMUL(km * c4 + mm * c1, d1x0(g)) // solving by acceleration
 
-        std::vector<float> uTemp(neq, float(0.0));
+        std::vector<T> uTemp(neq, T(0.0));
 
         matrix_descr descrA;
         descrA.type = SPARSE_MATRIX_TYPE_SYMMETRIC;
         descrA.mode = SPARSE_FILL_MODE_UPPER;
         descrA.diag = SPARSE_DIAG_NON_UNIT;
-        status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA_Km, descrA, &dxTemp[0], 0.0f, &uTemp[0]);
-        status = mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &d1x0Temp[0], 1.0f, &uTemp[0]);
 
-        std::vector<float> loads2(neq, 0.0f);
-
+        status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA_Km, descrA, &dxTemp[0], 0.0f, &uTemp[0]);
+        status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &d1x0Temp[0], 1.0f, &uTemp[0]);
+        
         //        loads[g_index] += (T(-1.0) * uTemp[k]);
 
         //y: = a * x + y
 
-        addVectors(float(-1.0), &uTemp[0], &loads2[0], neq);
+        addVectors(float(-1.0), &uTemp[0], &loads[0], neq);
 
-        for (int k = 0; k < diag_precon2.size(); ++k)
+        for (int k = 0; k < diag_precon.size(); ++k)
         {
-            diag_precon2[k] = float(1.0) / diag_precon2[k];
+            diag_precon[k] = T(1.0) / diag_precon[k];
         }
 
-        addVectors(float(1.0), &gravlo2[0], &loads2[0], loads2.size());
+        addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
         
         
-        std::vector<float> xnew(neq, float(0.0));
+        std::vector<T> xnew(neq, T(0.0));
         //
         ////---------------------- - pcg equation solution----------------------------
         //cg(xnew);
-        cg2(csrA_dt, descrA, xnew, diag_precon2, loads2);
+        cg(csrA_dt, descrA, xnew, diag_precon);
         ////--------------------------------------------------------------------------
         
         //d1x1 = d1x0 + xnew * dtim;
-        addVectors(&d1x02[0], float(1.0), &xnew[0], dtim, &d1x12[0], neq);
+        addVectors(&d1x0[0], T(1.0), &xnew[0], dtim, &d1x1[0], neq);
         
         //x1 = x1 + d1x1 * dtim;
-        addVectors(dtim, &d1x12[0], &x12[0], neq);
-        
-        //addVectors(&x1[0], T(1.0), &d1x1[0], dtim, &x1[0], neq + 1);
-        
-        copyVec(neq, &d1x12[0], &d1x02[0]);
+        addVectors(dtim, &d1x1[0], &x1[0], neq);
+                       
+        copyVec(neq, &d1x1[0], &d1x0[0]);
 
         if (verticesBuffer)
         {
@@ -1883,13 +1602,13 @@ public:
                 for (int i = 0; i < nn; ++i)
                 {
                     if (nf[i] > 0)
-                        verticesBuffer[i * 3] = x12[nf[i] - 1];
+                        verticesBuffer[i * 3] = x1[nf[i] - 1];
 
                     if (nf[i + nn] > 0)
-                        verticesBuffer[i * 3 + 1] = x12[nf[i + nn] - 1];
+                        verticesBuffer[i * 3 + 1] = x1[nf[i + nn] - 1];
 
                     if (nf[i + 2 * nn] > 0)
-                        verticesBuffer[i * 3 + 2] = x12[nf[i + 2 * nn] - 1];
+                        verticesBuffer[i * 3 + 2] = x1[nf[i + 2 * nn] - 1];
                                                 
                     //if (i == 5)
                     //{
@@ -1975,7 +1694,6 @@ void FEM_Factory<T>::update(int id, T dtim, T* verticesBuffer)
 {
     if (id < femAlg.size())
     {
-        //femAlg[id]->update2(dtim, verticesBuffer);
         femAlg[id]->update(dtim, verticesBuffer);
     }
 }
