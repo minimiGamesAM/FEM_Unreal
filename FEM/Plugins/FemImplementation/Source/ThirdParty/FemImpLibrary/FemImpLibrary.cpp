@@ -740,11 +740,11 @@ sparse_status_t sparse_mv(const sparse_operation_t  operation,
     float* y)
 {
     return mkl_sparse_s_mv(  operation,
-                       alpha,
-             A,
-         descr,   
+        alpha,
+        A,
+        descr,   
         x,
-                     beta,
+        beta,
         y);
 }
 
@@ -762,6 +762,36 @@ sparse_status_t sparse_mv(const sparse_operation_t  operation,
         descr,
         x,
         beta,
+        y);
+}
+
+sparse_status_t sparse_trsv(const sparse_operation_t  operation,
+    const double              alpha,
+    const sparse_matrix_t     A,
+    const struct matrix_descr descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+    const double* x,
+    double* y)
+{
+    return mkl_sparse_d_trsv(operation,
+        alpha,
+        A,
+        descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+        x,
+        y);
+}
+
+sparse_status_t sparse_trsv(const sparse_operation_t  operation,
+    const float              alpha,
+    const sparse_matrix_t     A,
+    const struct matrix_descr descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+    const float* x,
+    float* y)
+{
+    return mkl_sparse_s_trsv(operation,
+        alpha,
+        A,
+        descr,      /* sparse_matrix_type_t + sparse_fill_mode_t + sparse_diag_type_t */
+        x,
         y);
 }
 
@@ -1018,6 +1048,106 @@ namespace {
     void buildSystem()
     {
 
+    }
+}
+
+
+template<class T>
+void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std::vector<T>& x, int neq)
+{
+    sparse_status_t status;
+
+    MKL_INT expected_calls = 8;
+
+    status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, expected_calls);
+    //std::cout << status << std::endl;
+
+    matrix_descr descrA_precond;
+
+    descrA_precond.mode = SPARSE_FILL_MODE_UPPER;
+    descrA_precond.diag = SPARSE_DIAG_NON_UNIT;
+
+    descrA_precond.type = SPARSE_MATRIX_TYPE_TRIANGULAR;
+    status = mkl_sparse_set_sv_hint(csrA, SPARSE_OPERATION_TRANSPOSE, descrA_precond, expected_calls);
+    //std::cout << status << std::endl;
+    descrA_precond.type = SPARSE_MATRIX_TYPE_DIAGONAL;
+    status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA_precond, expected_calls);
+    //std::cout << status << std::endl;
+    descrA_precond.type = SPARSE_MATRIX_TYPE_TRIANGULAR;
+    status = mkl_sparse_set_sv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA_precond, expected_calls);
+    //std::cout << status << std::endl;
+
+    mkl_sparse_optimize(csrA);
+
+    std::vector<T> r(loads), w(neq, T(0.0)), tmp(neq, T(0.0)), tmp2(neq, T(0.0));
+
+    {
+        status = sparse_trsv(SPARSE_OPERATION_TRANSPOSE, T(1.0), csrA, descrA_precond, &r[0], &tmp[0]);
+        //std::cout << status << std::endl;
+        descrA_precond.type = SPARSE_MATRIX_TYPE_DIAGONAL;
+        status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, T(1.0), csrA, descrA_precond, &tmp[0], T(0.0), &tmp2[0]);
+        //std::cout << status << std::endl;
+        descrA_precond.type = SPARSE_MATRIX_TYPE_TRIANGULAR;
+        status = sparse_trsv(SPARSE_OPERATION_NON_TRANSPOSE, T(1.0), csrA, descrA_precond, &tmp2[0], &w[0]);
+        //std::cout << status << std::endl;
+    }
+
+    std::vector<T> p(w);
+    
+    T initial_norm_of_correction(0.0);
+    for (int i = 0; i < neq; i++) initial_norm_of_correction += w[i] * w[i];
+    initial_norm_of_correction = std::sqrt(initial_norm_of_correction);
+    T norm_of_correction = initial_norm_of_correction;
+
+    MKL_INT k(0);
+
+    T temp1(0.0);
+    for (int i = 0; i < neq; ++i) temp1 += r[i] * w[i];
+
+    //std::vector<T> x(neq, T(0.0));
+    //std::vector<T> u(loads);
+
+    while (norm_of_correction / initial_norm_of_correction > 1.e-3 && k < 1000)
+    {
+        // Calculate A*p
+        status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, T(1.0), csrA, descrA, &p[0], T(0.0), &tmp[0]);
+        //std::cout << status << std::endl;
+        // Calculate alpha_k
+        T temp2 = 0.0;
+        for (int i = 0; i < neq; i++) temp2 += p[i] * tmp[i];
+        T alpha = temp1 / temp2;
+
+        for (int i = 0; i < neq; i++) x[i] += alpha * p[i];
+        // Calculate r_k = r_k - alpha*A*p_k
+        status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, -alpha, csrA, descrA, &p[0], T(1.0), &r[0]);
+
+        // Calculate w_k = B^{-1}r_k
+        {
+            status = sparse_trsv(SPARSE_OPERATION_TRANSPOSE, 1.0, csrA, descrA_precond, &r[0], &tmp[0]);
+            //std::cout << status << std::endl;
+            descrA_precond.type = SPARSE_MATRIX_TYPE_DIAGONAL;
+            status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, csrA, descrA_precond, &tmp[0], T(0.0), &tmp2[0]);
+            //std::cout << status << std::endl;
+            descrA_precond.type = SPARSE_MATRIX_TYPE_TRIANGULAR;
+            status = sparse_trsv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, csrA, descrA_precond, &tmp2[0], &w[0]);
+            //std::cout << status << std::endl;
+        }
+
+        // Calculate current norm of correction
+        norm_of_correction = T(0.0);
+        for (int i = 0; i < neq; i++) norm_of_correction += w[i] * w[i];
+        norm_of_correction = sqrt(norm_of_correction);
+        //printf("relative norm of residual on " INT_PRINT_FORMAT " iteration = %4.5e\n", ++k, norm_of_correction / initial_norm_of_correction);
+        if (norm_of_correction <= 1.e-3) break;
+
+        // Calculate beta_k
+        temp2 = 0.0;
+        for (int i = 0; i < neq; i++) temp2 += r[i] * w[i];
+        T beta = temp2 / temp1;
+        temp1 = temp2;
+
+        // Calculate p_k = w_k-beta*p_k
+        for (int i = 0; i < neq; i++) p[i] = w[i] + beta * p[i];
     }
 }
 
@@ -1584,7 +1714,10 @@ public:
         //
         ////---------------------- - pcg equation solution----------------------------
         //cg(xnew);
-        cg(csrA_dt, descrA, xnew, diag_precon);
+        //cg(csrA_dt, descrA, xnew, diag_precon); 
+
+        cg2(csrA_dt, descrA, loads, xnew, neq);
+
         ////--------------------------------------------------------------------------
         
         //d1x1 = d1x0 + xnew * dtim;
