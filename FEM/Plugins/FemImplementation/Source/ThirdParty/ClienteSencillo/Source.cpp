@@ -290,10 +290,10 @@ void prueba2D()
 	}
 }
 
-
+template <class T>
 void pruebaWithDataTetGen()
 {
-	std::vector<float>			mVerticesBuffer;
+	std::vector<T>			mVerticesBuffer;
 	std::vector<int>			mTetsBuffer;
 	int							mIdAlgoFEM = -1;
 
@@ -385,29 +385,29 @@ void pruebaWithDataTetGen()
 	nf.push_back(0);
 	nf.push_back(1);
 		
-	mIdAlgoFEM = FEM_Factory<float>::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
-	FEM_Factory<float>::init(mIdAlgoFEM, &mVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
+	mIdAlgoFEM = FEM_Factory<T>::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
+	FEM_Factory<T>::init(mIdAlgoFEM, &mVerticesBuffer[0], &mTetsBuffer[0], &nf[0], nn);
 
 	///////////
 	std::vector<int> nodesLoaded;
 	nodesLoaded.push_back(8);
 
-	std::vector<float> val;
-	val.push_back(float(0.33));
-	val.push_back(float(0.33));
-	val.push_back(float(0.33));
+	std::vector<T> val;
+	val.push_back(T(0.33));
+	val.push_back(T(0.33));
+	val.push_back(T(0.33));
 
-	FEM_Factory<float>::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
+	FEM_Factory<T>::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
 
-	FEM_Factory<float>::setDamping(mIdAlgoFEM, float(0.5), float(0.1));
-	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(1000.0), float(0.3), float(1000000.0));
+	FEM_Factory<T>::setDamping(mIdAlgoFEM, T(0.5), T(0.1));
+	FEM_Factory<T>::setMaterialParams(mIdAlgoFEM, T(1000.0), T(0.3), T(1000000.0));
 
 	///////////
 
 	//////////////////////////////////////
 	for (int i = 0; i < 20; ++i)
 	{
-		long long timeProc = FEM_Factory<float>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
+		long long timeProc = FEM_Factory<T>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
 
 		//if (i >= 1273)
 		//{
@@ -443,6 +443,6 @@ int main()
 
 	//prueba2D<double>();
 
-	pruebaWithDataTetGen();
+	pruebaWithDataTetGen<float>();
 
 }

@@ -9,8 +9,11 @@
 #include <iomanip>
 
 #include "mkl.h"
+#include "mkl_rci.h"
 #include "mkl_pblas.h"
 #include "mkl_spblas.h"
+#include "mkl_service.h"
+
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -1054,6 +1057,12 @@ namespace {
 }
 
 
+////////////////////////////////////////////
+// This is the call
+// 
+//  cg2(csrA_dt, descrA, loads, xnew, neq);
+////////////////////////////////////////////
+
 template<class T>
 void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std::vector<T>& x, int neq)
 {
@@ -1148,6 +1157,144 @@ void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std
     }
 }
 
+template<class T>
+void cg(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std::vector<T>& xnew, std::vector<T>& diag_precon, int neq)
+{
+    int cg_iters = 0;
+    int cg_limit = 50;
+    T cg_tol = T(0.00001);
+
+    std::vector<T> d(neq, T(0.0));
+
+    for (int k = 0; k < diag_precon.size(); ++k)
+    {
+        diag_precon[k] = T(1.0) / diag_precon[k];
+    }
+
+    for (int i = 0; i < neq; ++i)
+    {
+        d[i] = diag_precon[i] * loads[i];
+    }
+
+    std::vector<T> p(d);
+    std::vector<T> x(neq, T(0.0));
+    std::vector<T> u(loads);
+
+    bool cg_converged(false);
+    do
+    {
+        cg_iters = cg_iters + 1;
+       
+        sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 0.0f, &u[0]);
+
+        T up = dotProduct(neq, &loads[0], &d[0]);
+        T alpha = up / dotProduct(neq, &p[0], &u[0]);
+
+        addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq); // xnew = x + alpha * p
+        addVectors(-alpha, &u[0], &loads[0], neq); // loads = loads - alpha * u
+
+        for (int i = 0; i < neq; ++i)
+        {
+            d[i] = diag_precon[i] * loads[i];
+        }
+
+        T beta = dotProduct(neq, &loads[0], &d[0]) / up;
+        addVectors(1 / beta, &d[0], &p[0], neq);
+        scalVecProduct(neq, beta, &p[0]);
+
+        checon(xnew, x, cg_tol, cg_converged);
+
+        if (cg_converged)
+        {
+            break;
+        }
+    } while (cg_iters < cg_limit);
+}
+////////////////////////////////////////////
+// This is the call
+// 
+// if (std::is_same<T, double>::value)
+//  cg3(csrA_dt, descrA, loads, xnew, neq);
+// else
+//  cg(csrA_dt, descrA, xnew, diag_precon);
+////////////////////////////////////////////
+template<class T>
+void cg3(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std::vector<T>& x, int neq);
+
+template<>
+void cg3(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<double>& loads, std::vector<double>& x, int neq)//, std::vector<T>& loads, std::vector<T>& x, int neq)
+{
+    MKL_INT rci_request, itercount, expected_itercount = neq;
+
+    MKL_INT ipar[128];
+    double dpar[128];
+    std::vector<double> tmp(4 * neq, 0.0);
+
+    std::vector<double>& rhs(loads);
+
+    std::vector<double>& solution(x);
+    //std::vector<double>& expected_sol(loads);
+    std::vector<double> temp(neq, 0.0);
+
+    double euclidean_norm;
+    double eone = -1.E0;
+    MKL_INT ione = 1;
+
+    sparse_operation_t    transA = SPARSE_OPERATION_NON_TRANSPOSE;
+
+    matrix_descr descrD;
+    descrD.type = SPARSE_MATRIX_TYPE_DIAGONAL;
+    descrD.mode = SPARSE_FILL_MODE_LOWER;
+    descrD.diag = SPARSE_DIAG_NON_UNIT;
+        
+    const MKL_INT n = neq;
+ 
+    dcg_init(&n, &solution[0], &rhs[0], &rci_request, ipar, dpar, &tmp[0]);
+    if (rci_request != 0)
+        std::cout << "fail scg init " << std::endl;
+
+    ipar[4] = 100;
+    ipar[10] = 1;
+
+    dcg_check(&n, &solution[0], &rhs[0], &rci_request, ipar, dpar, &tmp[0]);
+    if (rci_request != 0 && rci_request != -1001)
+        std::cout << "fail check" << std::endl;
+
+    dcg(&n, &solution[0], &rhs[0], &rci_request, ipar, dpar, &tmp[0]);
+
+    while (rci_request != 0)
+    {
+        if (rci_request == 1)
+        {
+            mkl_sparse_d_mv(transA, 1.0, csrA, descrA, &tmp[0], 0.0, &tmp[n]);
+        }
+        else if (rci_request == 2)
+        {
+            mkl_sparse_d_mv(transA, 1.0, csrA, descrA, &solution[0], 0.0, &temp[0]);
+            daxpy(&n, &eone, &rhs[0], &ione, &temp[0], &ione);
+            euclidean_norm = dnrm2(&n, &temp[0], &ione);
+
+            if (euclidean_norm < 1.e-8)
+                break;
+        }
+        else if (rci_request == 3)
+        {
+            mkl_sparse_d_trsv(transA, 1.0, csrA, descrD, &tmp[2 * n], &tmp[3 * n]);
+        }
+        else
+        {
+            std::cout << "fail to compute vector solution" << std::endl;
+            return;
+        }
+
+        dcg(&n, &solution[0], &rhs[0], &rci_request, ipar, dpar, &tmp[0]);
+    }
+
+    dcg_get(&n, &solution[0], &rhs[0], &rci_request, ipar, dpar, &tmp[0], &itercount);
+    //std::cout << "count " << itercount << std::endl;
+}
+
+/////////////////////////////////////////////
 template<class T>
 class Fem_Algoritm
 {
@@ -1496,62 +1643,10 @@ public:
         }
 
         std::copy(x0.begin(), x0.end(), x1.begin());
-
-      
-        
+                
         loads.resize(neq, T(0.0));
     }
     
-    void cg(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& xnew, std::vector<T>& diag_precon)
-    {
-        int ndof = nod * nodof;
-        int cg_iters = 0;
-        int cg_limit = 50;
-        T cg_tol = T(0.00001);
-
-        std::vector<T> d(neq, T(0.0));
-
-        for (int i = 0; i < neq; ++i)
-        {
-            d[i] = diag_precon[i] * loads[i];
-        }
-
-        std::vector<T> p(d);
-        std::vector<T> x(neq, T(0.0));
-        std::vector<T> u(loads);
-        
-        bool cg_converged(false);
-        do
-        {
-            cg_iters = cg_iters + 1;
-            std::fill(std::begin(u), std::end(u), T(0.0));
-                        
-            sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 1.0f, &u[0]);
-            
-            T up = dotProduct(neq, &loads[0], &d[0]);
-            T alpha = up / dotProduct(neq, &p[0], &u[0]);
-
-            addVectors(&x[0], T(1.0), &p[0], alpha, &xnew[0], neq); // xnew = x + alpha * p
-            addVectors(-alpha, &u[0], &loads[0], neq); // loads = loads - alpha * u
-
-            for (int i = 0; i < neq; ++i)
-            {
-                d[i] = diag_precon[i] * loads[i];
-            }
-
-            T beta = dotProduct(neq, &loads[0], &d[0]) / up;
-            addVectors(1 / beta, &d[0], &p[0], neq);
-            scalVecProduct(neq, beta, &p[0]);
-
-            checon(xnew, x, cg_tol, cg_converged);
-
-            if (cg_converged)
-            {
-                break;
-            }
-        } while (cg_iters < cg_limit);
-    }
-
     long long update(T dtim, T* verticesBuffer)
     {
         //// for debug purposes //
@@ -1696,36 +1791,25 @@ public:
         //        loads[g_index] += (T(-1.0) * uTemp[k]);
 
         //y: = a * x + y
-
         addVectors(float(-1.0), &uTemp[0], &loads[0], neq);
-
-        for (int k = 0; k < diag_precon.size(); ++k)
-        {
-            diag_precon[k] = T(1.0) / diag_precon[k];
-        }
-
         addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
                 
         std::vector<T> xnew(neq, T(0.0));
         //
         ////---------------------- - pcg equation solution----------------------------
-        
-        //cg(xnew);
-        
+                
         long long time_taken = T(0.0);
 
         auto start = std::chrono::steady_clock::now();
-                
-        cg(csrA_dt, descrA, xnew, diag_precon); 
-        
-        //cg2(csrA_dt, descrA, loads, xnew, neq);
 
-        ////--------------------------------------------------------------------------
-        
+        {
+            cg(csrA_dt, descrA, loads, xnew, diag_precon, neq);
+        }
+                
         auto end = std::chrono::steady_clock::now();
-        
         time_taken = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-       
+        ////--------------------------------------------------------------------------
+               
         //d1x1 = d1x0 + xnew * dtim;
         addVectors(&d1x0[0], T(1.0), &xnew[0], dtim, &d1x1[0], neq);
         
