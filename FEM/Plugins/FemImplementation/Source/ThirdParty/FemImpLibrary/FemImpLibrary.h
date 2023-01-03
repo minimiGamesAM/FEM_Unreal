@@ -28,7 +28,7 @@ public:
 	static void setGravityDirection(int id, T* gravDir);
 	static void setDamping(int id, const T fk, const T fm);
 	static void setMaterialParams(int id, const T e, const T v, const T gamma);
-	static void update(int id, T dtim, T* verticesBuffer);
+	static long long update(int id, T dtim, T* verticesBuffer);
 
 private: 
 	static std::vector<Fem_Algoritm<T>*> femAlg;

@@ -17,6 +17,8 @@
 
 #include <vector>
 #include <string>
+
+#include <chrono>
 //using namespace sycl;
 
 namespace
@@ -1057,7 +1059,7 @@ void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std
 {
     sparse_status_t status;
 
-    MKL_INT expected_calls = 8;
+    MKL_INT expected_calls = 10;
 
     status = mkl_sparse_set_mv_hint(csrA, SPARSE_OPERATION_NON_TRANSPOSE, descrA, expected_calls);
     //std::cout << status << std::endl;
@@ -1111,43 +1113,38 @@ void cg2(sparse_matrix_t& csrA, matrix_descr& descrA, std::vector<T>& loads, std
     {
         // Calculate A*p
         status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, T(1.0), csrA, descrA, &p[0], T(0.0), &tmp[0]);
-        //std::cout << status << std::endl;
         // Calculate alpha_k
-        T temp2 = 0.0;
-        for (int i = 0; i < neq; i++) temp2 += p[i] * tmp[i];
+        T temp2 = dotProduct(neq, &p[0], &tmp[0]);
         T alpha = temp1 / temp2;
 
-        for (int i = 0; i < neq; i++) x[i] += alpha * p[i];
+        addVectors(alpha, &p[0], &x[0], neq);
+
         // Calculate r_k = r_k - alpha*A*p_k
         status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, -alpha, csrA, descrA, &p[0], T(1.0), &r[0]);
 
         // Calculate w_k = B^{-1}r_k
         {
             status = sparse_trsv(SPARSE_OPERATION_TRANSPOSE, 1.0, csrA, descrA_precond, &r[0], &tmp[0]);
-            //std::cout << status << std::endl;
             descrA_precond.type = SPARSE_MATRIX_TYPE_DIAGONAL;
             status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, csrA, descrA_precond, &tmp[0], T(0.0), &tmp2[0]);
-            //std::cout << status << std::endl;
             descrA_precond.type = SPARSE_MATRIX_TYPE_TRIANGULAR;
             status = sparse_trsv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0, csrA, descrA_precond, &tmp2[0], &w[0]);
-            //std::cout << status << std::endl;
         }
 
         // Calculate current norm of correction
-        norm_of_correction = T(0.0);
-        for (int i = 0; i < neq; i++) norm_of_correction += w[i] * w[i];
+        norm_of_correction = dotProduct(neq, &w[0], &w[0]);
         norm_of_correction = sqrt(norm_of_correction);
         //printf("relative norm of residual on " INT_PRINT_FORMAT " iteration = %4.5e\n", ++k, norm_of_correction / initial_norm_of_correction);
         if (norm_of_correction <= 1.e-3) break;
 
         // Calculate beta_k
-        temp2 = 0.0;
-        for (int i = 0; i < neq; i++) temp2 += r[i] * w[i];
+        temp2 = dotProduct(neq, &r[0], &w[0]);
         T beta = temp2 / temp1;
         temp1 = temp2;
 
         // Calculate p_k = w_k-beta*p_k
-        for (int i = 0; i < neq; i++) p[i] = w[i] + beta * p[i];
+        addVectors(1 / beta, &w[0], &p[0], neq);
+        scalVecProduct(neq, beta, &p[0]);
     }
 }
 
@@ -1529,7 +1526,7 @@ public:
             cg_iters = cg_iters + 1;
             std::fill(std::begin(u), std::end(u), T(0.0));
                         
-            sparse_status_t status = sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 1.0f, &u[0]);
+            sparse_mv(SPARSE_OPERATION_NON_TRANSPOSE, 1.0f, csrA, descrA, &p[0], 1.0f, &u[0]);
             
             T up = dotProduct(neq, &loads[0], &d[0]);
             T alpha = up / dotProduct(neq, &p[0], &u[0]);
@@ -1555,7 +1552,7 @@ public:
         } while (cg_iters < cg_limit);
     }
 
-    void update(T dtim, T* verticesBuffer)
+    long long update(T dtim, T* verticesBuffer)
     {
         //// for debug purposes //
         time = time + dtim;
@@ -1708,18 +1705,27 @@ public:
         }
 
         addVectors(T(1.0), &gravlo[0], &loads[0], loads.size());
-        
-        
+                
         std::vector<T> xnew(neq, T(0.0));
         //
         ////---------------------- - pcg equation solution----------------------------
+        
         //cg(xnew);
-        //cg(csrA_dt, descrA, xnew, diag_precon); 
+        
+        long long time_taken = T(0.0);
 
-        cg2(csrA_dt, descrA, loads, xnew, neq);
+        auto start = std::chrono::steady_clock::now();
+                
+        cg(csrA_dt, descrA, xnew, diag_precon); 
+        
+        //cg2(csrA_dt, descrA, loads, xnew, neq);
 
         ////--------------------------------------------------------------------------
         
+        auto end = std::chrono::steady_clock::now();
+        
+        time_taken = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+       
         //d1x1 = d1x0 + xnew * dtim;
         addVectors(&d1x0[0], T(1.0), &xnew[0], dtim, &d1x1[0], neq);
         
@@ -1754,6 +1760,8 @@ public:
         mkl_sparse_destroy(csrA);
         mkl_sparse_destroy(csrA_dt);
         mkl_sparse_destroy(csrA_Km);
+        
+        return time_taken;
     }
 };
 
@@ -1823,13 +1831,15 @@ void FEM_Factory<T>::setMaterialParams(int id, const T e, const T v, const T gam
 
 
 template<class T>
-void FEM_Factory<T>::update(int id, T dtim, T* verticesBuffer)
+long long FEM_Factory<T>::update(int id, T dtim, T* verticesBuffer)
 {
     if (id < femAlg.size())
     {
-        femAlg[id]->update(dtim, verticesBuffer);
+        return femAlg[id]->update(dtim, verticesBuffer);
     }
-}
+    else
+        return 0;
+ }
 
 FEMIMP_DLL_API float basicTest(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)
 {
