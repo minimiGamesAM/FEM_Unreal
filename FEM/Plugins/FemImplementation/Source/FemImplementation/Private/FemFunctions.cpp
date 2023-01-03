@@ -43,9 +43,9 @@ void UFemFunctions::init(int id, float* g_coord, int* g_num, int* in_nf, int in_
 	FEM_Factory<float>::init(id, g_coord, g_num, in_nf, in_nn);
 }
 
-void UFemFunctions::update(int id, float dt, float* verticesBuffer)
+long long UFemFunctions::update(int id, float dt, float* verticesBuffer)
 {
-	FEM_Factory<float>::update(id, dt, verticesBuffer);
+	return FEM_Factory<float>::update(id, dt, verticesBuffer);
 }
 
 void UFemFunctions::runFem(float* verticesBuffer, int verticesBufferSize, int* tetsBuffer, int tetsBufferSize)

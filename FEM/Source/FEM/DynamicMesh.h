@@ -10,6 +10,8 @@
 #include <vector>
 #include "DynamicMesh.generated.h"
 
+class UTextRenderComponent;
+
 UCLASS()
 class FEM_API ADynamicMesh : public AActor
 {
@@ -52,6 +54,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = FEM_WorldParams)
 	FVector gravityDir;
 
+	UPROPERTY(EditAnywhere)
+	UTextRenderComponent* mTextDebug = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = FEM_WorldParams)
+	int drawNodeId = 0;
 	/**
 	 * This delegate is broadcast whenever the internal SourceMesh is updated
 	 */

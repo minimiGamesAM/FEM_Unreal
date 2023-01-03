@@ -5,6 +5,7 @@
 #include "MeshDescriptionToDynamicMesh.h"
 #include "DynamicMeshToMeshDescription.h"
 #include "StaticMeshAttributes.h"
+#include "Components/TextRenderComponent.h"
 #include "FemFunctions.h"
 #include <vector>
 
@@ -49,6 +50,10 @@ ADynamicMesh::ADynamicMesh()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+		
+	//mTextDebug = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextComponent"), false);
+	//mTextDebug->SetupAttachment(RootComponent);
+	//AddOwnedComponent(mTextDebug);
 }
 
 // Called when the game starts or when spawned
@@ -64,6 +69,12 @@ void ADynamicMesh::BeginPlay()
 
 	for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
 	{
+		auto textRender = Cast<UTextRenderComponent>(comps[i]);
+		if (textRender)
+		{
+			mTextDebug = textRender;
+		}
+
 		UProceduralMeshComponent* thisComp = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
 		if (thisComp)
 		{
@@ -141,7 +152,7 @@ void ADynamicMesh::BeginPlay()
 
 	//UFemFunctions::loadedNodes(mIdAlgoFEM, &nodesLoaded[0], nodesLoaded.size(), &val[0]);
 	///////////
-	
+		
 }
 
 void ADynamicMesh::PostInitializeComponents()
@@ -378,13 +389,10 @@ void ADynamicMesh::Tick(float DeltaTime)
 	 
 	UFemFunctions::setGravityDirection(mIdAlgoFEM, gravDir);
 
-	UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
+	long long timeProc = UFemFunctions::update(mIdAlgoFEM, DeltaTime, &mVerticesBuffer[0]);
 
-	//for (int i = 0; i < mVerticesBuffer.size(); ++i)
-	//{
-	//	mVerticesBuffer[i] += 0.2 * t;
-	//}
-	//
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tme CG %i "), timeProc));
+	
 
 	for (int i = 0; i < Vertices.Num(); ++i)
 	{
@@ -401,5 +409,21 @@ void ADynamicMesh::Tick(float DeltaTime)
 
 	ProceduralMesh->UpdateMeshSection(0, Vertices, Normals, UVs, VertexColors, Tangents);
 
+	
+
+	///////////////Debug////////////
+	if (mTextDebug)
+	{
+		for (int i = 0; i < Vertices.Num(); i++)
+		{
+			if (i == drawNodeId)
+			{
+				FVector& p = Vertices[i];
+
+				mTextDebug->SetText(FString::FromInt(i));
+				mTextDebug->SetRelativeLocation(p);
+			}
+		}
+	}
 }
 

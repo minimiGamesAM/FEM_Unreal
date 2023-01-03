@@ -24,7 +24,7 @@ public:
 	static void setDamping(int id, const float fk, const float fm);
 	static void setMaterialParams(int id, const float e, const float v, const float gamma);
 	static void init(int id, float* g_coord, int* g_num, int* in_nf, int in_nn);
-	static void update(int id, float dt, float* verticesBuffer);
+	static long long update(int id, float dt, float* verticesBuffer);
 
 	static void runTetGenio(const float* points,
 		const int*	faces,

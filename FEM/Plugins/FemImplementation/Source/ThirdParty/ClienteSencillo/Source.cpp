@@ -407,14 +407,14 @@ void pruebaWithDataTetGen()
 	//////////////////////////////////////
 	for (int i = 0; i < 20; ++i)
 	{
-		FEM_Factory<float>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
+		long long timeProc = FEM_Factory<float>::update(mIdAlgoFEM, 0.05, &mVerticesBuffer[0]);
 
 		//if (i >= 1273)
 		//{
 		//	FEM_Factory<float>::setMaterialParams(mIdAlgoFEM, float(1000.0), float(0.3), float(0.0));
 		//}
 
-		std::cout << i << "   " << mVerticesBuffer[3] << " " << mVerticesBuffer[4] << " " << mVerticesBuffer[5] << std::endl;
+		std::cout << i << "   " << mVerticesBuffer[3] << " " << mVerticesBuffer[4] << " " << mVerticesBuffer[5] << " time " << timeProc << std::endl;
 	}
 	
 	//////////////////////////////////////
