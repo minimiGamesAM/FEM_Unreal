@@ -201,32 +201,17 @@ void ADynamicMesh::RegenerateSourceMesh(FDynamicMesh3& MeshOut)
 
 		TMap<FVector, FColor> VertexColorData;
 		StaticMesh->GetVertexColorData(VertexColorData);
-		
-		//FColorVertexBuffer* colorBuffer = &StaticMesh->GetRenderData()->LODResources[0].VertexBuffers.ColorVertexBuffer;
-		
-		//colorBuffer->Init(colorBuffer->GetNumVertices(), true);
-		//TArray<FColor> colors; 
-		//colorBuffer->GetVertexColors(colors);
-		
+				
 		FMeshDescription* MeshDescription = StaticMesh->GetMeshDescription(0);
 		
 		const FVertexArray& VertexIDs = MeshDescription->Vertices();
 		
-		//auto nbVertices = colorBuffer->GetNumVertices();
-
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Pos %i, %i"), nbVertices, VertexIDs.Num()));
-
-		//if (nbVertices == VertexIDs.Num())
-		//{
-
-		//}
-
 		TVertexAttributesConstRef<FVector> VertexPositions =
 			MeshDescription->VertexAttributes().GetAttributesRef<FVector>(MeshAttribute::Vertex::Position);
 		
-		float* points = new float[VertexIDs.Num() * 3];
+		float* points = new float[MeshDescription->Vertices().Num() * 3];//.GetNumElements() * 3]; //.Num() * 3];
 		
-		for (const FVertexID vId : VertexIDs.GetElementIDs())
+		for (const FVertexID vId : MeshDescription->Vertices().GetElementIDs())
 		{
 			FVector p = VertexPositions.Get(vId);
 		
