@@ -60,8 +60,8 @@ private:
 	void buildTetMesh();
 
 private:
-	std::vector<float>			mVerticesBuffer;
-	std::vector<int>			mTetsBuffer;
+	TArray<float>				mVerticesBuffer;
+	TArray<int>					mTetsBuffer;
 
 	int							mIdAlgoFEM = -1;
 };

@@ -127,8 +127,8 @@ void ADeformable::buildTetMesh()
 	}
 
 	///////////////////////////
-	mTetsBuffer.clear();
-	mTetsBuffer.resize(numberoftetrahedra * 4);
+	mTetsBuffer.Empty();
+	mTetsBuffer.SetNum(numberoftetrahedra * 4);
 
 	for (int tetIdx = 0; tetIdx < numberoftetrahedra; tetIdx++)
 	{
@@ -184,8 +184,8 @@ void ADeformable::BeginPlay()
 
 		auto& data = meshSection->ProcVertexBuffer;
 
-		mVerticesBuffer.clear();
-		mVerticesBuffer.resize(data.Num() * 3);
+		mVerticesBuffer.Empty();
+		mVerticesBuffer.Reserve(data.Num() * 3);
 
 		TArray<FColor>	VertexColors;
 		for (int j = 0; j < data.Num(); ++j)
@@ -193,9 +193,9 @@ void ADeformable::BeginPlay()
 			//position
 			FVector& pos = data[j].Position;
 
-			mVerticesBuffer[j * 3] = pos[0];
-			mVerticesBuffer[j * 3 + 1] = pos[1];
-			mVerticesBuffer[j * 3 + 2] = pos[2];
+			mVerticesBuffer.Push(pos[0]);
+			mVerticesBuffer.Push(pos[1]);
+			mVerticesBuffer.Push(pos[2]);
 
 			//color
 			FColor& color = data[j].Color;
@@ -206,7 +206,7 @@ void ADeformable::BeginPlay()
 		//nodof = number of freedoms per node (x, y, z, q1, q2, q3 etc)
 		const int nodof = 3;
 		//nn = total number of nodes in the problem
-		int nn = mVerticesBuffer.size() / 3;
+		int nn = mVerticesBuffer.Num() / 3;
 
 		std::vector<int> nf(nodof * nn, 1);
 
@@ -233,7 +233,7 @@ void ADeformable::BeginPlay()
 		// number of nodes per element
 		int nod = 4;
 
-		mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsBuffer.size() / 4, nod, 1, "tetrahedron");
+		mIdAlgoFEM = UFemFunctions::create(dim, nodof, mTetsBuffer.Num() / 4, nod, 1, "tetrahedron");
 
 		UFemFunctions::setMaterialParams(mIdAlgoFEM, e, v, gamma);
 		UFemFunctions::setDamping(mIdAlgoFEM, fk, fm);
@@ -261,7 +261,7 @@ void ADeformable::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FVector defaultVec(0.0f, 0.0f, 0.0f);
-	TArray<FVector>	Vertices(&defaultVec, mVerticesBuffer.size() / 3);
+	TArray<FVector>	Vertices(&defaultVec, mVerticesBuffer.Num() / 3);
 
 	// update array with FEM
 
