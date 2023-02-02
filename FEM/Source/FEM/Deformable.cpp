@@ -14,6 +14,56 @@ ADeformable::ADeformable()
 
 }
 
+void ADeformable::prubaFuncion()
+{
+	if (!ProceduralMeshComp || !StaticMeshComp)
+	{
+		TArray<UActorComponent*> comps;
+
+		this->GetComponents(comps);
+
+		for (int i = 0; i < comps.Num(); ++i) //Because there may be more components
+		{
+			UProceduralMeshComponent* thisCompP = Cast<UProceduralMeshComponent>(comps[i]); //try to cast to static mesh component
+			if (thisCompP)
+			{
+				ProceduralMeshComp = thisCompP;
+			}
+
+			UStaticMeshComponent* thisCompS = Cast<UStaticMeshComponent>(comps[i]); //try to cast to static mesh component
+			if (thisCompS)
+			{
+				StaticMeshComp = thisCompS;
+			}
+		}
+
+		//int size = mVerticesBuffer.Num();
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tme CG %i "), size));
+		
+	}
+
+	if (ProceduralMeshComp && StaticMeshComp)
+	{
+		if (mTetsBuffer.IsEmpty())
+			buildTetMesh();
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Tme CG %i "), size));
+	}
+}
+
+void ADeformable::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	prubaFuncion();
+}
+
+void ADeformable::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	prubaFuncion();
+}
+
 void ADeformable::buildTetMesh()
 {
 	//static mesh
@@ -70,10 +120,6 @@ void ADeformable::buildTetMesh()
 		tet2facelist,
 		"pqz-f-nn");
 
-	ProceduralMeshComp->ClearAllMeshSections();
-
-	//ProceduralMesh->CreateMeshSection(0, )
-
 	auto defaultPos = FVector(0.0f, 0.0f, 0.0f);
 	auto defaultColor = FColor(0, 0, 0, 0);
 
@@ -127,7 +173,7 @@ void ADeformable::buildTetMesh()
 	}
 
 	///////////////////////////
-	mTetsBuffer.Empty();
+	//mTetsBuffer.Empty();
 	mTetsBuffer.SetNum(numberoftetrahedra * 4);
 
 	for (int tetIdx = 0; tetIdx < numberoftetrahedra; tetIdx++)
@@ -139,6 +185,8 @@ void ADeformable::buildTetMesh()
 	}
 	///////////////////////////
 
+	ProceduralMeshComp->ClearAllMeshSections();
+
 	ProceduralMeshComp->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, false);
 
 	UMaterialInterface* UseMaterial = UMaterial::GetDefaultMaterial(MD_Surface);
@@ -149,6 +197,22 @@ void ADeformable::buildTetMesh()
 	}
 
 	ProceduralMeshComp->SetMaterial(0, UseMaterial);
+
+	auto meshSection = ProceduralMeshComp->GetProcMeshSection(0);
+
+	auto& data = meshSection->ProcVertexBuffer;
+
+	mVerticesBuffer.SetNum(data.Num() * 3);
+
+	for (int j = 0; j < data.Num(); ++j)
+	{
+		//position
+		FVector& pos = data[j].Position;
+
+		mVerticesBuffer[j * 3] = pos[0];
+		mVerticesBuffer[j * 3 + 1] = pos[1];
+		mVerticesBuffer[j * 3 + 2] = pos[2];
+	}
 }
 
 // Called when the game starts or when spawned
@@ -177,26 +241,14 @@ void ADeformable::BeginPlay()
 
 	if (ProceduralMeshComp && StaticMeshComp)
 	{
-		buildTetMesh();
-
 		// init FEM
 		auto meshSection = ProceduralMeshComp->GetProcMeshSection(0);
 
 		auto& data = meshSection->ProcVertexBuffer;
-
-		mVerticesBuffer.Empty();
-		mVerticesBuffer.Reserve(data.Num() * 3);
-
+		
 		TArray<FColor>	VertexColors;
 		for (int j = 0; j < data.Num(); ++j)
 		{
-			//position
-			FVector& pos = data[j].Position;
-
-			mVerticesBuffer.Push(pos[0]);
-			mVerticesBuffer.Push(pos[1]);
-			mVerticesBuffer.Push(pos[2]);
-
 			//color
 			FColor& color = data[j].Color;
 			VertexColors.Add(color);

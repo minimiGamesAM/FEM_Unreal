@@ -13,10 +13,15 @@ UCLASS()
 class FEM_API ADeformable : public AActor
 {
 	GENERATED_BODY()
-	
+		
 public:	
 	// Sets default values for this actor's properties
 	ADeformable();
+	
+	UFUNCTION(BlueprintCallable)
+	void prubaFuncion();
+
+public:
 
 	UPROPERTY(EditAnywhere)
 	UProceduralMeshComponent* ProceduralMeshComp = nullptr;
@@ -55,7 +60,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//std::vector<float>			mVerticesBuffer;
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	virtual void PostInitializeComponents() override;
+
 private:
 	void buildTetMesh();
 
